@@ -1,0 +1,56 @@
+.process-section {
+  padding: 6.5rem 0;
+  background-color: var(--bg-page);
+}
+
+.process-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  position: relative;
+}
+
+.timeline-step-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.timeline-step-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-peach);
+  box-shadow: var(--shadow-medium);
+}
+
+.step-num-pill {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.4rem;
+  box-shadow: 0 4px 14px rgba(10, 88, 202, 0.35);
+}
+
+.step-title {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.65rem;
+}
+
+.step-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

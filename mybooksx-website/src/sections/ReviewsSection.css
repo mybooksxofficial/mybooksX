@@ -1,0 +1,204 @@
+.reviews-section {
+  padding: 6.5rem 0;
+  background-color: #FFFFFF;
+  position: relative;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 1.8rem;
+  margin-bottom: 3.5rem;
+}
+
+.review-card {
+  background: var(--bg-page);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 3.5vw, 2.4rem) clamp(1.2rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, background-color 0.28s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--royal-blue);
+  background: #FFFFFF;
+  box-shadow: 0 22px 48px -8px rgba(102, 73, 48, 0.18), 0 8px 24px rgba(10, 88, 202, 0.12);
+}
+
+.review-card:hover::before {
+  background: linear-gradient(90deg, var(--royal-blue), #FFAA00, var(--color-peach));
+}
+
+.review-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.review-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--royal-blue);
+  background: var(--royal-blue-light);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.stars-row {
+  display: flex;
+  gap: 3px;
+}
+
+.review-quote {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-style: italic;
+  margin-bottom: 1.8rem;
+  flex-grow: 1;
+}
+
+.review-footer {
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.author-details {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.author-avatar-initial {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-peach);
+  color: var(--color-espresso);
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(102, 73, 48, 0.2);
+}
+
+.author-name {
+  font-size: 1.05rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.15rem;
+}
+
+.author-role {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.review-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.delivery-pill,
+.support-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  color: var(--color-taupe);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 24/7 Support Strip */
+.support-highlight-strip {
+  background: var(--color-peach-light);
+  border: 1.5px solid var(--color-peach);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.2rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.support-icon-circle {
+  width: 58px;
+  height: 58px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(10, 88, 202, 0.12);
+}
+
+.support-strip-text h4 {
+  font-size: 1.35rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.4rem;
+}
+
+.support-strip-text p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .reviews-section {
+    padding: 4.5rem 0;
+  }
+  .support-highlight-strip {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.4rem;
+    padding: 1.8rem 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-section {
+    padding: 3.5rem 0;
+  }
+  .reviews-grid {
+    gap: 1.2rem;
+  }
+  .support-strip-text h4 {
+    font-size: 1.2rem;
+  }
+  .support-strip-text p {
+    font-size: 0.88rem;
+  }
+}

@@ -1,0 +1,248 @@
+.wheel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 31, 22, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1.2rem;
+  overflow-y: auto;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.wheel-modal-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-peach);
+  box-shadow: 0 25px 60px rgba(102, 73, 48, 0.35);
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 2rem 1.8rem;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popUp {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.wheel-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--color-sand-light);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-espresso);
+  transition: all var(--transition-fast);
+}
+
+.wheel-close-btn:hover {
+  background: var(--color-peach);
+  transform: rotate(90deg);
+}
+
+.wheel-header {
+  margin-bottom: 1.4rem;
+}
+
+.wheel-header h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-top: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.wheel-header p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.wheel-interactive-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  max-width: 100%;
+  margin: 1rem auto 1.4rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-pointer-triangle {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 24px solid var(--royal-blue);
+  z-index: 10;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
+}
+
+.wheel-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 10px 28px rgba(102, 73, 48, 0.22);
+}
+
+.wheel-svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.wheel-action-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.spin-action-btn {
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 1.05rem;
+}
+
+.wheel-disclaimer-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Won Box */
+.won-result-box {
+  background: var(--color-peach-light);
+  border: 1.5px dashed var(--color-taupe);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  animation: popUp 0.35s ease-out;
+}
+
+.won-result-box h4 {
+  font-size: 1.4rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.4rem;
+}
+
+.highlight-discount {
+  color: var(--royal-blue);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.won-result-box p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.9rem;
+  line-height: 1.5;
+}
+
+.promo-code-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: #FFFFFF;
+  border: 2px solid var(--royal-blue);
+  border-radius: var(--radius-full);
+  padding: 0.65rem 1.4rem;
+  margin-bottom: 0.65rem;
+}
+
+.promo-code-pill span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.promo-code-pill strong {
+  font-size: 1.2rem;
+  color: var(--royal-blue);
+  letter-spacing: 0.08em;
+  font-family: var(--font-heading);
+}
+
+.wheel-actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.whatsapp-bill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  padding: 0.95rem;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-full);
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp-bill-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+}
+
+.single-spin-note {
+  font-size: 0.76rem;
+  color: var(--color-taupe);
+  margin-top: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .wheel-modal-overlay {
+    padding: 1rem 0.6rem;
+  }
+  .wheel-modal-card {
+    padding: 1.4rem 0.9rem;
+    max-height: 95vh;
+  }
+  .wheel-interactive-container {
+    width: 200px;
+    height: 200px;
+  }
+  .wheel-header h3 {
+    font-size: 1.25rem;
+  }
+  .won-result-box {
+    padding: 1rem 0.75rem;
+  }
+  .promo-code-pill strong {
+    font-size: 1rem;
+  }
+  .whatsapp-bill-btn {
+    font-size: 0.85rem;
+    padding: 0.85rem;
+  }
+}

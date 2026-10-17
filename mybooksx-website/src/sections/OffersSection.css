@@ -1,0 +1,297 @@
+.offers-section {
+  padding: 6.5rem 0;
+  background-color: var(--bg-page);
+  position: relative;
+}
+
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 2rem;
+  margin-bottom: 3.8rem;
+}
+
+.two-cards-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.deal-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-subtle);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  position: relative;
+  will-change: transform;
+}
+
+.deal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px -8px rgba(102, 73, 48, 0.14), 0 4px 14px rgba(10, 88, 202, 0.08);
+  border-color: var(--color-sand);
+}
+
+.compact-deal-card {
+  padding: 2rem 1.8rem;
+}
+
+.deal-arrow-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin: 0.4rem auto 1.2rem auto;
+  background: var(--color-sand-light);
+  border: 1.5px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--royal-blue);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.deal-arrow-toggle-btn:hover {
+  background: var(--royal-blue-light);
+  border-color: var(--royal-blue);
+  transform: translateY(-2px);
+}
+
+.deal-arrow-toggle-btn.active {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  border-color: var(--royal-blue);
+}
+
+.deal-expanded-drawer {
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-light);
+  margin-bottom: 1.2rem;
+  animation: fadeIn 0.28s ease-out;
+}
+
+.deal-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--color-sand);
+}
+
+.deal-card.popular-card {
+  border: 2px solid var(--royal-blue);
+  box-shadow: 0 14px 38px -6px rgba(10, 88, 202, 0.2);
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--royal-blue-light) 120%);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  right: 1.5rem;
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.25rem 0.8rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.05em;
+  box-shadow: 0 3px 10px rgba(10, 88, 202, 0.35);
+}
+
+.deal-tag {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--color-taupe);
+  background: var(--color-sand-light);
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.deal-title {
+  font-size: 1.45rem;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+}
+
+.deal-desc {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.6rem;
+}
+
+.pricing-box {
+  background: var(--color-peach-light);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  margin-bottom: 1.6rem;
+  border: 1px solid var(--color-peach);
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+
+.original-price {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.discount-price {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--color-espresso);
+  font-family: var(--font-heading);
+}
+
+.billing-note {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--color-taupe);
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+.deal-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 2.2rem;
+}
+
+.deal-features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.48;
+}
+
+.check-icon {
+  color: var(--royal-blue);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.deal-cta-btn {
+  font-size: 0.96rem;
+  padding: 0.95rem;
+}
+
+/* Yearly Maintenance Banner */
+.yearly-maintenance-highlight {
+  background: #FFFFFF;
+  border: 1.5px solid var(--color-peach);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.2rem;
+  box-shadow: var(--shadow-medium);
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.maintenance-icon-box {
+  width: 58px;
+  height: 58px;
+  background: var(--royal-blue-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.maintenance-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.maintenance-text h4 {
+  font-size: 1.35rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.4rem;
+  word-break: break-word;
+}
+
+.maintenance-text p {
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.maintenance-text del {
+  color: var(--text-muted);
+}
+
+.maintenance-text strong {
+  color: var(--royal-blue);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.maintenance-cta-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 0.95rem 1.6rem;
+  font-size: 0.98rem;
+  text-align: center;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .offers-section {
+    padding: 4.5rem 0;
+  }
+  .yearly-maintenance-highlight {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.4rem;
+    padding: 1.8rem 1.4rem;
+    width: 100%;
+  }
+  .maintenance-cta-btn {
+    white-space: normal;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .offers-section {
+    padding: 3.5rem 0;
+  }
+  .deal-card {
+    padding: 1.6rem 1.25rem;
+  }
+  .discount-price {
+    font-size: 1.85rem;
+  }
+}

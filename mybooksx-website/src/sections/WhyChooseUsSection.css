@@ -1,0 +1,117 @@
+.why-choose-us-section {
+  padding: 6.5rem 0;
+  background-color: var(--bg-page);
+  position: relative;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.8rem;
+  margin-top: 1.5rem;
+}
+
+.why-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2rem;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.why-card:hover {
+  transform: translateY(-9px) scale(1.02);
+  border-color: var(--royal-blue);
+  box-shadow: 0 24px 50px -10px rgba(10, 88, 202, 0.2), 0 10px 24px rgba(102, 73, 48, 0.12);
+}
+
+.why-card:hover::before {
+  background: linear-gradient(90deg, var(--royal-blue), #FFAA00, var(--color-peach));
+}
+
+.why-icon-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-md);
+  background: var(--royal-blue-light);
+  border: 1px solid var(--border-royal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.4rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.why-card:hover .why-icon-wrap {
+  transform: scale(1.16) rotate(-5deg);
+  background-color: #DBE7FF;
+  box-shadow: 0 8px 20px rgba(10, 88, 202, 0.28);
+}
+
+.why-title {
+  font-size: 1.25rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.why-desc {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .why-choose-us-section {
+    padding: 5rem 0;
+  }
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .why-choose-us-section {
+    padding: 4rem 0;
+  }
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .why-card {
+    padding: 1.6rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .why-choose-us-section {
+    padding: 3.5rem 0;
+  }
+  .why-icon-wrap {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+  .why-title {
+    font-size: 1.15rem;
+  }
+}

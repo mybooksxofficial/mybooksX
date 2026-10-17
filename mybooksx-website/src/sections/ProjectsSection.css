@@ -1,0 +1,102 @@
+.projects-section {
+  padding: 6.5rem 0;
+  background-color: #FFFFFF;
+}
+
+.demo-disclaimer-pill {
+  display: inline-block;
+  margin-top: 0.8rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-taupe);
+  background: var(--color-sand-light);
+  padding: 0.25rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.project-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--color-peach);
+  background: #FFFFFF;
+  box-shadow: var(--shadow-medium);
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.project-tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--royal-blue);
+  background: var(--royal-blue-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.project-arrow-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-espresso);
+  transition: all var(--transition-fast);
+}
+
+.project-card:hover .project-arrow-btn {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  border-color: var(--royal-blue);
+  transform: rotate(45deg);
+}
+
+.project-title {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  line-height: 1.35;
+}
+
+.project-desc {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+  flex-grow: 1;
+}
+
+.project-metrics-box {
+  background: var(--color-peach-light);
+  border: 1px solid var(--color-peach);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+}
