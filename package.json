@@ -1,0 +1,13 @@
+{
+  "name": "mybooksx",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "mybooksx-website"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview": "npm run preview --workspace=mybooksx-website"
+  }
+}
