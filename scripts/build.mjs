@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,18 +9,12 @@ const websiteDir = path.join(rootDir, 'mybooksx-website');
 
 console.log('--- Building MyBooks Website ---');
 const isWin = process.platform === 'win32';
-const npmCmd = isWin ? 'npm.cmd' : 'npm';
+const buildCmd = isWin ? 'npm.cmd run build' : 'npm run build';
 
-const result = spawnSync(npmCmd, ['run', 'build'], {
+execSync(buildCmd, {
   cwd: websiteDir,
-  stdio: 'inherit',
-  shell: isWin
+  stdio: ['ignore', 'inherit', 'inherit']
 });
-
-if (result.status !== 0) {
-  console.error('Build failed with exit code', result.status);
-  process.exit(result.status || 1);
-}
 
 const srcDist = path.join(websiteDir, 'dist');
 const rootDist = path.join(rootDir, 'dist');
@@ -30,8 +24,10 @@ if (fs.existsSync(srcDist)) {
     fs.rmSync(rootDist, { recursive: true, force: true });
   }
   fs.cpSync(srcDist, rootDist, { recursive: true });
-  console.log('--- Build Succeeded: Synced dist to repository root and mybooksx-website/dist ---');
+  console.log('--- Build Succeeded: Synced dist to repository root ---');
 } else {
   console.error('Error: Build completed but dist directory was not found!');
   process.exit(1);
 }
+
+process.exit(0);

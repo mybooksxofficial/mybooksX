@@ -44,15 +44,16 @@ export interface EnquiryResponse {
 const rateLimitStore = new Map<string, number[]>();
 const idempotencyStore = new Map<string, EnquiryResponse>();
 
-// Clean up stale idempotency records periodically
-setInterval(() => {
+// Clean up stale idempotency records lazily or via unref timer
+function cleanupStaleIdempotency() {
   const now = Date.now();
   for (const [key, val] of idempotencyStore.entries()) {
     if (val.timestamp && now - new Date(val.timestamp).getTime() > 10 * 60 * 1000) {
       idempotencyStore.delete(key);
     }
   }
-}, 60 * 1000);
+}
+
 
 export function sanitizeString(input: unknown): string {
   if (typeof input !== 'string') return '';
@@ -137,6 +138,7 @@ export function processEnquirySubmission(
   payload: EnquiryPayload,
   clientIp = '127.0.0.1'
 ): { statusCode: number; response: EnquiryResponse } {
+  cleanupStaleIdempotency();
   // 1. Rate Limiting Check (Max 10 per 5 mins per IP)
   const now = Date.now();
   const windowMs = 5 * 60 * 1000;
