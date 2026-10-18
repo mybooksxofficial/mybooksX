@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Lock, ShieldCheck, LogOut, Clock, Phone, MessageSquare, Trash2, Search, Filter, AlertCircle, UserCheck } from 'lucide-react';
+import { ArrowLeft, Lock, ShieldCheck, LogOut, Clock, Phone, MessageSquare, Trash2, Search, Filter, AlertCircle, UserCheck, Eye, EyeOff } from 'lucide-react';
 import { bookingService } from '../services/bookingService';
 import type { BookingRecord } from '../services/bookingService';
 import './OwnerPanelModal.css';
@@ -16,6 +16,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
   const [ownerId, setOwnerId] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,11 +35,28 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
     const cleanId = ownerId.trim().toLowerCase();
     const cleanPass = password.trim();
 
-    // Secure tough Owner credentials (revealed only in user chat)
-    const validIds = ['admin@mybooksx.com', 'mybooksx_admin', 'owner'];
-    const validPass = 'MBX#Ojas9644!Key';
+    // Accepted Owner / Admin IDs
+    const validIds = [
+      'admin',
+      'admin@mybooksx.com',
+      'mybooksx_admin',
+      'owner',
+      'ojas',
+      'mybooksx'
+    ];
 
-    if (validIds.includes(cleanId) && cleanPass === validPass) {
+    // Accepted passwords (both the master tough key and simple convenient mobile passwords)
+    const validPasswords = [
+      'MBX#Ojas9644!Key',
+      'ojas9644',
+      'Ojas9644',
+      'admin9644',
+      'admin123',
+      'mybooksx123',
+      'mbx9644'
+    ];
+
+    if (validIds.includes(cleanId) && validPasswords.includes(cleanPass)) {
       setIsAuthenticated(true);
       sessionStorage.setItem('mybooksx_owner_auth', 'true');
       setLoginError('');
@@ -154,15 +172,25 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
                 <div className="form-field">
                   <label htmlFor="ownerPassword">Master Password</label>
-                  <input
-                    type="password"
-                    id="ownerPassword"
-                    placeholder="Enter Master Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="ownerPassword"
+                      placeholder="Enter Master Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password-visibility-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <button type="submit" className="btn-primary w-full owner-auth-submit-btn">
