@@ -350,15 +350,17 @@
 }
 
 .expand-card-toggle-arrow-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  margin: 0.4rem auto 0.8rem auto;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  margin: 0.6rem auto 1rem auto;
   background: var(--color-sand-light);
   border: 1.5px solid var(--border-light);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
   color: var(--royal-blue);
   cursor: pointer;
   transition: all var(--transition-fast);

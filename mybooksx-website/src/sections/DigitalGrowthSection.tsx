@@ -75,8 +75,8 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
           </p>
         </div>
 
-        {/* Master Dropdown Trigger Card for Other Than Software */}
-        <div className="growth-master-control-wrap">
+        {/* Mobile-Only Master Dropdown Trigger Card for Other Than Software */}
+        <div className="growth-master-control-wrap mobile-only-master-trigger">
           <button
             type="button"
             className={`growth-master-trigger-card ${isSectionExpanded ? 'active' : ''}`}
@@ -107,9 +107,9 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
           </button>
         </div>
 
-        {/* Two Featured Service Cards shown when expanded */}
-        {isSectionExpanded && (
-          <div className="growth-cards-grid animate-fade-in">
+        {/* Always visible on laptop/desktop; collapsible on mobile */}
+        <div className={`growth-cards-wrapper ${isSectionExpanded ? 'mobile-visible' : 'mobile-hidden'}`}>
+          <div className="growth-cards-grid">
           {DIGITAL_GROWTH_SERVICES.map((svc) => {
             const isSocial = svc.id === 'social-media';
             const title = language === 'hi' ? svc.titleHi : svc.title;
@@ -249,8 +249,8 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
               </div>
             );
           })}
+          </div>
         </div>
-        )}
       </div>
 
       {/* Service Details & Pricing Modal */}

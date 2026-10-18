@@ -35,8 +35,8 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           <p>{t.offers.subtitle}</p>
         </div>
 
-        {/* Master Dropdown Trigger Card for Custom Web & Custom App */}
-        <div className="offers-master-control-wrap">
+        {/* Mobile-Only Master Dropdown Trigger Card for Custom Web & Custom App */}
+        <div className="offers-master-control-wrap mobile-only-master-trigger">
           <button
             type="button"
             className={`offers-master-trigger-card ${isOffersMasterOpen ? 'active' : ''}`}
@@ -67,9 +67,9 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           </button>
         </div>
 
-        {isOffersMasterOpen && (
-          <div className="offers-content-wrap animate-fade-in">
-            <div className="deals-grid two-cards-grid">
+        {/* Always visible on laptop/desktop; collapsible on mobile */}
+        <div className={`offers-content-wrap ${isOffersMasterOpen ? 'mobile-visible' : 'mobile-hidden'}`}>
+          <div className="deals-grid two-cards-grid">
           {displayDeals.map((deal, idx) => {
             const isExpanded = !!expandedDeals[idx];
 
@@ -155,8 +155,7 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           </a>
         </div>
       </div>
-    )}
-      </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 };

@@ -101,6 +101,14 @@
   transform: rotate(180deg);
 }
 
+.mobile-only-master-trigger {
+  display: none !important;
+}
+
+.growth-cards-wrapper {
+  display: block;
+}
+
 .growth-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
@@ -697,6 +705,16 @@
     justify-content: center;
     white-space: normal;
     text-align: center;
+  }
+  .mobile-only-master-trigger {
+    display: block !important;
+  }
+  .growth-cards-wrapper.mobile-hidden {
+    display: none !important;
+  }
+  .growth-cards-wrapper.mobile-visible {
+    display: block !important;
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 

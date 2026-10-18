@@ -248,14 +248,16 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ onSelectProduc
                       ))}
                   </ul>
 
-                  {/* Expand / Collapse Button */}
+                  {/* Arrow Button to Read More / Read Less */}
                   <button
                     type="button"
-                    className="toggle-features-btn"
+                    className={`expand-card-toggle-arrow-btn ${isExpanded ? 'active' : ''}`}
                     onClick={() => toggleExpand(prod.id)}
+                    aria-label={isExpanded ? 'Read Less' : 'Read More'}
+                    title={isExpanded ? 'Show less details' : 'Read more details'}
                   >
-                    <span>{isExpanded ? 'Show Less Details' : 'View Full Technical Features'}</span>
-                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
+                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                 </div>
 

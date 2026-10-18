@@ -101,8 +101,12 @@
   transform: rotate(180deg);
 }
 
+.mobile-only-master-trigger {
+  display: none !important;
+}
+
 .offers-content-wrap {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
 }
 
 .deals-grid {
@@ -382,6 +386,17 @@
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
+  }
+@media (max-width: 768px) {
+  .mobile-only-master-trigger {
+    display: block !important;
+  }
+  .offers-content-wrap.mobile-hidden {
+    display: none !important;
+  }
+  .offers-content-wrap.mobile-visible {
+    display: block !important;
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 
