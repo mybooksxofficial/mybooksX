@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Lock, Key, ShieldCheck, LogOut, Clock, Phone, MessageSquare, Trash2, Search, Filter, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Lock, ShieldCheck, LogOut, Clock, Phone, MessageSquare, Trash2, Search, Filter, AlertCircle, UserCheck } from 'lucide-react';
 import { bookingService } from '../services/bookingService';
 import type { BookingRecord } from '../services/bookingService';
 import './OwnerPanelModal.css';
@@ -34,14 +34,17 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
     const cleanId = ownerId.trim().toLowerCase();
     const cleanPass = password.trim();
 
-    // Default Owner Credentials
-    if ((cleanId === 'admin@mybooksx.com' || cleanId === 'owner' || cleanId === 'admin') && cleanPass === 'admin') {
+    // Secure tough Owner credentials (revealed only in user chat)
+    const validIds = ['admin@mybooksx.com', 'mybooksx_admin', 'owner'];
+    const validPass = 'MBX#Ojas9644!Key';
+
+    if (validIds.includes(cleanId) && cleanPass === validPass) {
       setIsAuthenticated(true);
       sessionStorage.setItem('mybooksx_owner_auth', 'true');
       setLoginError('');
       setBookings(bookingService.getAllBookings());
     } else {
-      setLoginError('Invalid Owner ID or Password. Please check the credentials displayed below.');
+      setLoginError('Incorrect Master ID or Password. Access denied.');
     }
   };
 
@@ -78,173 +81,182 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
   const countContacted = bookings.filter((b) => b.status === 'Contacted').length;
 
   return (
-    <div className="owner-modal-overlay" onClick={onClose}>
-      <div className="owner-modal-card" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="owner-modal-header">
-          <div className="owner-header-left">
-            <div className="owner-badge-icon">
-              <ShieldCheck size={22} className="text-royal" />
+    <div className="owner-webpage-container">
+      {/* Full Webpage Header Bar */}
+      <header className="owner-webpage-navbar">
+        <div className="owner-nav-left">
+          <button type="button" className="owner-back-web-btn" onClick={onClose} title="Return to Website">
+            <ArrowLeft size={18} />
+            <span>Back to Website</span>
+          </button>
+
+          <div className="owner-brand-divider" />
+
+          <div className="owner-nav-brand">
+            <div className="circular-logo-container">
+              <img src="/logo/mybooksx-logo.png" alt="MyBooksX" className="circular-logo-img" />
             </div>
             <div>
-              <h3>MyBooksX Owner Panel</h3>
-              <span className="owner-subline">Administrative Control & Client Bookings</span>
+              <h2 className="owner-webpage-title">MyBooksX Executive Studio</h2>
+              <span className="owner-webpage-sub">Owner Portal & Management Webpage</span>
             </div>
-          </div>
-          <div className="owner-header-right">
-            {isAuthenticated && (
-              <button type="button" className="owner-logout-btn" onClick={handleLogout} title="Log Out">
-                <LogOut size={16} />
-                <span>Logout</span>
-              </button>
-            )}
-            <button type="button" className="owner-close-btn" onClick={onClose} aria-label="Close Owner Panel">
-              <X size={20} />
-            </button>
           </div>
         </div>
 
-        {/* Content */}
+        <div className="owner-nav-right">
+          {isAuthenticated ? (
+            <button type="button" className="owner-signout-btn" onClick={handleLogout}>
+              <LogOut size={16} />
+              <span>Log Out</span>
+            </button>
+          ) : (
+            <div className="owner-security-badge">
+              <ShieldCheck size={16} className="text-royal" />
+              <span>Restricted Access</span>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Main Webpage Body */}
+      <main className="owner-webpage-main">
         {!isAuthenticated ? (
-          /* LOGIN SCREEN */
-          <div className="owner-login-view">
-            <div className="login-security-tag">
-              <Lock size={14} />
-              <span>Restricted Management Portal</span>
+          /* AUTHENTIC DEDICATED LOGIN WEBPAGE */
+          <div className="owner-login-card-container">
+            <div className="owner-auth-card">
+              <div className="auth-card-icon-wrap">
+                <Lock size={32} className="text-royal" />
+              </div>
+
+              <h3>Owner Portal Login</h3>
+              <p>Enter your confidential master credentials to access the client bookings and project inquiries.</p>
+
+              {loginError && (
+                <div className="login-error-alert">
+                  <AlertCircle size={16} />
+                  <span>{loginError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleLogin} className="owner-auth-form">
+                <div className="form-field">
+                  <label htmlFor="ownerId">Owner ID / Username</label>
+                  <input
+                    type="text"
+                    id="ownerId"
+                    placeholder="Enter Owner ID"
+                    value={ownerId}
+                    onChange={(e) => setOwnerId(e.target.value)}
+                    required
+                    autoComplete="username"
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="ownerPassword">Master Password</label>
+                  <input
+                    type="password"
+                    id="ownerPassword"
+                    placeholder="Enter Master Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary w-full owner-auth-submit-btn">
+                  <span>Sign In to Management Portal</span>
+                  <ShieldCheck size={17} />
+                </button>
+              </form>
+
+              <div className="auth-footer-note">
+                <UserCheck size={14} className="text-royal inline-icon" />
+                <span>Protected area. Client bookings and phone contacts are securely managed here.</span>
+              </div>
             </div>
-
-            <h4 className="login-heading">Owner Login</h4>
-            <p className="login-subtext">
-              Sign in with your master credentials to view, manage, and contact all clients who booked via the website.
-            </p>
-
-            {/* Display ID & Password as requested */}
-            <div className="credentials-display-box">
-              <div className="cred-header">
-                <Key size={14} className="text-royal" />
-                <strong>Default Owner Credentials</strong>
-              </div>
-              <div className="cred-row">
-                <span>Owner ID:</span>
-                <code>admin@mybooksx.com</code>
-              </div>
-              <div className="cred-row">
-                <span>Password:</span>
-                <code>admin</code>
-              </div>
-            </div>
-
-            {loginError && (
-              <div className="login-error-alert">
-                <AlertCircle size={15} />
-                <span>{loginError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="owner-login-form">
-              <div className="form-field">
-                <label htmlFor="ownerId">Owner ID / Username</label>
-                <input
-                  type="text"
-                  id="ownerId"
-                  placeholder="e.g. admin@mybooksx.com or admin"
-                  value={ownerId}
-                  onChange={(e) => setOwnerId(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="ownerPassword">Password</label>
-                <input
-                  type="password"
-                  id="ownerPassword"
-                  placeholder="Enter Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn-primary w-full owner-submit-btn">
-                <span>Access Bookings Dashboard</span>
-                <ShieldCheck size={16} />
-              </button>
-            </form>
-
-            <span className="owner-note-hint">
-              Note: Normal website visitors book projects directly without encountering any login screens.
-            </span>
           </div>
         ) : (
-          /* DASHBOARD SCREEN */
-          <div className="owner-dashboard-view">
-            {/* Quick Metrics Bar */}
-            <div className="owner-metrics-bar">
-              <div className="metric-chip">
-                <span>Total Bookings</span>
-                <strong>{bookings.length}</strong>
+          /* FULL WEBPAGE DASHBOARD */
+          <div className="container owner-dashboard-container">
+            {/* Dashboard Welcome Header */}
+            <div className="owner-dash-heading-row">
+              <div>
+                <h2>Client Inquiries & Bookings</h2>
+                <p>Real-time list of client consultation requests submitted through the website.</p>
               </div>
-              <div className="metric-chip highlight-new">
-                <span>New Bookings</span>
-                <strong>{countNew}</strong>
-              </div>
-              <div className="metric-chip">
-                <span>Contacted</span>
-                <strong>{countContacted}</strong>
+
+              <div className="owner-quick-stats">
+                <div className="stat-pill">
+                  <span className="stat-lbl">Total Bookings</span>
+                  <strong>{bookings.length}</strong>
+                </div>
+                <div className="stat-pill highlight-gold">
+                  <span className="stat-lbl">New Uncontacted</span>
+                  <strong>{countNew}</strong>
+                </div>
+                <div className="stat-pill highlight-green">
+                  <span className="stat-lbl">Contacted</span>
+                  <strong>{countContacted}</strong>
+                </div>
               </div>
             </div>
 
-            {/* Controls Bar: Search & Status Filter */}
-            <div className="owner-controls-bar">
-              <div className="owner-search-wrap">
-                <Search size={16} className="search-icon" />
+            {/* Filter and Search Bar */}
+            <div className="owner-dash-toolbar">
+              <div className="dash-search-box">
+                <Search size={18} className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Search by client name, phone, or service..."
+                  placeholder="Search by client name, phone number, service..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
-              <div className="owner-filter-wrap">
-                <Filter size={15} className="filter-icon" />
+              <div className="dash-filter-box">
+                <Filter size={16} className="filter-icon" />
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value as any)}
-                  className="owner-filter-select"
+                  className="dash-filter-dropdown"
                 >
-                  <option value="All">All Statuses ({bookings.length})</option>
-                  <option value="New">New Only ({countNew})</option>
-                  <option value="Contacted">Contacted ({countContacted})</option>
-                  <option value="Closed">Closed</option>
+                  <option value="All">All Bookings ({bookings.length})</option>
+                  <option value="New">🟡 New ({countNew})</option>
+                  <option value="Contacted">🟢 Contacted ({countContacted})</option>
+                  <option value="Closed">⚪ Closed</option>
                 </select>
               </div>
             </div>
 
-            {/* Bookings List */}
+            {/* Bookings Display */}
             {filteredBookings.length === 0 ? (
-              <div className="empty-bookings-box">
-                <Clock size={36} className="text-muted" />
-                <h4>No Bookings Found</h4>
-                <p>New inquiries and project bookings from the website will appear here in real-time.</p>
+              <div className="owner-empty-state">
+                <Clock size={48} className="text-muted" />
+                <h3>No Bookings Yet</h3>
+                <p>
+                  {searchQuery || filterStatus !== 'All'
+                    ? 'No bookings match your current search or filter criteria.'
+                    : 'When clients book a consultation or project on the website, their details will immediately appear on this page without fake dummy data.'}
+                </p>
               </div>
             ) : (
-              <div className="bookings-cards-list">
+              <div className="owner-bookings-grid">
                 {filteredBookings.map((b) => (
-                  <div key={b.id} className={`booking-record-card status-${b.status.toLowerCase()}`}>
-                    <div className="booking-card-top">
-                      <div className="booking-client-info">
-                        <span className="booking-id-pill">{b.id}</span>
-                        <h4 className="booking-client-name">{b.name}</h4>
-                        {b.businessType && <span className="booking-business-type">{b.businessType}</span>}
+                  <div key={b.id} className={`owner-booking-card status-${b.status.toLowerCase()}`}>
+                    <div className="card-top-header">
+                      <div className="client-meta-wrap">
+                        <span className="booking-id-tag">{b.id}</span>
+                        <h3 className="client-full-name">{b.name}</h3>
+                        {b.businessType && <span className="client-biz-type">{b.businessType}</span>}
                       </div>
 
-                      <div className="booking-status-actions">
+                      <div className="card-status-controls">
                         <select
                           value={b.status}
                           onChange={(e) => handleStatusChange(b.id, e.target.value as any)}
-                          className={`status-dropdown-pill status-${b.status.toLowerCase()}`}
+                          className={`status-pill-select status-${b.status.toLowerCase()}`}
                         >
                           <option value="New">🟡 New</option>
                           <option value="Contacted">🟢 Contacted</option>
@@ -253,47 +265,49 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
                         <button
                           type="button"
-                          className="booking-delete-btn"
+                          className="delete-booking-icon-btn"
                           onClick={() => handleDelete(b.id)}
-                          title="Delete booking"
+                          title="Delete Booking"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
 
-                    <div className="booking-service-badge">
-                      <strong>Requested Service:</strong> {b.service}
-                      {b.promoCode && <span className="promo-badge-tag">Promo: {b.promoCode}</span>}
+                    <div className="booking-service-callout">
+                      <strong>Requested Service:</strong>
+                      <span>{b.service}</span>
+                      {b.promoCode && <span className="promo-voucher-tag">Promo: {b.promoCode}</span>}
                     </div>
 
                     {b.details && (
-                      <p className="booking-details-text">
-                        <strong>Project Notes:</strong> {b.details}
-                      </p>
+                      <div className="booking-notes-box">
+                        <strong>Project Notes:</strong>
+                        <p>{b.details}</p>
+                      </div>
                     )}
 
-                    <div className="booking-card-footer">
-                      <span className="booking-time-stamp">
+                    <div className="card-action-bar">
+                      <span className="booking-timestamp">
                         <Clock size={13} className="inline-icon" /> {b.createdAt}
                       </span>
 
-                      <div className="booking-contact-actions">
+                      <div className="client-reach-buttons">
                         <a
                           href={`https://wa.me/${b.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                            `Hello ${b.name}! Thank you for your booking on MyBooksX for "${b.service}". How can we help you get started?`
+                            `Hello ${b.name}! Thank you for your inquiry on MyBooksX for "${b.service}". When is a good time for a brief discussion?`
                           )}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="btn-whatsapp-quick"
-                          title="Open WhatsApp chat with client"
+                          className="reach-btn-whatsapp"
+                          title="Chat on WhatsApp"
                         >
-                          <MessageSquare size={14} />
-                          <span>WhatsApp Client</span>
+                          <MessageSquare size={15} />
+                          <span>WhatsApp</span>
                         </a>
 
-                        <a href={`tel:${b.phone}`} className="btn-call-quick" title="Call Client">
-                          <Phone size={14} />
+                        <a href={`tel:${b.phone}`} className="reach-btn-call" title="Call Client">
+                          <Phone size={15} />
                           <span>{b.phone}</span>
                         </a>
                       </div>
@@ -304,7 +318,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
             )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

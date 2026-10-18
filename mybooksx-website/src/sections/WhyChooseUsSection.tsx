@@ -4,7 +4,7 @@ import { InteractiveCard } from '../components/InteractiveCard';
 import './WhyChooseUsSection.css';
 
 export const WhyChooseUsSection: React.FC = () => {
-  const [openAccordionIdx, setOpenAccordionIdx] = useState<number | null>(0);
+  const [openAccordionIdx, setOpenAccordionIdx] = useState<number | null>(null);
 
   const toggleAccordion = (idx: number) => {
     setOpenAccordionIdx((prev) => (prev === idx ? null : idx));

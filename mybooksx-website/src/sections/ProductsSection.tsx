@@ -11,7 +11,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ onSelectProduc
   const [billingCycle, setBillingCycle] = useState<'yearly' | 'permanent'>('yearly');
   const [restoWithOjas, setRestoWithOjas] = useState(false);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
-  const [mobileOpenAppId, setMobileOpenAppId] = useState<string | null>('resto-x');
+  const [mobileOpenAppId, setMobileOpenAppId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));

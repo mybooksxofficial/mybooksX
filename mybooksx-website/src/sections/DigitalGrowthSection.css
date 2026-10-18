@@ -77,13 +77,57 @@
   margin-bottom: 1.4rem;
 }
 
+/* Collapsible Strategy Preview Button */
+.growth-preview-collapsible {
+  margin-bottom: 1.25rem;
+}
+
+.growth-preview-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  background: var(--bg-page);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.growth-preview-toggle-btn:hover {
+  background: var(--color-peach);
+  border-color: var(--royal-blue);
+  color: var(--royal-blue);
+}
+
+.growth-preview-toggle-btn.active {
+  background: var(--royal-blue-light);
+  border-color: var(--royal-blue);
+  color: var(--royal-blue);
+}
+
+.toggle-chevron {
+  transition: transform var(--transition-fast);
+}
+
+.toggle-chevron.rotated {
+  transform: rotate(180deg);
+}
+
 /* Miniature Interactive Preview Mockup */
 .growth-preview-mockup {
   background: var(--color-sand-light);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   padding: 1rem 1.1rem;
-  margin-bottom: 1.4rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .mockup-header-bar {

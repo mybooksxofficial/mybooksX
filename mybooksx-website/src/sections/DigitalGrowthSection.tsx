@@ -11,7 +11,8 @@ import {
   X,
   Clock,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react';
 import { DIGITAL_GROWTH_SERVICES } from '../data/growthServicesData';
 import type { GrowthService, GrowthPlan } from '../data/growthServicesData';
@@ -24,6 +25,11 @@ interface DigitalGrowthSectionProps {
 export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSelectService }) => {
   const { language } = useLanguage();
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<GrowthService | null>(null);
+  const [openPreviewId, setOpenPreviewId] = useState<string | null>(null);
+
+  const togglePreview = (id: string) => {
+    setOpenPreviewId((prev) => (prev === id ? null : id));
+  };
 
   const handleOpenModal = (svc: GrowthService) => {
     setSelectedServiceForModal(svc);
@@ -72,6 +78,7 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
             const desc = language === 'hi' ? svc.descriptionHi : svc.description;
             const cat = language === 'hi' ? svc.categoryLabelHi : svc.categoryLabel;
             const startPrice = language === 'hi' ? svc.startingPriceHi : svc.startingPrice;
+            const isPreviewOpen = openPreviewId === svc.id;
 
             return (
               <div key={svc.id} className="growth-card interactive-card">
@@ -87,67 +94,85 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
 
                 <p className="growth-card-desc">{desc}</p>
 
-                {/* Miniature Interactive Preview Mockup */}
-                <div className="growth-preview-mockup">
-                  <div className="mockup-header-bar">
-                    <span className="mockup-status-dot" />
-                    <span className="mockup-badge-text">{svc.previewDetails.badge}</span>
-                  </div>
+                {/* Collapsible Interactive Preview Mockup */}
+                <div className="growth-preview-collapsible">
+                  <button
+                    type="button"
+                    className={`growth-preview-toggle-btn ${isPreviewOpen ? 'active' : ''}`}
+                    onClick={() => togglePreview(svc.id)}
+                    aria-expanded={isPreviewOpen}
+                  >
+                    <span className="toggle-btn-label">
+                      {isPreviewOpen
+                        ? (language === 'hi' ? 'रणनीति पूर्वावलोकन छुपाएं' : 'Hide Strategy Preview')
+                        : (language === 'hi' ? 'रणनीति पूर्वावलोकन देखें' : 'View Sample Strategy Demo')}
+                    </span>
+                    <ChevronDown size={15} className={`toggle-chevron ${isPreviewOpen ? 'rotated' : ''}`} />
+                  </button>
 
-                  {isSocial ? (
-                    /* Social Content Calendar Preview */
-                    <div className="social-calendar-preview">
-                      <div className="cal-week-row">
-                        <div className="cal-cell active">
-                          <span className="day-name">MON</span>
-                          <span className="post-type-tag">CAROUSEL</span>
-                          <span className="post-topic">Product Spotlight</span>
-                        </div>
-                        <div className="cal-cell">
-                          <span className="day-name">WED</span>
-                          <span className="post-type-tag story">UPDATE</span>
-                          <span className="post-topic">Client Story</span>
-                        </div>
-                        <div className="cal-cell active">
-                          <span className="day-name">FRI</span>
-                          <span className="post-type-tag info">POLL</span>
-                          <span className="post-topic">Feature Review</span>
-                        </div>
+                  {isPreviewOpen && (
+                    <div className="growth-preview-mockup animate-fade-in">
+                      <div className="mockup-header-bar">
+                        <span className="mockup-status-dot" />
+                        <span className="mockup-badge-text">{svc.previewDetails.badge}</span>
                       </div>
-                      <div className="preview-metrics-strip">
-                        {svc.previewDetails.sampleMetrics.map((m, i) => (
-                          <div key={i} className="metric-col">
-                            <strong>{m.value}</strong>
-                            <span>{m.label}</span>
+
+                      {isSocial ? (
+                        /* Social Content Calendar Preview */
+                        <div className="social-calendar-preview">
+                          <div className="cal-week-row">
+                            <div className="cal-cell active">
+                              <span className="day-name">MON</span>
+                              <span className="post-type-tag">CAROUSEL</span>
+                              <span className="post-topic">Product Spotlight</span>
+                            </div>
+                            <div className="cal-cell">
+                              <span className="day-name">WED</span>
+                              <span className="post-type-tag story">UPDATE</span>
+                              <span className="post-topic">Client Story</span>
+                            </div>
+                            <div className="cal-cell active">
+                              <span className="day-name">FRI</span>
+                              <span className="post-type-tag info">POLL</span>
+                              <span className="post-topic">Feature Review</span>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    /* Email Campaign Mockup Preview */
-                    <div className="email-campaign-preview">
-                      <div className="email-preview-envelope">
-                        <div className="email-row-subject">
-                          <span className="subject-prefix">SUB:</span>
-                          <span className="subject-line">Special Festive Offer Inside • Complete Suite Upgrade</span>
-                        </div>
-                        <div className="email-meta-strip">
-                          <span className="audience-pill">Audience: Active Clients</span>
-                          <span className="template-pill">Bespoke Design</span>
-                        </div>
-                      </div>
-                      <div className="preview-metrics-strip">
-                        {svc.previewDetails.sampleMetrics.map((m, i) => (
-                          <div key={i} className="metric-col">
-                            <strong>{m.value}</strong>
-                            <span>{m.label}</span>
+                          <div className="preview-metrics-strip">
+                            {svc.previewDetails.sampleMetrics.map((m, i) => (
+                              <div key={i} className="metric-col">
+                                <strong>{m.value}</strong>
+                                <span>{m.label}</span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ) : (
+                        /* Email Campaign Mockup Preview */
+                        <div className="email-campaign-preview">
+                          <div className="email-preview-envelope">
+                            <div className="email-row-subject">
+                              <span className="subject-prefix">SUB:</span>
+                              <span className="subject-line">Special Festive Offer Inside • Complete Suite Upgrade</span>
+                            </div>
+                            <div className="email-meta-strip">
+                              <span className="audience-pill">Audience: Active Clients</span>
+                              <span className="template-pill">Bespoke Design</span>
+                            </div>
+                          </div>
+                          <div className="preview-metrics-strip">
+                            {svc.previewDetails.sampleMetrics.map((m, i) => (
+                              <div key={i} className="metric-col">
+                                <strong>{m.value}</strong>
+                                <span>{m.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <span className="illustrative-disclaimer">{svc.previewDetails.disclaimer}</span>
                     </div>
                   )}
-
-                  <span className="illustrative-disclaimer">{svc.previewDetails.disclaimer}</span>
                 </div>
 
                 {/* Core Deliverables List */}
@@ -157,7 +182,7 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
                     {language === 'hi' ? 'मुख्य सेवा बिंदु:' : 'Core Deliverables:'}
                   </span>
                   <ul className="growth-deliverables-list">
-                    {svc.plans[1].features.slice(0, 4).map((feat, fIdx) => (
+                    {svc.plans[1].features.slice(0, 3).map((feat, fIdx) => (
                       <li key={fIdx}>
                         <Check size={15} className="check-icon" />
                         <span>{feat}</span>

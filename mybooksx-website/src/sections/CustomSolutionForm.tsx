@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { Building2, CheckCircle2, CalendarCheck, MessageSquare, PlusCircle } from 'lucide-react';
+import { Building2, CheckCircle2, CalendarCheck, PlusCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formStateService } from '../services/formStateService';
 import { bookingService } from '../services/bookingService';
@@ -193,28 +193,16 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
               </div>
 
               <div className="booking-success-actions">
-                <a
-                  href={`https://wa.me/919644570828?text=${encodeURIComponent(
-                    `Hello MyBooksX Team! I just submitted booking ref ${bookingConfirmed.id} for "${bookingConfirmed.service}". My name is ${bookingConfirmed.name} (${bookingConfirmed.phone}).`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-primary booking-wa-btn"
-                >
-                  <MessageSquare size={16} />
-                  <span>Send Immediate WhatsApp Notification</span>
-                </a>
-
                 <button
                   type="button"
                   onClick={() => {
                     setBookingConfirmed(null);
                     formStateService.updateData({ name: '', phone: '', businessType: '', details: '' });
                   }}
-                  className="btn-secondary"
+                  className="btn-primary"
                 >
-                  <PlusCircle size={15} />
-                  <span>Book Another Project</span>
+                  <PlusCircle size={16} />
+                  <span>Done / Book Another Consultation</span>
                 </button>
               </div>
             </div>

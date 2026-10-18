@@ -12,55 +12,26 @@ export interface BookingRecord {
 
 const STORAGE_KEY = 'mybooksx_bookings';
 
-const INITIAL_SAMPLE_BOOKINGS: BookingRecord[] = [
-  {
-    id: 'MBX-BK-918204',
-    name: 'Vikram Malhotra',
-    phone: '+91 9826012345',
-    businessType: 'Retail Supermarket Chain',
-    service: 'Resto-X (Yearly: ₹4,999)',
-    details: 'Need table QR ordering and inventory sync for 2 branch stores in Indore.',
-    promoCode: 'FESTIVE10',
-    createdAt: new Date(Date.now() - 3600000 * 4).toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }),
-    status: 'New'
-  },
-  {
-    id: 'MBX-BK-829103',
-    name: 'Ananya Sharma',
-    phone: '+91 9425098765',
-    businessType: 'Boutique Event Management',
-    service: 'Event-X (Wedding Suite) - Permanent',
-    details: 'Looking for royal wedding guest RSVP and live photo vault for upcoming November wedding.',
-    promoCode: 'LUCKY1000',
-    createdAt: new Date(Date.now() - 3600000 * 22).toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }),
-    status: 'Contacted'
-  }
-];
-
 export const bookingService = {
   getAllBookings(): BookingRecord[] {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_BOOKINGS));
-        return INITIAL_SAMPLE_BOOKINGS;
+        return [];
       }
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Filter out any past dummy test data with Vikram Malhotra or Ananya Sharma
+      const realOnly = parsed.filter(
+        (b: BookingRecord) =>
+          b.name !== 'Vikram Malhotra' && b.name !== 'Ananya Sharma' && !b.id.startsWith('SAMPLE-')
+      );
+      if (realOnly.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(realOnly));
+      }
+      return realOnly;
     } catch (e) {
       console.error('Failed to read bookings from storage', e);
-      return INITIAL_SAMPLE_BOOKINGS;
+      return [];
     }
   },
 
