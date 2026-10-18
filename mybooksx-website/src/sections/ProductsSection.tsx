@@ -11,9 +11,14 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ onSelectProduc
   const [billingCycle, setBillingCycle] = useState<'yearly' | 'permanent'>('yearly');
   const [restoWithOjas, setRestoWithOjas] = useState(false);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const [mobileOpenAppId, setMobileOpenAppId] = useState<string | null>('resto-x');
 
   const toggleExpand = (id: string) => {
     setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleMobileAccordion = (id: string) => {
+    setMobileOpenAppId((prev) => (prev === id ? null : id));
   };
 
   const productsConfig = [
@@ -140,8 +145,8 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ onSelectProduc
           </div>
         </div>
 
-        {/* Products Grid with Expand/Collapse Feature */}
-        <div className="products-grid">
+        {/* Desktop 4-Card Grid (Hidden on Mobile) */}
+        <div className="products-grid desktop-only-grid">
           {productsConfig.map((prod) => {
             const isPermanentOnly = prod.yearlyPrice === null;
             const isExpanded = !!expandedCards[prod.id];
@@ -219,65 +224,161 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ onSelectProduc
                       {isPermanentOnly
                         ? 'Full Lifetime Event Access'
                         : billingCycle === 'yearly'
-                        ? 'Annual license with priority support'
-                        : 'One-time payment • Complete source code'}
+                        ? 'Includes 1 Full Year Cloud & Updates'
+                        : '100% Source Code & Database Ownership'}
                     </span>
                   </div>
 
-                  {/* Minimal Expand Arrow Toggle */}
+                  <p className="product-desc">{prod.desc}</p>
+
+                  {/* Core Features */}
+                  <ul className="product-features-list">
+                    {prod.initialFeatures.map((feat, idx) => (
+                      <li key={idx}>
+                        <Check size={16} className="feature-check-icon text-royal" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                    {isExpanded &&
+                      prod.deepFeatures.map((feat, idx) => (
+                        <li key={`deep-${idx}`} className="deep-feature-item">
+                          <Check size={16} className="feature-check-icon text-royal" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                  </ul>
+
+                  {/* Expand / Collapse Button */}
                   <button
                     type="button"
-                    className={`expand-card-toggle-arrow-btn ${isExpanded ? 'active' : ''}`}
+                    className="toggle-features-btn"
                     onClick={() => toggleExpand(prod.id)}
-                    aria-label={isExpanded ? 'Collapse features' : 'Expand full features'}
-                    title={isExpanded ? 'Collapse details' : 'Expand details'}
                   >
-                    {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </button>
-
-                  {/* Full Details & Features revealed ONLY on arrow click */}
-                  {isExpanded && (
-                    <div className="expanded-details-drawer">
-                      <p className="product-desc expanded-feature-anim">{prod.desc}</p>
-                      <ul className="product-features-list expanded-feature-anim">
-                        {prod.initialFeatures.map((feat, fIdx) => (
-                          <li key={fIdx}>
-                            <Check size={16} className="check-icon" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                        {prod.deepFeatures.map((feat, fIdx) => (
-                          <li key={`deep-${fIdx}`}>
-                            <Check size={16} className="check-icon" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                        {prod.hasOjasAddon && restoWithOjas && (
-                          <li className="addon-feature-item">
-                            <Check size={16} className="check-icon" />
-                            <strong>Includes Ojas AI Customer WhatsApp Bot</strong>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div className="product-card-footer">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onSelectProduct(`${prod.name} (${billingCycle}: ₹${currentPrice})`);
-                      const target = document.getElementById('custom-solution');
-                      if (target) target.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className={`w-full ${prod.popular ? 'btn-primary' : 'btn-secondary'} product-cta-btn`}
-                  >
-                    <span>Select {prod.name} (₹{currentPrice})</span>
-                    <ArrowRight size={15} />
+                    <span>{isExpanded ? 'Show Less Details' : 'View Full Technical Features'}</span>
+                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </button>
                 </div>
+
+                {/* Primary CTA */}
+                <button
+                  type="button"
+                  className="btn-primary product-cta-btn"
+                  onClick={() =>
+                    onSelectProduct(
+                      `${prod.name} (${billingCycle === 'yearly' && !isPermanentOnly ? 'Yearly' : 'Permanent'}: ₹${currentPrice?.toLocaleString()})`
+                    )
+                  }
+                >
+                  <span>Select & Book Software</span>
+                  <ArrowRight size={15} />
+                </button>
               </InteractiveCard>
+            );
+          })}
+        </div>
+
+        {/* Mobile Dropdown Accordion List (Active only on Phone) */}
+        <div className="products-accordion-mobile mobile-only-accordion">
+          {productsConfig.map((prod) => {
+            const isPermanentOnly = prod.yearlyPrice === null;
+            const isOpen = mobileOpenAppId === prod.id;
+
+            const currentPrice = isPermanentOnly
+              ? prod.permanentPrice
+              : billingCycle === 'yearly'
+              ? prod.yearlyPrice
+              : prod.permanentPrice;
+
+            const originalPrice = isPermanentOnly
+              ? prod.permanentOriginal
+              : billingCycle === 'yearly'
+              ? prod.yearlyOriginal
+              : prod.permanentOriginal;
+
+            const priceSuffix = isPermanentOnly
+              ? ' permanent'
+              : billingCycle === 'yearly'
+              ? '/yr'
+              : ' lifetime';
+
+            return (
+              <div key={prod.id} className={`prod-accordion-item ${isOpen ? 'open' : ''}`}>
+                <button
+                  type="button"
+                  className="prod-accordion-trigger"
+                  onClick={() => toggleMobileAccordion(prod.id)}
+                  aria-expanded={isOpen}
+                >
+                  <div className="prod-trigger-left">
+                    <div className="prod-icon-circle">{prod.icon}</div>
+                    <div className="prod-trigger-title-wrap">
+                      <div className="prod-tag-badge">{prod.tag}</div>
+                      <h3 className="prod-trigger-title">{prod.name}</h3>
+                    </div>
+                  </div>
+
+                  <div className="prod-trigger-right">
+                    <div className="prod-trigger-price-badge">
+                      <del className="prod-mobile-del">{originalPrice}</del>
+                      <strong>₹{currentPrice?.toLocaleString()}</strong>
+                      <small>{priceSuffix}</small>
+                    </div>
+                    <ChevronDown size={18} className={`prod-chevron ${isOpen ? 'rotated' : ''}`} />
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="prod-accordion-panel">
+                    <p className="prod-mobile-desc">{prod.desc}</p>
+
+                    {/* Resto-X Ojas AI Addon */}
+                    {prod.hasOjasAddon && (
+                      <div className="ojas-addon-box mobile-addon-box">
+                        <label className="ojas-toggle-label">
+                          <input
+                            type="checkbox"
+                            checked={restoWithOjas}
+                            onChange={(e) => setRestoWithOjas(e.target.checked)}
+                          />
+                          <div className="ojas-toggle-text">
+                            <span className="toggle-title">
+                              <Plus size={13} className="text-royal inline-icon" /> Integrate Ojas AI Bot
+                            </span>
+                            <span className="toggle-sub">
+                              {billingCycle === 'yearly' ? '+₹999/yr' : '+₹2,500 Permanent'}
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    )}
+
+                    {/* All Features */}
+                    <div className="prod-mobile-features-label">Included Features:</div>
+                    <ul className="prod-mobile-features-list">
+                      {prod.initialFeatures.concat(prod.deepFeatures).map((feat, idx) => (
+                        <li key={idx}>
+                          <Check size={14} className="text-royal flex-shrink-0" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Booking CTA Button */}
+                    <button
+                      type="button"
+                      className="btn-primary w-full prod-mobile-book-btn"
+                      onClick={() =>
+                        onSelectProduct(
+                          `${prod.name} (${billingCycle === 'yearly' && !isPermanentOnly ? 'Yearly' : 'Permanent'}: ₹${currentPrice?.toLocaleString()})`
+                        )
+                      }
+                    >
+                      <span>Book {prod.name}</span>
+                      <ArrowRight size={15} />
+                    </button>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

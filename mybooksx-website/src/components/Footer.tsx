@@ -3,7 +3,11 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { Phone, Mail, MapPin, ArrowUp, Sparkles } from 'lucide-react';
 import './Footer.css';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenOwner?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenOwner }) => {
   const { t } = useLanguage();
 
   const scrollToTop = () => {
@@ -85,15 +89,27 @@ export const Footer: React.FC = () => {
           <p className="copyright-text">
             © {new Date().getFullYear()} MyBooksX Studio. {t.footer.rights}
           </p>
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="scroll-top-btn"
-            aria-label="Scroll to top"
-          >
-            <span>Back to Top</span>
-            <ArrowUp size={16} />
-          </button>
+
+          <div className="footer-bottom-actions">
+            <button
+              type="button"
+              onClick={onOpenOwner}
+              className="owner-portal-trigger-link"
+              title="Restricted Administrative Login"
+            >
+              <span>🔐 Owner Portal</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="scroll-top-btn"
+              aria-label="Scroll to top"
+            >
+              <span>Back to Top</span>
+              <ArrowUp size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </footer>

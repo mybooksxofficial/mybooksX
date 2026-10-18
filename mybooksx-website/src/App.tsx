@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { Navbar } from './components/Navbar';
 import { SidebarDrawer } from './components/SidebarDrawer';
@@ -8,20 +8,33 @@ import { ProductsSection } from './sections/ProductsSection';
 import { OffersSection } from './sections/OffersSection';
 import { WhyChooseUsSection } from './sections/WhyChooseUsSection';
 import { DigitalGrowthSection } from './sections/DigitalGrowthSection';
-import { ProcessSection } from './sections/ProcessSection';
 import { FaqSection } from './sections/FaqSection';
 import { CustomSolutionForm } from './sections/CustomSolutionForm';
 import { Footer } from './components/Footer';
 import { SpinWheelModal } from './components/SpinWheelModal';
 import { OjasAiModal } from './components/OjasAiModal';
+import { OwnerPanelModal } from './components/OwnerPanelModal';
 import { MessageSquareText } from 'lucide-react';
 
 export const AppContent: React.FC = () => {
   const [wheelOpen, setWheelOpen] = useState(false);
   const [ojasOpen, setOjasOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [ownerOpen, setOwnerOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: string } | null>(null);
+
+  // Allow direct access via #owner or #admin URL hash
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#owner' || window.location.hash === '#admin') {
+        setOwnerOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   const handleApplyCode = (code: string, discount: string) => {
     setAppliedPromo({ code, discount });
@@ -51,33 +64,31 @@ export const AppContent: React.FC = () => {
         onOpenWheel={() => setWheelOpen(true)}
         onOpenOjas={() => setOjasOpen(true)}
         onSelectProduct={handleSelectPlan}
+        onOpenOwner={() => setOwnerOpen(true)}
       />
 
-      {/* Clean Hero Section without the mock window box */}
+      {/* Clean Hero Section */}
       <HeroSection
         onOpenWheel={() => setWheelOpen(true)}
         onOpenOjas={() => setOjasOpen(true)}
       />
 
-      {/* Client Reviews Section: Pankaj Patidar, Nayan Panchal (Custom Android App), Harshit Choudhary */}
+      {/* Client Reviews Section */}
       <ReviewsSection />
 
-      {/* Flagship Products Section with Expandable Cards & Yearly/Permanent Slider */}
+      {/* Flagship Products Section with Mobile Accordion Dropdown & Desktop Grid */}
       <ProductsSection onSelectProduct={handleSelectPlan} />
 
       {/* Custom Software Development Offers & Deals */}
       <OffersSection onSelectPlan={handleSelectPlan} />
 
-      {/* Why Choose Us Panel */}
+      {/* Why Choose Us Panel with Mobile Accordion Dropdown & Desktop Grid */}
       <WhyChooseUsSection />
-
-      {/* Process Section */}
-      <ProcessSection />
 
       {/* Digital Growth Services: Social Media Management & Email Marketing */}
       <DigitalGrowthSection onSelectService={handleSelectPlan} />
 
-      {/* Project Inquiry, Dual WhatsApp/Email Transmission & Final Invoice Page */}
+      {/* Clean Project Booking Form (No login required for clients) */}
       <CustomSolutionForm
         preselectedService={selectedPlan}
         appliedPromo={appliedPromo}
@@ -86,8 +97,8 @@ export const AppContent: React.FC = () => {
       {/* FAQ Accordion */}
       <FaqSection />
 
-      {/* Luxury Footer in matching Light Warm Linen/Brown Theme */}
-      <Footer />
+      {/* Luxury Footer with Owner Portal link */}
+      <Footer onOpenOwner={() => setOwnerOpen(true)} />
 
       {/* Lucky Discount Spin Wheel Modal */}
       <SpinWheelModal
@@ -116,6 +127,17 @@ export const AppContent: React.FC = () => {
       <OjasAiModal
         isOpen={ojasOpen}
         onClose={() => setOjasOpen(false)}
+      />
+
+      {/* Owner / Admin Management Panel Modal */}
+      <OwnerPanelModal
+        isOpen={ownerOpen}
+        onClose={() => {
+          setOwnerOpen(false);
+          if (window.location.hash === '#owner' || window.location.hash === '#admin') {
+            history.replaceState(null, '', ' ');
+          }
+        }}
       />
     </div>
   );

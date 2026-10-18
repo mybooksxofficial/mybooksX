@@ -230,11 +230,33 @@
 
 .sidebar-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .sidebar-cta {
   padding: 0.85rem;
   font-size: 0.95rem;
+}
+
+.sidebar-owner-btn {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-taupe);
+  background: var(--bg-page);
+  border: 1px dashed var(--border-light);
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-owner-btn:hover {
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+  border-color: var(--royal-blue);
 }
 
 /* Sidebar Page Navigation Links */

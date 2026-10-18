@@ -111,6 +111,30 @@
   color: var(--color-taupe);
 }
 
+.footer-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.owner-portal-trigger-link {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-taupe);
+  background: none;
+  border: 1px dashed var(--border-light);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.owner-portal-trigger-link:hover {
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+  border-color: var(--royal-blue);
+}
+
 .scroll-top-btn {
   display: inline-flex;
   align-items: center;

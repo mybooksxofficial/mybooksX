@@ -8,6 +8,7 @@ interface SidebarDrawerProps {
   onOpenWheel: () => void;
   onOpenOjas: () => void;
   onSelectProduct: (name: string) => void;
+  onOpenOwner?: () => void;
 }
 
 export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
@@ -15,7 +16,8 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   onClose,
   onOpenWheel,
   onOpenOjas,
-  onSelectProduct
+  onSelectProduct,
+  onOpenOwner
 }) => {
   if (!isOpen) return null;
 
@@ -100,7 +102,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
               <ArrowRight size={13} className="nav-arrow-hint" />
             </a>
             <a href="#custom-solution" onClick={onClose} className="sidebar-nav-link">
-              <span>Custom Solution & Invoicing</span>
+              <span>Book Custom Project</span>
               <ArrowRight size={13} className="nav-arrow-hint" />
             </a>
             <a href="#faq" onClick={onClose} className="sidebar-nav-link">
@@ -193,16 +195,27 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           </div>
         </div>
 
-        {/* Quick CTA */}
+        {/* Quick CTA & Owner Link */}
         <div className="sidebar-footer">
           <a
             href="#custom-solution"
             onClick={onClose}
             className="btn-primary w-full sidebar-cta"
           >
-            <span>Start Custom Project</span>
+            <span>Book Custom Project</span>
             <ArrowRight size={15} />
           </a>
+
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (onOpenOwner) onOpenOwner();
+            }}
+            className="sidebar-owner-btn"
+          >
+            🔐 Owner / Admin Portal
+          </button>
         </div>
       </aside>
     </div>
