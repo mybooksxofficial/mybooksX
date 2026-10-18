@@ -24,8 +24,13 @@ interface DigitalGrowthSectionProps {
 
 export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSelectService }) => {
   const { language } = useLanguage();
+  const [isSectionExpanded, setIsSectionExpanded] = useState<boolean>(false);
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<GrowthService | null>(null);
   const [openPreviewId, setOpenPreviewId] = useState<string | null>(null);
+
+  const toggleSection = () => {
+    setIsSectionExpanded((prev) => !prev);
+  };
 
   const togglePreview = (id: string) => {
     setOpenPreviewId((prev) => (prev === id ? null : id));
@@ -70,8 +75,41 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
           </p>
         </div>
 
-        {/* Two Featured Service Cards */}
-        <div className="growth-cards-grid">
+        {/* Master Dropdown Trigger Card for Other Than Software */}
+        <div className="growth-master-control-wrap">
+          <button
+            type="button"
+            className={`growth-master-trigger-card ${isSectionExpanded ? 'active' : ''}`}
+            onClick={toggleSection}
+            aria-expanded={isSectionExpanded}
+          >
+            <div className="growth-master-left">
+              <div className="growth-master-icon-pill">
+                <TrendingUp size={24} className="text-royal" />
+              </div>
+              <div className="growth-master-text-group">
+                <span className="growth-master-title">
+                  {isSectionExpanded
+                    ? (language === 'hi' ? 'डिजिटल ग्रोथ सर्विसेज छुपाएं' : 'Hide Digital Growth Services')
+                    : (language === 'hi' ? 'सॉफ्टवेयर के अलावा अन्य सेवाएं (क्लिक करके देखें)' : 'Other Than Software: Growth & Marketing (Click to Expand)')}
+                </span>
+                <span className="growth-master-subtext">
+                  {isSectionExpanded
+                    ? (language === 'hi' ? 'स्पेस बचाने के लिए यहां क्लिक करें' : 'Click to collapse and save screen space')
+                    : (language === 'hi' ? 'सोशल मीडिया व ईमेल मार्केटिंग प्लान • टैप करके देखें' : 'Social Media Management & Email Campaigns • Tap to Explore 2 Services')}
+                </span>
+              </div>
+            </div>
+            <div className="growth-master-right">
+              <span className="growth-count-badge">2 Services</span>
+              <ChevronDown size={22} className={`growth-master-chevron ${isSectionExpanded ? 'rotated' : ''}`} />
+            </div>
+          </button>
+        </div>
+
+        {/* Two Featured Service Cards shown when expanded */}
+        {isSectionExpanded && (
+          <div className="growth-cards-grid animate-fade-in">
           {DIGITAL_GROWTH_SERVICES.map((svc) => {
             const isSocial = svc.id === 'social-media';
             const title = language === 'hi' ? svc.titleHi : svc.title;
@@ -212,6 +250,7 @@ export const DigitalGrowthSection: React.FC<DigitalGrowthSectionProps> = ({ onSe
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Service Details & Pricing Modal */}

@@ -9,10 +9,15 @@ interface OffersSectionProps {
 
 export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) => {
   const { t } = useLanguage();
+  const [isOffersMasterOpen, setIsOffersMasterOpen] = useState(false);
   const [expandedDeals, setExpandedDeals] = useState<Record<number, boolean>>({});
 
   const toggleExpand = (idx: number) => {
     setExpandedDeals(prev => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
+  const toggleOffersMaster = () => {
+    setIsOffersMasterOpen(prev => !prev);
   };
 
   // Keep first two deals: Custom Website & Custom Android App (removes chaotic 3rd card)
@@ -30,7 +35,41 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           <p>{t.offers.subtitle}</p>
         </div>
 
-        <div className="deals-grid two-cards-grid">
+        {/* Master Dropdown Trigger Card for Custom Web & Custom App */}
+        <div className="offers-master-control-wrap">
+          <button
+            type="button"
+            className={`offers-master-trigger-card ${isOffersMasterOpen ? 'active' : ''}`}
+            onClick={toggleOffersMaster}
+            aria-expanded={isOffersMasterOpen}
+          >
+            <div className="offers-master-left">
+              <div className="offers-master-icon-pill">
+                <Sparkles size={24} className="text-royal" />
+              </div>
+              <div className="offers-master-text-group">
+                <span className="offers-master-title">
+                  {isOffersMasterOpen
+                    ? 'Hide Custom Web & Mobile App Packages'
+                    : 'Custom App & Custom Web Packages (Click to Expand)'}
+                </span>
+                <span className="offers-master-subtext">
+                  {isOffersMasterOpen
+                    ? 'Click to collapse and save screen space'
+                    : 'Custom Website from ₹14,999 & Android Mobile App from ₹24,999 • Tap to View'}
+                </span>
+              </div>
+            </div>
+            <div className="offers-master-right">
+              <span className="offers-count-badge">2 Packages</span>
+              <ChevronDown size={22} className={`offers-master-chevron ${isOffersMasterOpen ? 'rotated' : ''}`} />
+            </div>
+          </button>
+        </div>
+
+        {isOffersMasterOpen && (
+          <div className="offers-content-wrap animate-fade-in">
+            <div className="deals-grid two-cards-grid">
           {displayDeals.map((deal, idx) => {
             const isExpanded = !!expandedDeals[idx];
 
@@ -115,6 +154,8 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
             Lock in ₹5,999/yr Rate
           </a>
         </div>
+      </div>
+    )}
       </div>
     </section>
   );
