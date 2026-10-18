@@ -12,7 +12,7 @@
 
 .sidebar-drawer {
   width: 100%;
-  max-width: min(100vw, 380px);
+  max-width: min(88vw, 380px);
   height: 100%;
   background: #FFFFFF;
   border-right: 2px solid var(--color-peach);
@@ -236,3 +236,53 @@
   padding: 0.85rem;
   font-size: 0.95rem;
 }
+
+/* Sidebar Page Navigation Links */
+.sidebar-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1.8rem;
+}
+
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.95rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-nav-link:hover,
+.sidebar-nav-link:active {
+  background: #FFFFFF;
+  border-color: var(--royal-blue);
+  color: var(--royal-blue);
+  transform: translateX(4px);
+}
+
+.nav-arrow-hint {
+  color: var(--color-taupe);
+  transition: transform var(--transition-fast);
+}
+
+.sidebar-nav-link:hover .nav-arrow-hint,
+.sidebar-nav-link:active .nav-arrow-hint {
+  transform: translateX(3px);
+  color: var(--royal-blue);
+}
+
+@media (max-width: 480px) {
+  .sidebar-drawer {
+    max-width: min(88vw, 320px);
+    padding: 1.4rem 1rem;
+  }
+}
+

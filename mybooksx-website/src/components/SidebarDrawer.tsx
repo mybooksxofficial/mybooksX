@@ -79,6 +79,37 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           </button>
         </div>
 
+        {/* Mobile & Desktop Page Navigation Links */}
+        <div className="sidebar-section">
+          <span className="sidebar-section-label">PAGE NAVIGATION</span>
+          <div className="sidebar-nav-links">
+            <a href="#products" onClick={onClose} className="sidebar-nav-link">
+              <span>Flagship Products</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+            <a href="#digital-growth" onClick={onClose} className="sidebar-nav-link">
+              <span>Digital Growth Services</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+            <a href="#why-choose-us" onClick={onClose} className="sidebar-nav-link">
+              <span>Why Choose Us</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+            <a href="#reviews" onClick={onClose} className="sidebar-nav-link">
+              <span>Client Verified Reviews</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+            <a href="#custom-solution" onClick={onClose} className="sidebar-nav-link">
+              <span>Custom Solution & Invoicing</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+            <a href="#faq" onClick={onClose} className="sidebar-nav-link">
+              <span>Frequently Asked Questions</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </a>
+          </div>
+        </div>
+
         {/* Flagship Products Quick Access */}
         <div className="sidebar-section">
           <span className="sidebar-section-label">FLAGSHIP SOFTWARE</span>

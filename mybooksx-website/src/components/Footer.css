@@ -146,6 +146,7 @@
 @media (max-width: 480px) {
   .site-footer {
     padding-top: 3rem;
+    padding-bottom: 3.8rem;
   }
   .footer-content-wrap {
     gap: 1.8rem;

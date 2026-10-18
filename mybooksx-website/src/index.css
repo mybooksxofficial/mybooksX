@@ -72,14 +72,27 @@ html {
   font-size: 16px;
   background-color: var(--bg-page);
   color: var(--text-primary);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
   font-family: var(--font-body);
   line-height: 1.65;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
   background-color: var(--bg-page);
   -webkit-font-smoothing: antialiased;
+}
+
+.mybooksx-app-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
 }
 
 :lang(hi) body,
@@ -475,6 +488,38 @@ input, select, textarea {
   }
 }
 
+/* Tactile Mobile Touch Feedback for Cards & Buttons */
+@media (max-width: 992px) {
+  .interactive-card:active,
+  .card-elegant:active,
+  .product-card:active,
+  .deal-card:active,
+  .review-card:active,
+  .why-card:active {
+    transform: scale(0.985) !important;
+    transition: transform 0.12s ease !important;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-accent:active {
+    transform: scale(0.96) !important;
+  }
+
+  .section-header {
+    margin-bottom: 2.8rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.8rem, 6vw, 2.3rem);
+  }
+
+  .section-header p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -485,5 +530,6 @@ input, select, textarea {
     scroll-behavior: auto !important;
   }
 }
+
 
 

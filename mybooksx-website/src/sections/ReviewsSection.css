@@ -178,7 +178,7 @@
 
 @media (max-width: 900px) {
   .reviews-section {
-    padding: 4.5rem 0;
+    padding: 4.2rem 0;
   }
   .support-highlight-strip {
     flex-direction: column;
@@ -186,17 +186,35 @@
     gap: 1.4rem;
     padding: 1.8rem 1.4rem;
   }
+  .support-highlight-strip .nowrap {
+    white-space: normal;
+    width: 100%;
+    text-align: center;
+  }
 }
 
 @media (max-width: 480px) {
   .reviews-section {
-    padding: 3.5rem 0;
+    padding: 3.2rem 0;
   }
   .reviews-grid {
-    gap: 1.2rem;
+    gap: 1.15rem;
+    grid-template-columns: 1fr;
+  }
+  .review-card {
+    padding: 1.4rem 1.1rem;
+  }
+  .review-quote {
+    font-size: 0.96rem;
+    margin-bottom: 1.4rem;
+  }
+  .delivery-pill,
+  .support-pill {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.45rem;
   }
   .support-strip-text h4 {
-    font-size: 1.2rem;
+    font-size: 1.18rem;
   }
   .support-strip-text p {
     font-size: 0.88rem;

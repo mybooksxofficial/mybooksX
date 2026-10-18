@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, ArrowRight } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -10,7 +10,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { language, setLanguage, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,7 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         <div className="nav-left">
           <button 
             type="button" 
-            className="sidebar-toggle-btn"
+            className="sidebar-toggle-btn desktop-only-btn"
             onClick={onToggleSidebar}
             title="Explore Products & Quick Menu"
             aria-label="Open Sidebar"
@@ -47,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </a>
         </div>
 
-        {/* Minimal Clean Links */}
+        {/* Minimal Clean Links for Desktop */}
         <div className="desktop-links">
           <a href="#products" className="nav-link">{t.nav.products}</a>
           <a href="#digital-growth" className="nav-link">Digital Growth</a>
@@ -83,46 +82,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             <ArrowRight size={14} />
           </a>
 
-          {/* Mobile hamburger */}
+          {/* Mobile Single Unified Drawer Hamburger */}
           <button
             type="button"
             className="mobile-toggle-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle Navigation Menu"
+            onClick={onToggleSidebar}
+            aria-label="Open Navigation Menu"
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} />
           </button>
         </div>
       </nav>
-
-      {/* Mobile drawer */}
-      {mobileMenuOpen && (
-        <div className="mobile-drawer">
-          <div className="mobile-drawer-links">
-            <a href="#products" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
-              {t.nav.products}
-            </a>
-            <a href="#digital-growth" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
-              Digital Growth
-            </a>
-            <a href="#why-choose-us" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
-              Why Choose Us
-            </a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
-              Client Reviews
-            </a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
-              {t.nav.faq}
-            </a>
-
-            <div className="mobile-drawer-extras">
-              <a href="#custom-solution" onClick={() => setMobileMenuOpen(false)} className="btn-primary w-full">
-                {t.nav.startProject}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 };
