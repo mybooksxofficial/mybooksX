@@ -705,3 +705,100 @@
   background: #fef2f2;
 }
 
+/* Inline Message Follow-up & Suggestion Chips */
+.ojas-inline-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed rgba(10, 88, 202, 0.15);
+}
+
+.ojas-msg-chip {
+  background: #FFFFFF;
+  border: 1px solid var(--royal-blue);
+  color: var(--royal-blue);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 1px 4px rgba(10, 88, 202, 0.08);
+}
+
+.ojas-msg-chip:hover {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(10, 88, 202, 0.22);
+}
+
+.ojas-msg-chip:active {
+  transform: translateY(0);
+}
+
+/* Fallback & Direct WhatsApp Escalation Button */
+.ojas-whatsapp-fallback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 0.6rem;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.ojas-whatsapp-fallback-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
+
+/* Guided Lead Flow Card & Actions */
+.ojas-lead-summary-card {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.ojas-lead-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.ojas-btn-secondary-chip {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  color: var(--color-espresso);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.ojas-btn-secondary-chip:hover {
+  background: var(--color-sand-light);
+}
+
+

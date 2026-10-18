@@ -2,6 +2,7 @@ import { VERIFIED_KNOWLEDGE_DOCS } from '../data/companyKnowledge';
 import { STRUCTURED_KNOWLEDGE_COLLECTION } from '../data/ojas10xKnowledge';
 import type { KnowledgeRecord } from '../data/ojas10xKnowledge';
 import { OjasTaskEngine, type TaskState } from './ojasTaskEngine';
+import { OjasMatchingEngine } from './ojasMatchingEngine';
 
 export interface OjasDiagnostics {
   requestId: string;
@@ -23,6 +24,9 @@ export interface OjasResolvedResponse {
   taskState?: TaskState;
   showPreviewCard?: boolean;
   showConfirmationControls?: boolean;
+  followUpChips?: string[];
+  isFallback?: boolean;
+  unansweredQuery?: string;
 }
 
 export interface ConversationTurn {
@@ -515,7 +519,7 @@ export class OjasIntelligentBrain {
       };
     }
 
-    // 4. STRUCTURED 10X KNOWLEDGE BASE MATCHING (Semantic, Alias, and Token-Overlap Scoring)
+    // 4. STRUCTURED 10X KNOWLEDGE BASE HIGH-CONFIDENCE MATCHING
     const stopWords = new Set(['what', 'is', 'are', 'the', 'a', 'an', 'and', 'or', 'in', 'of', 'for', 'to', 'can', 'you', 'we', 'our', 'my', 'me', 'please', 'tell', 'about', 'should', 'would', 'do', 'does', 'how', 'kya', 'hai', 'hain', 'ka', 'ke', 'ki', 'ko']);
     const queryTokens = q.split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
 
@@ -567,7 +571,47 @@ export class OjasIntelligentBrain {
       }
     }
 
-    if (bestRecord && highestScore >= 18) {
+    // High confidence canonical/alias hit
+    if (bestRecord && highestScore >= 60) {
+      const intent = bestRecord.category === 'product' ? 'mybooks_product' : (bestRecord.category === 'founder' || bestRecord.category === 'company') ? 'mybooks_company' : 'general_knowledge';
+      return {
+        text: lang === 'hi' ? bestRecord.detailedAnswerHi : bestRecord.detailedAnswerEn,
+        isLead: false,
+        source: bestRecord.source,
+        diagnostics: {
+          requestId: `req-${Date.now()}`,
+          detectedIntent: intent,
+          knowledgeSourceQueried: 'Structured 10X Knowledge Repository',
+          retrievedRecordsCount: 1,
+          retrievalScore: highestScore,
+          modelInvoked: false,
+          validationResult: 'VALID'
+        }
+      };
+    }
+
+    // 5. COMPREHENSIVE 100+ INTENT MATCHING ENGINE (Fuzzy, Synonyms, Hinglish, Weighted Scoring)
+    const engineMatch = OjasMatchingEngine.matchIntent(raw);
+    if (engineMatch.isConfident && engineMatch.intent) {
+      return {
+        text: lang === 'hi' ? engineMatch.intent.replyHi : engineMatch.intent.replyEn,
+        isLead: engineMatch.intent.category === 'pricing' || engineMatch.intent.category === 'objections' || engineMatch.intent.category === 'contact',
+        source: `Ojas 100+ Intent Engine (${engineMatch.source})`,
+        followUpChips: engineMatch.intent.followUpChips,
+        diagnostics: {
+          requestId: `req-${Date.now()}`,
+          detectedIntent: (engineMatch.intent.category === 'resto_x' || engineMatch.intent.category === 'event_x' || engineMatch.intent.category === 'fitness_x' || engineMatch.intent.category === 'custom_software') ? 'mybooks_product' : 'mybooks_company',
+          knowledgeSourceQueried: 'Ojas 100+ Intents Repository',
+          retrievedRecordsCount: 1,
+          retrievalScore: engineMatch.score,
+          modelInvoked: false,
+          validationResult: 'VALID'
+        }
+      };
+    }
+
+    // Moderate confidence secondary KB hit
+    if (bestRecord && highestScore >= 24) {
       const intent = bestRecord.category === 'product' ? 'mybooks_product' : (bestRecord.category === 'founder' || bestRecord.category === 'company') ? 'mybooks_company' : 'general_knowledge';
       return {
         text: lang === 'hi' ? bestRecord.detailedAnswerHi : bestRecord.detailedAnswerEn,
@@ -643,41 +687,34 @@ export class OjasIntelligentBrain {
       }
     }
 
-    // 7. SEPARATED CONTEXT-AWARE INTENT FALLBACKS
-    // A. If question was specifically about MyBooks company details
-    const isCompanyTargeted = q.includes('mybooks') || q.includes('deep mehta') || q.includes('resto') || q.includes('event-x') || q.includes('fitness-x');
-    if (isCompanyTargeted) {
-      return {
-        text: lang === 'hi'
-          ? `मैं MyBooks के उत्पादों (Resto-X, Event-X, Fitness-X, कस्टम मोबाइल ऐप्स, व संस्थापकों) के बारे में जानकारी दे सकता हूँ, लेकिन यह विशिष्ट विवरण वर्तमान सत्यापित रिकॉर्ड्स में उपलब्ध नहीं है।`
-          : `I can help with MyBooks, but that specific company detail is not documented in our verified public records. You can ask me about our verified offerings (Resto-X, Event-X, Fitness-X, Custom Apps, Pricing, or Founder Deep Mehta).`,
-        isLead: false,
-        source: 'MyBooks Grounded Boundary Policy',
-        diagnostics: {
-          requestId: `req-${Date.now()}`,
-          detectedIntent: 'missing_metric',
-          knowledgeSourceQueried: 'Structured 10X Knowledge Repository',
-          retrievedRecordsCount: 0,
-          modelInvoked: false,
-          failureCategory: 'unverified_company_detail',
-          validationResult: 'FALLBACK'
-        }
-      };
-    }
+    // 7. LOG UNANSWERED QUESTION & ENHANCED FALLBACK WITH CHIPS + WHATSAPP ESCALATION
+    OjasMatchingEngine.logUnansweredQuestion(raw, lang);
 
-    // B. General Knowledge fallback when offline model is not currently responding
+    const fallbackChips = [
+      '🍽️ Resto-X Pricing & Demo',
+      '🚀 3-Week Custom App',
+      '⚡ Why Choose MyBooks vs Competitors?',
+      '💰 All Product Pricing',
+      '👨‍💻 Founder Deep Mehta'
+    ];
+
+    const fallbackText = lang === 'hi'
+      ? `मैं अभी आपके प्रश्न *" ${raw} "* के बारे में पूरी तरह सुनिश्चित नहीं हूँ, लेकिन मैं हमारे सत्यापित सॉफ़्टवेयर के बारे में आपकी पूरी सहायता कर सकता हूँ! नीचे दिए गए लोकप्रिय विकल्पों में से चुनें, या संस्थापक **Deep Mehta** से सीधे WhatsApp पर बात करने के लिए बटन दबाएं:`
+      : `I'm still learning that specific question about *" ${raw} "*! While I review this with our engineering team, here are popular options, or you can connect directly with Founder **Deep Mehta** on WhatsApp:`;
+
     return {
-      text: lang === 'hi'
-        ? `आपके प्रश्न *" ${raw} "* के लिए वर्तमान ऑफ़लाइन ज्ञानकोष में सत्यापित रिकॉर्ड उपलब्ध नहीं है। आप मुझसे MyBooks के उत्पादों (Resto-X, Event-X, कस्टम ऐप्स), कोडिंग (HTML, CSS, JS, Python), AI, या व्यावसायिक गणनाओं के बारे में पूछ सकते हैं!`
-        : `I don't have enough verified offline documentation to answer *" ${raw} "* with absolute certainty. You can ask me about MyBooks software solutions (Resto-X, Event-X, Custom Apps), programming (HTML, CSS, JavaScript, Python), AI concepts, or business calculations!`,
-      isLead: false,
-      source: 'Ojas Core Brain',
+      text: fallbackText,
+      isLead: true,
+      source: 'Ojas Smart Fallback Engine',
+      followUpChips: fallbackChips,
+      isFallback: true,
+      unansweredQuery: raw,
       diagnostics: {
         requestId: `req-${Date.now()}`,
-        detectedIntent: 'general_knowledge',
+        detectedIntent: 'fallback',
         retrievedRecordsCount: 0,
         modelInvoked: false,
-        failureCategory: 'general_offline_insufficient_info',
+        failureCategory: 'unanswered_question_logged',
         validationResult: 'FALLBACK'
       }
     };
