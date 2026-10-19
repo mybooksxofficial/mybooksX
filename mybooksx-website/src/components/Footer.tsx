@@ -43,22 +43,22 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOwner }) => {
           <h4 className="footer-col-title">Flagship Products & Deals</h4>
           <ul className="footer-link-list">
             <li>
-              <a href="#products">Resto-X Restaurant POS (₹5,499/yr)</a>
+              <a href="#products">Resto-X Restaurant POS (₹4,999/yr)</a>
             </li>
             <li>
-              <a href="#products">Event-X Wedding Suite (₹9,999)</a>
+              <a href="#products">Event-X Wedding Suite (₹2,999)</a>
             </li>
             <li>
-              <a href="#products">Ojas AI Business Intelligence (₹14,999)</a>
+              <a href="#products">Fitness-X Gym Manager (₹999/yr)</a>
             </li>
             <li>
-              <a href="#products">Fitness-X Gym Manager (₹8,999)</a>
+              <a href="#products">Ojas AI Business Copilot (₹999/yr)</a>
             </li>
             <li>
-              <a href="#pricing">Customized Website (₹24,999)</a>
+              <a href="#pricing">Custom Website (₹5,999/yr or ₹24,999)</a>
             </li>
             <li>
-              <a href="#pricing">Customized Android App (₹29,999)</a>
+              <a href="#pricing">Custom Android App (₹6,999/yr or ₹29,999)</a>
             </li>
           </ul>
         </div>

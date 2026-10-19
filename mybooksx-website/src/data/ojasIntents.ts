@@ -1422,6 +1422,46 @@ export const OJAS_INTENTS: OjasIntent[] = [
     replyEn: `**CAC & LTV Unit Economics:**\n\n• **Customer Acquisition Cost (CAC):** Total sales & marketing spend ÷ Number of customers acquired.\n• **Customer Lifetime Value (LTV):** Average order value × Purchase frequency × Customer lifespan.\n• **Healthy Benchmark:** An LTV:CAC ratio of **3:1 or higher** represents a highly profitable scalable business.`,
     replyHi: `**CAC और LTV यूनिट इकोनॉमिक्स:**\n\n• **CAC (ग्राहक अधिग्रहण लागत):** कुल मार्केटिंग खर्च ÷ कुल मिले नए ग्राहक।\n• **LTV (ग्राहक लाइफटाइम वैल्यू):** ग्राहक द्वारा अपने पूरे कार्यकाल में दिया गया कुल शुद्ध लाभ।\n• **हेल्दी बिज़नेस नियम:** LTV और CAC का अनुपात **3:1 या उससे अधिक** होना चाहिए।`,
     followUpChips: ['Digital Growth Overview', 'Show All Pricing', 'Start Project']
+  },
+  {
+    id: 'pricing_custom_website_yearly',
+    category: 'pricing',
+    topic: 'custom_software',
+    keywords: ['website price', 'website yearly', 'custom website cost', 'website charges', 'website plan', 'website price per year', 'yearly website'],
+    hinglishKeywords: ['website kitne ki hai', 'website yearly price', 'website banwane ka kharcha', 'website ka rate', 'ek saal ka website'],
+    replyEn: `**Custom Website Development Pricing:**\n\n• **Yearly Plan:** **₹5,999/year** (Domain configuration, cloud hosting, SSL, SEO optimization & annual maintenance).\n• **Yearly + Ojas AI Copilot:** **₹6,999/year** (Just +₹1,000 to bundle our 24/7 bilingual AI lead capture & WhatsApp assistant).\n• **Permanent Lifetime Ownership:** **₹24,999 (One-Time)** with 100% full source code and database ownership (zero recurring renewal fees).\n\nEngineered bespoke to your exact brand in 3 weeks.`,
+    replyHi: `**कस्टम वेबसाइट डेवलपमेंट प्राइसिंग:**\n\n• **इयरली प्लान:** **₹5,999/साल** (होस्टिंग, SSL, SEO सेटअप और सालाना मेंटेनेंस सहित)।\n• **इयरली + Ojas AI कोपायलट:** **₹6,999/साल** (24/7 ऑटोमेटेड लीड्स और WhatsApp असिस्टेंट के लिए मात्र ₹1,000 अतिरिक्त)।\n• **परमानेंट लाइफटाइम ओनरशिप:** **₹24,999 (एकमुश्त)** 100% फुल सोर्स कोड ओनरशिप के साथ, कोई रिन्यूअल फीस नहीं।\n\nसिर्फ़ 3 हफ़्तों में कस्टम रेडी।`,
+    followUpChips: ['Book Website Project', 'Website with Ojas AI', 'Android App Pricing', 'Talk to Deep Mehta']
+  },
+  {
+    id: 'pricing_custom_app_yearly',
+    category: 'pricing',
+    topic: 'custom_software',
+    keywords: ['app price', 'app yearly', 'custom app cost', 'android app charges', 'mobile app plan', 'app price per year', 'yearly app'],
+    hinglishKeywords: ['app kitne ka hai', 'app yearly price', 'app banwane ka kharcha', 'mobile app ka rate', 'ek saal ka app'],
+    replyEn: `**Custom Android Mobile App Pricing:**\n\n• **Yearly Plan:** **₹6,999/year** (Play Store release, cloud database synchronization, maintenance & bug warranty).\n• **Yearly + Ojas AI Copilot:** **₹7,999/year** (Just +₹1,000 to bundle in-app AI user guidance & smart search).\n• **Permanent Lifetime Ownership:** **₹29,999 (One-Time)** with 100% full source code, Play Store deployment, and database ownership.\n\nCrafted specifically for your inventory, delivery, or client workflow in 3 weeks.`,
+    replyHi: `**कस्टम Android मोबाइल ऐप प्राइसिंग:**\n\n• **इयरली प्लान:** **₹6,999/साल** (प्ले स्टोर रिलीज, रियल-टाइम क्लाउड सिंक और सालाना मेंटेनेंस सहित)।\n• **इयरली + Ojas AI कोपायलट:** **₹7,999/साल** (इन-ऐप AI असिस्टेंट के लिए मात्र ₹1,000 अतिरिक्त)।\n• **परमानेंट लाइफटाइम ओनरशिप:** **₹29,999 (एकमुश्त)** 100% फुल सोर्स कोड और प्ले स्टोर पब्लिशिंग के साथ।\n\n3 हफ़्तों में आपके बिज़नेस वर्कफ़्लो के अनुसार तैयार।`,
+    followUpChips: ['Book Android App', 'App with Ojas AI', 'Website Pricing', 'Talk to Deep Mehta']
+  },
+  {
+    id: 'company_usa_clients',
+    category: 'company',
+    topic: 'company',
+    keywords: ['do you make apps for usa clients', 'usa clients', 'clients in usa', 'international clients', 'do you serve usa', 'us clients', 'worldwide clients'],
+    hinglishKeywords: ['usa ke liye app banate ho', 'bahar ke client ke liye kaam karte ho', 'usa clients ke liye', 'foreign client kaam'],
+    replyEn: `**Yes! We proudly engineer apps & software for USA and global clients:**\n\nFounded by **Deep Mehta** and based in India, **MyBooksX** serves businesses worldwide, including clients in the **United States (USA)**, UK, UAE, and across India.\n\n• **Timezone Flexibility:** Overlapping communication hours aligned with US Eastern (EST) and Pacific (PST) working hours.\n• **Global Payments:** Frictionless invoicing in USD/EUR via Stripe, International Wire (SWIFT), and credit cards.\n• **Complete Ownership:** All clients receive 100% full source code ownership, enterprise Git repositories, and secure cloud deployment on AWS / GCP.`,
+    replyHi: `**हाँ! हम USA और दुनिया भर के ग्राहकों के लिए कस्टम ऐप्स व सॉफ़्टवेयर बनाते हैं:**\n\n**Deep Mehta** द्वारा स्थापित और भारत में स्थित **MyBooksX** पूरे भारत के साथ-साथ **USA**, UK, UAE और वैश्विक व्यवसायों के लिए उच्च-स्तरीय वेब और मोबाइल ऐप्लिकेशन्स तैयार करता है।\n\n• **टाइमज़ोन समन्वय:** US टाइमज़ोन के अनुसार लाइव सपोर्ट और कॉल्स।\n• **इंटरनेशनल पेमेंट्स:** Stripe, कार्ड्स और वायर ट्रांसफर (USD/EUR) में आसान भुगतान।\n• **100% सोर्स कोड:** अंतरराष्ट्रीय क्लाइंट्स को भी पूरा सोर्स कोड और AWS/GCP क्लाउड सेटअप मिलता है।`,
+    followUpChips: ['Book Consultation', 'Custom Android App', 'Website Pricing', 'Talk to Founder Deep Mehta']
+  },
+  {
+    id: 'smalltalk_joke',
+    category: 'smalltalk',
+    topic: 'smalltalk',
+    keywords: ['tell me a joke', 'tell a joke', 'say a joke', 'make me laugh', 'funny joke', 'joke please'],
+    hinglishKeywords: ['joke sunao', 'ek joke sunao', 'chutkula sunao', 'kuch majedar sunao', 'kuch hasi ki baat'],
+    replyEn: `**Here's a quick programmer joke for you:** 😄\n\n*Why do programmers always prefer dark mode?*\n*Because light attracts bugs!*\n\nAs MyBooksX's official AI copilot, I specialize in custom software, pricing, and business automation. Would you like to check out our apps, calculate custom project pricing, or connect with our engineering team?`,
+    replyHi: `**आपके लिए एक छोटा सा डेवलपर जोक:** 😄\n\n*प्रोग्रामर्स हमेशा डार्क मोड क्यों पसंद करते हैं?*\n*क्योंकि रोशनी की तरफ "bugs" (कीड़े/एरर्स) खिंचे चले आते हैं!*\n\nमैं MyBooksX का आधिकारिक बिजनेस AI कोपायलट हूँ, इसलिए मेरा मुख्य काम आपके बिज़नेस के लिए बेस्ट सॉफ़्टवेयर और प्राइसिंग बताना है! क्या आप हमारे प्रॉडक्ट्स या प्लान्स देखना चाहेंगे?`,
+    followUpChips: ['Show Flagship Products', 'Check Pricing Plans', 'Custom Software Details', 'Talk to Deep Mehta']
   }
 ];
 

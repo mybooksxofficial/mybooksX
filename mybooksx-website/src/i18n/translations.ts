@@ -284,7 +284,7 @@ export const translations: Record<Language, Translations> = {
           title: "Customized Website Development",
           originalPrice: "₹38,000",
           discountPrice: "₹24,999",
-          billingNote: "was ₹30,000 • permanent ownership & complete source code",
+          billingNote: "Yearly ₹5,999/yr (₹6,999 with Ojas AI) • Lifetime ₹24,999 with 100% source code",
           desc: "Full bespoke luxury responsive website engineered for your exact branding, search engine rankings, and high conversion.",
           features: [
             "Unique bespoke luxury design (Neutral Elegance theme)",
@@ -292,9 +292,9 @@ export const translations: Record<Language, Translations> = {
             "Mobile-first ultra-responsive performance",
             "Direct WhatsApp & Email lead transmission",
             "Google Search Console & SEO optimization ready",
-            "Bonus: Add Event-X or Ojas AI for just ₹999 or FREE"
+            "Yearly: ₹5,999/yr (or ₹6,999/yr with Ojas AI) • Lifetime: ₹24,999"
           ],
-          cta: "Claim Custom Website (₹24,999)",
+          cta: "Claim Custom Website",
           popular: true
         },
         {
@@ -302,17 +302,17 @@ export const translations: Record<Language, Translations> = {
           title: "Customized Android App Development",
           originalPrice: "₹65,000",
           discountPrice: "₹29,999",
-          billingNote: "was ₹50,000 • one-time build with Play Store setup",
+          billingNote: "Yearly ₹6,999/yr (₹7,999 with Ojas AI) • Lifetime ₹29,999 with 100% source code",
           desc: "Native-grade Android mobile application customized to your inventory, dispatch, field staff, or customer ordering flow.",
           features: [
             "Custom-built Mobile App & Play Store launch",
             "Real-time cloud database synchronization",
             "Push alerts, user authentication & OTP login",
             "Payment gateway integration (UPI, QR, Cards)",
-            "Annual maintenance cut from ₹8,000 to ₹5,999/yr",
+            "Yearly: ₹6,999/yr (or ₹7,999/yr with Ojas AI) • Lifetime: ₹29,999",
             "Admin web dashboard included"
           ],
-          cta: "Claim Android App (₹29,999)",
+          cta: "Claim Android App",
           popular: true
         },
         {
@@ -680,7 +680,7 @@ export const translations: Record<Language, Translations> = {
           title: "कस्टमाइज्ड वेबसाइट डेवलपमेंट",
           originalPrice: "₹38,000",
           discountPrice: "₹24,999",
-          billingNote: "पहले ₹30,000 • स्थायी मालिकाना हक और पूरा सोर्स कोड",
+          billingNote: "इयरली ₹5,999/साल (Ojas AI सहित ₹6,999) • लाइफटाइम ₹24,999 100% सोर्स कोड सहित",
           desc: "आपके व्यवसाय के लिए विशेष रूप से बनाई गई वेबसाइट, जो ग्राहकों का भरोसा जीतती है और बिक्री बढ़ाती है।",
           features: [
             "यूनिक रॉयल लग्जरी डिज़ाइन (Neutral Elegance थीम)",
@@ -688,9 +688,9 @@ export const translations: Record<Language, Translations> = {
             "मोबाइल और टैबलेट पर सुपरफास्ट डिस्प्ले",
             "व्हाट्सएप और ईमेल इंक्वायरी सीधे कनेक्टेड",
             "गूगल सर्च (SEO) के लिए पूरी तरह अनुकूलित",
-            "बोनस: Event-X या Ojas AI सिर्फ ₹999 या मुफ़्त पाएं"
+            "इयरली: ₹5,999/साल (या Ojas AI सहित ₹6,999) • लाइफटाइम: ₹24,999"
           ],
-          cta: "वेबसाइट बनवाएं (₹24,999)",
+          cta: "कस्टम वेबसाइट ऑर्डर करें",
           popular: true
         },
         {
@@ -698,17 +698,17 @@ export const translations: Record<Language, Translations> = {
           title: "कस्टमाइज्ड एंड्रॉइड ऐप डेवलपमेंट",
           originalPrice: "₹65,000",
           discountPrice: "₹29,999",
-          billingNote: "पहले ₹50,000 • प्ले स्टोर सेटअप के साथ",
+          billingNote: "इयरली ₹6,999/साल (Ojas AI सहित ₹7,999) • लाइफटाइम ₹29,999 100% सोर्स कोड सहित",
           desc: "आपके बिज़नेस, बिलिंग, इन्वेंटरी या आर्डर बुकिंग के लिए खास तौर पर तैयार किया गया फास्ट एंड्रॉइड ऐप।",
           features: [
             "आपकी ज़रूरतों के अनुसार मोबाइल ऐप और प्ले स्टोर सेटअप",
             "रियल-टाइम क्लाउड डेटाबेस सिंक",
             "पुश नोटिफिकेशन और सुरक्षित यूजर लॉगिन",
             "पेमेंट गेटवे (UPI, कार्ड) इंटीग्रेशन",
-            "सालाना मेंटेनेंस: ₹8,000 से घटाकर सिर्फ ₹5,999/वर्ष",
+            "इयरली: ₹6,999/साल (या Ojas AI सहित ₹7,999) • लाइफटाइम: ₹29,999",
             "मालिक के लिए आसान एडमिन पैनल"
           ],
-          cta: "एंड्रॉइड ऐप बनवाएं (₹29,999)",
+          cta: "एंड्रॉइड ऐप ऑर्डर करें",
           popular: true
         },
         {

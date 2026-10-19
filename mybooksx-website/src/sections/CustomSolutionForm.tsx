@@ -263,8 +263,12 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                     onChange={handleChange}
                   >
                     {formData.service && ![
-                      "Customized Website Development (Offer ₹24,999)",
-                      "Customized Android App Development (Offer ₹29,999)",
+                      "Customized Website Development - Yearly (₹5,999/yr)",
+                      "Customized Website + Ojas AI - Yearly (₹6,999/yr)",
+                      "Customized Android App - Yearly (₹6,999/yr)",
+                      "Customized Android App + Ojas AI - Yearly (₹7,999/yr)",
+                      "Customized Website Development - Lifetime (₹24,999)",
+                      "Customized Android App Development - Lifetime (₹29,999)",
                       "Resto-X (Yearly: ₹4,999)",
                       "Resto-X (Permanent: ₹24,999)",
                       "Resto-X + Ojas AI (Yearly: ₹5,999)",
@@ -284,21 +288,24 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                       <option value={formData.service}>{formData.service} (Selected)</option>
                     )}
 
-                    <optgroup label="Flagship Software Apps">
-                      <option value="Resto-X (Yearly: ₹4,999)">Resto-X Dining Suite (Yearly: ₹4,999)</option>
-                      <option value="Resto-X (Permanent: ₹24,999)">Resto-X Dining Suite (Permanent: ₹24,999)</option>
-                      <option value="Resto-X + Ojas AI (Yearly: ₹5,999)">Resto-X + Ojas AI Bot (Yearly: ₹5,999)</option>
-                      <option value="Ojas AI (Yearly: ₹999)">Ojas AI Intelligent Bot (Yearly: ₹999)</option>
-                      <option value="Event-X (Permanent: ₹2,999)">Event-X Wedding & Events (Permanent: ₹2,999)</option>
-                      <option value="Fitness-X (Yearly: ₹999)">Fitness-X Gym Manager (Yearly: ₹999)</option>
-                    </optgroup>
-
-                    <optgroup label="Custom Engineering Offers">
-                      <option value="Customized Website Development (Offer ₹24,999)">
-                        Customized Website Development (Offer ₹24,999)
+                    <optgroup label="Custom Web & Mobile App Plans">
+                      <option value="Customized Website Development - Yearly (₹5,999/yr)">
+                        Customized Website Development - Yearly (₹5,999/yr)
                       </option>
-                      <option value="Customized Android App Development (Offer ₹29,999)">
-                        Customized Android App Development (Offer ₹29,999)
+                      <option value="Customized Website + Ojas AI - Yearly (₹6,999/yr)">
+                        Customized Website + Ojas AI - Yearly (₹6,999/yr)
+                      </option>
+                      <option value="Customized Android App - Yearly (₹6,999/yr)">
+                        Customized Android App - Yearly (₹6,999/yr)
+                      </option>
+                      <option value="Customized Android App + Ojas AI - Yearly (₹7,999/yr)">
+                        Customized Android App + Ojas AI - Yearly (₹7,999/yr)
+                      </option>
+                      <option value="Customized Website Development - Lifetime (₹24,999)">
+                        Customized Website - Lifetime 100% Code (₹24,999)
+                      </option>
+                      <option value="Customized Android App Development - Lifetime (₹29,999)">
+                        Customized Android App - Lifetime 100% Code (₹29,999)
                       </option>
                     </optgroup>
 

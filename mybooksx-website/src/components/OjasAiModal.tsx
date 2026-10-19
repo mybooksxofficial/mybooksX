@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import {
   X,
@@ -6,6 +6,7 @@ import {
   Sparkles,
   MessageCircle,
   ArrowRight,
+  ArrowLeft,
   User,
   Trash2,
   CheckCircle2
@@ -19,6 +20,8 @@ interface Message {
   id: string;
   sender: 'bot' | 'user';
   text: string;
+  fullText?: string;
+  isStreaming?: boolean;
   timestamp: string;
   followUpChips?: string[];
   isFallback?: boolean;
@@ -71,7 +74,74 @@ export const OjasAiModal: React.FC<OjasAiModalProps> = ({ isOpen, onClose }) => 
 
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'ollama' | 'verified'>('checking');
   const [activeModel, setActiveModel] = useState<string>('Ojas Core Brain');
+  const chatBodyRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const latestBotMsgRef = useRef<HTMLDivElement>(null);
+  const streamingIntervalRef = useRef<any>(null);
+  const scrollTimerRef = useRef<any>(null);
+
+  // Prevent background page scrolling when Ojas modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (streamingIntervalRef.current) {
+        clearInterval(streamingIntervalRef.current);
+      }
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Smart Auto-Scroll:
+  // - When a user message is sent or bot is typing: scroll to bottom so the user's query is visible.
+  // - When a bot response arrives or streams: smoothly scroll so the START of the bot's response
+  //   (and the user question right above it) is comfortably in view at the top!
+  //   The user never has to scroll UP to read the answer.
+  const scrollToAnswerTop = useCallback(() => {
+    if (!chatBodyRef.current || !latestBotMsgRef.current) return;
+    const container = chatBodyRef.current;
+    const botEl = latestBotMsgRef.current;
+
+    const prevUserEl = botEl.previousElementSibling as HTMLElement | null;
+    let targetTop = botEl.offsetTop - 14;
+
+    if (prevUserEl && prevUserEl.classList.contains('user')) {
+      if (prevUserEl.offsetHeight < 140) {
+        targetTop = Math.max(0, prevUserEl.offsetTop - 10);
+      }
+    }
+
+    container.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: 'smooth'
+    });
+  }, []);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const lastMsg = messages[messages.length - 1];
+
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+
+    scrollTimerRef.current = setTimeout(() => {
+      if (lastMsg.sender === 'bot') {
+        scrollToAnswerTop();
+      } else {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 40);
+  }, [messages.length, isTyping, scrollToAnswerTop]);
 
   // Check Ollama connectivity on mount/open
   useEffect(() => {
@@ -100,14 +170,14 @@ export const OjasAiModal: React.FC<OjasAiModalProps> = ({ isOpen, onClose }) => 
     checkOllama();
   }, [isOpen]);
 
-  // Starter suggestion chips
+  // Starter suggestion chips for top topics
   const starterChips = [
-    '🍽️ Resto-X Demo & Price',
-    '🚀 3-Week Custom App',
-    '💡 Why Choose MyBooks?',
-    '💰 Complete Pricing Plans',
-    '📋 Start Project / Get Quote',
-    '🤝 Talk to Founder Deep Mehta'
+    '✨ Products',
+    '💰 Pricing',
+    '🚀 Custom Software',
+    '📞 Contact',
+    '👤 Talk to Human',
+    '🍽️ Resto-X Demo'
   ];
 
   // Initialize welcome message if empty
@@ -138,10 +208,6 @@ export const OjasAiModal: React.FC<OjasAiModalProps> = ({ isOpen, onClose }) => 
     }
   }, [messages]);
 
-  // Auto-scroll
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
 
   if (!isOpen) return null;
 
@@ -330,8 +396,35 @@ export const OjasAiModal: React.FC<OjasAiModalProps> = ({ isOpen, onClose }) => 
       return;
     }
 
+    // Check if user clicked 'Talk to Human' or wants human contact
+    const lowerQ = query.toLowerCase().trim();
+    if (
+      lowerQ === 'talk to human' ||
+      lowerQ === '👤 talk to human' ||
+      lowerQ === 'talk to a human' ||
+      lowerQ.includes('human support') ||
+      lowerQ.includes('real person') ||
+      lowerQ.includes('deep mehta se baat')
+    ) {
+      setIsTyping(false);
+      streamBotResponse({
+        text: language === 'hi'
+          ? "बिल्कुल! आप सीधे हमारे फ़ाउंडर **Deep Mehta** से संपर्क कर सकते हैं:\n\n• **WhatsApp / Call:** +91 9644570828\n• **Email:** mybooksxofficial@gmail.com\n• **प्रोजेक्ट बुकिंग:** इसी पेज पर नीचे 'Book Your Custom Project' फॉर्म भरें।\n\nआप सीधे नीचे दिए गए बटन से WhatsApp पर भी जुड़ सकते हैं!"
+          : "Certainly! You can connect directly with our founder **Deep Mehta**:\n\n• **Direct WhatsApp / Call:** +91 9644570828\n• **Official Email:** mybooksxofficial@gmail.com\n• **Consultation Form:** Fill out the 'Book Your Custom Project' section on this page.\n\nClick the button below to connect on WhatsApp right away!",
+        isLead: true,
+        followUpChips: ['Book Project Form', 'Check Pricing Plans', 'Custom Android App']
+      });
+      return;
+    }
+
+    if (lowerQ === 'book project form' || lowerQ === 'view form') {
+      setIsTyping(false);
+      formStateService.triggerHighlightAndScroll();
+      onClose();
+      return;
+    }
+
     // Check if user is initiating the guided lead flow
-    const lowerQ = query.toLowerCase();
     const isLeadFlowTrigger =
       query.includes('Start Project') ||
       query.includes('Get Quote') ||
@@ -393,15 +486,10 @@ CRITICAL RULES:
         if (res.ok) {
           const data = await res.json();
           if (data.message?.content) {
-            const botMsg: Message = {
-              id: `bot-${Date.now()}`,
-              sender: 'bot',
+            streamBotResponse({
               text: data.message.content,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               followUpChips: starterChips.slice(0, 3)
-            };
-            setIsTyping(false);
-            setMessages(prev => [...prev, botMsg]);
+            });
             return;
           }
         }
@@ -410,42 +498,114 @@ CRITICAL RULES:
       }
     }
 
-    // 2. High-fidelity verified engine with 100+ intents, fuzzy matching, and autonomous task support
+    // 2. High-fidelity verified engine with 110+ intents, fuzzy matching, and autonomous task support
     try {
       const answer = await OjasIntelligentBrain.resolveResponseAsync(query, historyTurns, language);
+      streamBotResponse(answer);
+    } catch (err) {
+      console.warn('Async response generation encountered an error, falling back:', err);
+      const fallback = OjasIntelligentBrain.resolveResponse(query, historyTurns, language);
+      streamBotResponse(fallback);
+    }
+  };
 
-      const botMsg: Message = {
-        id: `bot-${Date.now()}`,
+  const streamBotResponse = (answer: {
+    text: string;
+    isLead?: boolean;
+    showPreviewCard?: boolean;
+    showConfirmationControls?: boolean;
+    taskState?: any;
+    followUpChips?: string[];
+    isFallback?: boolean;
+    unansweredQuery?: string;
+  }) => {
+    if (streamingIntervalRef.current) {
+      clearInterval(streamingIntervalRef.current);
+      streamingIntervalRef.current = null;
+    }
+
+    const botMsgId = `bot-${Date.now()}`;
+    const fullText = answer.text;
+    const words = fullText.split(' ');
+
+    if (words.length <= 4) {
+      setIsTyping(false);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: botMsgId,
+          sender: 'bot',
+          text: fullText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isLeadAction: answer.isLead,
+          showPreviewCard: answer.showPreviewCard,
+          showConfirmationControls: answer.showConfirmationControls,
+          taskState: answer.taskState,
+          followUpChips: answer.followUpChips,
+          isFallback: answer.isFallback,
+          unansweredQuery: answer.unansweredQuery,
+          isStreaming: false
+        }
+      ]);
+      return;
+    }
+
+    let wordIndex = 2;
+    setIsTyping(false);
+    setMessages(prev => [
+      ...prev,
+      {
+        id: botMsgId,
         sender: 'bot',
-        text: answer.text,
+        text: words.slice(0, 2).join(' '),
+        fullText: fullText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isLeadAction: answer.isLead,
         showPreviewCard: answer.showPreviewCard,
         showConfirmationControls: answer.showConfirmationControls,
         taskState: answer.taskState,
-        followUpChips: answer.followUpChips,
+        followUpChips: [],
         isFallback: answer.isFallback,
-        unansweredQuery: answer.unansweredQuery
-      };
+        unansweredQuery: answer.unansweredQuery,
+        isStreaming: true
+      }
+    ]);
 
-      setIsTyping(false);
-      setMessages(prev => [...prev, botMsg]);
-    } catch (err) {
-      console.warn('Async response generation encountered an error, falling back:', err);
-      const fallback = OjasIntelligentBrain.resolveResponse(query, historyTurns, language);
-      const botMsg: Message = {
-        id: `bot-${Date.now()}`,
-        sender: 'bot',
-        text: fallback.text,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isLeadAction: fallback.isLead,
-        followUpChips: fallback.followUpChips,
-        isFallback: fallback.isFallback,
-        unansweredQuery: fallback.unansweredQuery
-      };
-      setIsTyping(false);
-      setMessages(prev => [...prev, botMsg]);
+    streamingIntervalRef.current = setInterval(() => {
+      wordIndex += 2;
+      if (wordIndex >= words.length) {
+        clearInterval(streamingIntervalRef.current);
+        streamingIntervalRef.current = null;
+        setMessages(prev => prev.map(m => m.id === botMsgId ? {
+          ...m,
+          text: fullText,
+          followUpChips: answer.followUpChips,
+          isStreaming: false
+        } : m));
+      } else {
+        setMessages(prev => prev.map(m => m.id === botMsgId ? {
+          ...m,
+          text: words.slice(0, wordIndex).join(' ')
+        } : m));
+      }
+    }, 24);
+  };
+
+  const handleSkipStreaming = (msgId: string) => {
+    if (streamingIntervalRef.current) {
+      clearInterval(streamingIntervalRef.current);
+      streamingIntervalRef.current = null;
     }
+    setMessages(prev => prev.map(m => {
+      if (m.id === msgId && m.isStreaming && m.fullText) {
+        return {
+          ...m,
+          text: m.fullText,
+          isStreaming: false
+        };
+      }
+      return m;
+    }));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -499,6 +659,18 @@ CRITICAL RULES:
       <div className="ojas-clean-dialog-card" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="ojas-dialog-header">
+          {/* Prominent Back Arrow button for phones & mobile full-screen */}
+          <button
+            type="button"
+            className="dialog-back-btn"
+            onClick={onClose}
+            aria-label="Back to Website"
+            title="Back to Website"
+          >
+            <ArrowLeft size={19} />
+            <span className="back-btn-text">Back</span>
+          </button>
+
           <div className="ojas-dialog-brand">
             <div className={`ojas-avatar-box ${isTyping ? 'generating' : ''}`}>
               <img src="/logo/ojas-ai-logo.svg" alt="Ojas" className="ojas-logo-img" />
@@ -554,9 +726,15 @@ CRITICAL RULES:
         </div>
 
         {/* Chat Messages */}
-        <div className="ojas-dialog-body">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`dialog-msg-item ${msg.sender}`}>
+        <div className="ojas-dialog-body" ref={chatBodyRef}>
+          {messages.map((msg, idx) => {
+            const isLastBotMsg = msg.sender === 'bot' && idx === messages.length - 1;
+            return (
+              <div
+                key={msg.id}
+                ref={isLastBotMsg ? latestBotMsgRef : null}
+                className={`dialog-msg-item ${msg.sender}`}
+              >
               <div className="dialog-msg-avatar">
                 {msg.sender === 'bot' ? (
                   <div className="bot-symbol-frame">
@@ -570,8 +748,13 @@ CRITICAL RULES:
               </div>
 
               <div className="dialog-msg-content">
-                <div className="dialog-bubble">
+                <div
+                  className={`dialog-bubble ${msg.isStreaming ? 'streaming-active' : ''}`}
+                  onClick={() => msg.isStreaming && handleSkipStreaming(msg.id)}
+                  title={msg.isStreaming ? "Click to reveal complete answer" : undefined}
+                >
                   <MarkdownRenderer content={msg.text} />
+                  {msg.isStreaming && <span className="ojas-streaming-cursor" />}
                 </div>
                 <span className="dialog-msg-time">{msg.timestamp}</span>
 
@@ -651,7 +834,8 @@ CRITICAL RULES:
                 )}
               </div>
             </div>
-          ))}
+          );
+        })}
 
           {/* Typing Indicator (Task 8) */}
           {isTyping && (

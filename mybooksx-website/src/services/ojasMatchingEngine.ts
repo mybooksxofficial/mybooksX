@@ -164,7 +164,27 @@ export class OjasMatchingEngine {
     'petpuja': 'petpooja',
     'posist': 'posist',
     'vyapar': 'vyapar',
-    'khatabook': 'khatabook'
+    'khatabook': 'khatabook',
+
+    // Website & Web
+    'website': 'website',
+    'web': 'website',
+    'site': 'website',
+    'portal': 'website',
+
+    // USA / Global
+    'usa': 'usa',
+    'america': 'usa',
+    'us': 'usa',
+    'international': 'usa',
+    'foreign': 'usa',
+    'abroad': 'usa',
+
+    // Joke / Entertainment
+    'joke': 'joke',
+    'jokes': 'joke',
+    'funny': 'joke',
+    'chutkula': 'joke'
   };
 
   /**

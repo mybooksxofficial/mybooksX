@@ -102,10 +102,28 @@ export const VERIFIED_KNOWLEDGE_DOCS: CompanyFact[] = [
   {
     id: "kb-custom-android",
     category: "product",
-    questionPatterns: ["custom app", "app cost", "build app", "app development", "mobile application"],
-    answerEn: "MyBooks engineers custom native-grade mobile applications tailored to your exact business workflow in 3 weeks. Available on special launch offer at ₹29,999 with complete production setup.",
-    answerHi: "MyBooks आपके बिज़नेस के लिए सिर्फ़ 3 हफ़्तों में कस्टम मोबाइल ऐप्लिकेशन तैयार करता है। स्पेशल ऑफर क़ीमत ₹29,999 (प्रोडक्शन सेटअप सहित)।",
+    questionPatterns: ["custom app", "app cost", "build app", "app development", "mobile application", "app yearly", "app price"],
+    answerEn: "MyBooks engineers custom native-grade mobile applications in 3 weeks. Pricing: Yearly License is ₹6,999/yr (or ₹7,999/yr with Ojas AI Copilot), or Permanent Lifetime Ownership with 100% full source code at ₹29,999.",
+    answerHi: "MyBooks सिर्फ़ 3 हफ़्तों में कस्टम मोबाइल ऐप तैयार करता है। इयरली लाइसेंस: ₹6,999/साल (या Ojas AI के साथ ₹7,999/साल), अथवा 100% फुल सोर्स कोड ओनरशिप के साथ परमानेंट लाइफटाइम ₹29,999 में उपलब्ध है।",
     source: "Mobile Engineering Catalog",
+    verified: true
+  },
+  {
+    id: "kb-custom-website",
+    category: "product",
+    questionPatterns: ["custom website", "website cost", "build website", "website development", "website yearly", "website price"],
+    answerEn: "MyBooks develops bespoke, high-performance responsive websites in 3 weeks. Pricing: Yearly Plan is ₹5,999/yr (or ₹6,999/yr with Ojas AI Copilot), or Permanent Lifetime Ownership with 100% full source code at ₹24,999.",
+    answerHi: "MyBooks कस्टम रेस्पॉन्सिव वेबसाइट्स तैयार करता है। इयरली प्लान: ₹5,999/साल (या Ojas AI के साथ ₹6,999/साल), अथवा फुल सोर्स कोड ओनरशिप के साथ परमानेंट लाइफटाइम ₹24,999 में उपलब्ध है।",
+    source: "Web Engineering Catalog",
+    verified: true
+  },
+  {
+    id: "kb-usa-global-clients",
+    category: "core",
+    questionPatterns: ["usa clients", "international clients", "outside india", "do you serve usa", "us clients", "global clients"],
+    answerEn: "Yes! Founded by Deep Mehta and based in India, MyBooksX serves clients globally, including the USA, UK, UAE, and India, delivering production-grade custom web and mobile apps with full source code ownership.",
+    answerHi: "हाँ! Deep Mehta द्वारा स्थापित MyBooksX भारत में स्थित है और पूरे भारत के साथ-साथ USA, UK, UAE और वैश्विक ग्राहकों के लिए कस्टम वेब व मोबाइल ऐप्स तैयार करता है।",
+    source: "Global Delivery Spec",
     verified: true
   },
   {

@@ -9,19 +9,20 @@ interface OffersSectionProps {
 
 export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) => {
   const { t } = useLanguage();
-  const [isOffersMasterOpen, setIsOffersMasterOpen] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<'yearly' | 'lifetime'>('yearly');
+  const [withOjas, setWithOjas] = useState<Record<string, boolean>>({
+    website: true,
+    app: true
+  });
   const [expandedDeals, setExpandedDeals] = useState<Record<number, boolean>>({});
 
   const toggleExpand = (idx: number) => {
     setExpandedDeals(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
-  const toggleOffersMaster = () => {
-    setIsOffersMasterOpen(prev => !prev);
+  const toggleOjas = (key: 'website' | 'app') => {
+    setWithOjas(prev => ({ ...prev, [key]: !prev[key] }));
   };
-
-  // Keep first two deals: Custom Website & Custom Android App (removes chaotic 3rd card)
-  const displayDeals = t.offers.deals.slice(0, 2);
 
   return (
     <section className="offers-section" id="pricing">
@@ -33,78 +34,93 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           </span>
           <h2>{t.offers.title}</h2>
           <p>{t.offers.subtitle}</p>
+
+          {/* Luxury Billing Mode Switcher: Yearly vs Lifetime */}
+          <div className="billing-cycle-toggle-wrapper">
+            <button
+              type="button"
+              className={`billing-cycle-btn ${billingCycle === 'yearly' ? 'active' : ''}`}
+              onClick={() => setBillingCycle('yearly')}
+            >
+              <span>Yearly License</span>
+              <span className="billing-save-pill">From ₹5,999/yr</span>
+            </button>
+            <button
+              type="button"
+              className={`billing-cycle-btn ${billingCycle === 'lifetime' ? 'active' : ''}`}
+              onClick={() => setBillingCycle('lifetime')}
+            >
+              <span>100% Lifetime Ownership</span>
+              <span className="billing-save-pill">Permanent Code</span>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile-Only Master Dropdown Trigger Card for Custom Web & Custom App */}
-        <div className="offers-master-control-wrap mobile-only-master-trigger">
-          <button
-            type="button"
-            className={`offers-master-trigger-card ${isOffersMasterOpen ? 'active' : ''}`}
-            onClick={toggleOffersMaster}
-            aria-expanded={isOffersMasterOpen}
-          >
-            <div className="offers-master-left">
-              <div className="offers-master-icon-pill">
-                <Sparkles size={24} className="text-royal" />
-              </div>
-              <div className="offers-master-text-group">
-                <span className="offers-master-title">
-                  {isOffersMasterOpen
-                    ? 'Hide Custom Web & Mobile App Packages'
-                    : 'Custom App & Custom Web Packages (Click to Expand)'}
-                </span>
-                <span className="offers-master-subtext">
-                  {isOffersMasterOpen
-                    ? 'Click to collapse and save screen space'
-                    : 'Custom Website from ₹14,999 & Android Mobile App from ₹24,999 • Tap to View'}
-                </span>
-              </div>
-            </div>
-            <div className="offers-master-right">
-              <span className="offers-count-badge">2 Packages</span>
-              <ChevronDown size={22} className={`offers-master-chevron ${isOffersMasterOpen ? 'rotated' : ''}`} />
-            </div>
-          </button>
-        </div>
-
-        {/* Always visible on laptop/desktop; collapsible on mobile */}
-        <div className={`offers-content-wrap ${isOffersMasterOpen ? 'mobile-visible' : 'mobile-hidden'}`}>
-          <div className="deals-grid two-cards-grid">
-          {displayDeals.map((deal, idx) => {
-            const isExpanded = !!expandedDeals[idx];
+        {/* Clean, spacious side-by-side Deals Grid */}
+        <div className="deals-grid two-cards-grid">
+          {/* Card 1: Custom Website */}
+          {(() => {
+            const hasOjas = withOjas.website;
+            const price = billingCycle === 'yearly'
+              ? (hasOjas ? '₹6,999' : '₹5,999')
+              : '₹24,999';
+            const originalPrice = billingCycle === 'yearly' ? '₹30,000' : '₹38,000';
+            const billingNote = billingCycle === 'yearly'
+              ? (hasOjas ? 'per year (includes ₹1,000 Ojas AI Copilot add-on)' : 'per year • domain setup & maintenance')
+              : 'permanent ownership • 100% full source code';
+            const selectionString = billingCycle === 'yearly'
+              ? (hasOjas ? 'Customized Website + Ojas AI - Yearly (₹6,999/yr)' : 'Customized Website Development - Yearly (₹5,999/yr)')
+              : 'Customized Website Development - Lifetime (₹24,999)';
+            const isExpanded = !!expandedDeals[0];
 
             return (
-              <div
-                key={idx}
-                className={`deal-card ${deal.popular ? 'popular-card' : ''} interactive-card compact-deal-card`}
-              >
-                {deal.popular && (
-                  <div className="popular-badge">
-                    <Star size={12} fill="#FFFFFF" />
-                    <span>MOST POPULAR</span>
-                  </div>
-                )}
+              <div className="deal-card popular-card interactive-card compact-deal-card">
+                <div className="popular-badge">
+                  <Star size={12} fill="#FFFFFF" />
+                  <span>MOST POPULAR • HIGH ROI</span>
+                </div>
 
                 <div className="deal-top">
-                  <span className="deal-tag">{deal.tag}</span>
-                  <h3 className="deal-title">{deal.title}</h3>
+                  <span className="deal-tag">BESPOKE WEB</span>
+                  <h3 className="deal-title">Customized Website Development</h3>
                 </div>
 
                 <div className="pricing-box">
                   <div className="price-row">
-                    <del className="original-price">{deal.originalPrice}</del>
-                    <span className="discount-price">{deal.discountPrice}</span>
+                    <del className="original-price">{originalPrice}</del>
+                    <span className="discount-price">{price}</span>
+                    {billingCycle === 'yearly' && <span className="price-period">/year</span>}
                   </div>
-                  <span className="billing-note">{deal.billingNote}</span>
+                  <span className="billing-note">{billingNote}</span>
                 </div>
 
-                {/* Minimal Arrow Toggle Button to match Product Cards */}
+                {/* +₹1,000 with Ojas AI Checkbox Pill (Yearly Mode) */}
+                {billingCycle === 'yearly' && (
+                  <div
+                    className={`ojas-addon-toggle-card ${hasOjas ? 'selected' : ''}`}
+                    onClick={() => toggleOjas('website')}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={hasOjas}
+                      onChange={() => {}}
+                      className="ojas-addon-checkbox"
+                    />
+                    <div className="ojas-addon-text">
+                      <strong>Include Ojas AI Copilot (+₹1,000/yr)</strong>
+                      <span>24/7 bilingual leads handler, WhatsApp chat & OCR scanner</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Minimal Arrow Toggle Button */}
                 <button
                   type="button"
                   className={`deal-arrow-toggle-btn ${isExpanded ? 'active' : ''}`}
-                  onClick={() => toggleExpand(idx)}
+                  onClick={() => toggleExpand(0)}
                   aria-label={isExpanded ? 'Collapse features' : 'Expand full features'}
-                  title={isExpanded ? 'Collapse details' : 'Expand details'}
                 >
                   {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
@@ -112,14 +128,15 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
                 {/* Expanded Details Drawer */}
                 {isExpanded && (
                   <div className="deal-expanded-drawer">
-                    <p className="deal-desc">{deal.desc}</p>
+                    <p className="deal-desc">
+                      Full bespoke luxury responsive website engineered for your exact branding, search engine rankings, and high conversion.
+                    </p>
                     <ul className="deal-features-list">
-                      {deal.features.map((feat, fIdx) => (
-                        <li key={fIdx}>
-                          <Check size={16} className="check-icon" />
-                          <span>{feat}</span>
-                        </li>
-                      ))}
+                      <li><Check size={16} className="check-icon" /><span>Unique bespoke luxury design (Neutral Elegance theme)</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Dynamic multilingual engine (English & Hindi)</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Mobile-first ultra-responsive performance & Google SEO ready</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Direct WhatsApp & Email lead transmission</span></li>
+                      <li><Check size={16} className="check-icon" /><span>{billingCycle === 'yearly' ? 'Annual cloud maintenance & uptime monitoring' : '100% full source code ownership delivered'}</span></li>
                     </ul>
                   </div>
                 )}
@@ -127,16 +144,113 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
                 <div className="deal-card-footer">
                   <a
                     href="#custom-solution"
-                    onClick={() => onSelectPlan(deal.title)}
-                    className={`w-full ${deal.popular ? 'btn-primary' : 'btn-secondary'} deal-cta-btn`}
+                    onClick={() => onSelectPlan(selectionString)}
+                    className="w-full btn-primary deal-cta-btn"
                   >
-                    <span>{deal.cta}</span>
+                    <span>Claim Website ({price}{billingCycle === 'yearly' ? '/yr' : ''})</span>
                     <ArrowRight size={15} />
                   </a>
                 </div>
               </div>
             );
-          })}
+          })()}
+
+          {/* Card 2: Custom Android App */}
+          {(() => {
+            const hasOjas = withOjas.app;
+            const price = billingCycle === 'yearly'
+              ? (hasOjas ? '₹7,999' : '₹6,999')
+              : '₹29,999';
+            const originalPrice = billingCycle === 'yearly' ? '₹50,000' : '₹65,000';
+            const billingNote = billingCycle === 'yearly'
+              ? (hasOjas ? 'per year (includes ₹1,000 Ojas AI Copilot add-on)' : 'per year • Play Store release & cloud sync')
+              : 'permanent ownership • 100% full source code & Play Store';
+            const selectionString = billingCycle === 'yearly'
+              ? (hasOjas ? 'Customized Android App + Ojas AI - Yearly (₹7,999/yr)' : 'Customized Android App - Yearly (₹6,999/yr)')
+              : 'Customized Android App Development - Lifetime (₹29,999)';
+            const isExpanded = !!expandedDeals[1];
+
+            return (
+              <div className="deal-card popular-card interactive-card compact-deal-card">
+                <div className="popular-badge">
+                  <Star size={12} fill="#FFFFFF" />
+                  <span>FLAGSHIP ENTERPRISE</span>
+                </div>
+
+                <div className="deal-top">
+                  <span className="deal-tag">NATIVE APP</span>
+                  <h3 className="deal-title">Customized Android App Development</h3>
+                </div>
+
+                <div className="pricing-box">
+                  <div className="price-row">
+                    <del className="original-price">{originalPrice}</del>
+                    <span className="discount-price">{price}</span>
+                    {billingCycle === 'yearly' && <span className="price-period">/year</span>}
+                  </div>
+                  <span className="billing-note">{billingNote}</span>
+                </div>
+
+                {/* +₹1,000 with Ojas AI Checkbox Pill (Yearly Mode) */}
+                {billingCycle === 'yearly' && (
+                  <div
+                    className={`ojas-addon-toggle-card ${hasOjas ? 'selected' : ''}`}
+                    onClick={() => toggleOjas('app')}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={hasOjas}
+                      onChange={() => {}}
+                      className="ojas-addon-checkbox"
+                    />
+                    <div className="ojas-addon-text">
+                      <strong>Include Ojas AI Copilot (+₹1,000/yr)</strong>
+                      <span>In-app intelligent user assistant & voice response</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Minimal Arrow Toggle Button */}
+                <button
+                  type="button"
+                  className={`deal-arrow-toggle-btn ${isExpanded ? 'active' : ''}`}
+                  onClick={() => toggleExpand(1)}
+                  aria-label={isExpanded ? 'Collapse features' : 'Expand full features'}
+                >
+                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+
+                {/* Expanded Details Drawer */}
+                {isExpanded && (
+                  <div className="deal-expanded-drawer">
+                    <p className="deal-desc">
+                      Native-grade Android mobile application customized to your inventory, dispatch, field staff, or customer ordering flow.
+                    </p>
+                    <ul className="deal-features-list">
+                      <li><Check size={16} className="check-icon" /><span>Custom-built Mobile App & Play Store publishing</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Real-time cloud database synchronization</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Push alerts, user authentication & OTP login</span></li>
+                      <li><Check size={16} className="check-icon" /><span>Payment gateway integration (UPI, QR, Cards)</span></li>
+                      <li><Check size={16} className="check-icon" /><span>{billingCycle === 'yearly' ? 'Complete annual maintenance & security patch updates' : '100% full source code ownership delivered'}</span></li>
+                    </ul>
+                  </div>
+                )}
+
+                <div className="deal-card-footer">
+                  <a
+                    href="#custom-solution"
+                    onClick={() => onSelectPlan(selectionString)}
+                    className="w-full btn-primary deal-cta-btn"
+                  >
+                    <span>Claim Android App ({price}{billingCycle === 'yearly' ? '/yr' : ''})</span>
+                    <ArrowRight size={15} />
+                  </a>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Maintenance highlight banner */}
@@ -155,7 +269,6 @@ export const OffersSection: React.FC<OffersSectionProps> = ({ onSelectPlan }) =>
           </a>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
 };
