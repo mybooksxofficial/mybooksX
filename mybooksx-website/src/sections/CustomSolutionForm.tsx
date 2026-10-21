@@ -268,6 +268,7 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                       "Customized Android App - Yearly (₹6,999/yr)",
                       "Customized Android App + Ojas AI - Yearly (₹7,999/yr)",
                       "Customized Website Development - Lifetime (₹24,999)",
+                      "Customized Website Development (Offer ₹24,999)",
                       "Customized Android App Development - Lifetime (₹29,999)",
                       "Resto-X (Yearly: ₹4,999)",
                       "Resto-X (Permanent: ₹24,999)",
@@ -288,7 +289,7 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                       <option value={formData.service}>{formData.service} (Selected)</option>
                     )}
 
-                    <optgroup label="Custom Web & Mobile App Plans">
+                    <optgroup label="Custom Web & Mobile App Development">
                       <option value="Customized Website Development - Yearly (₹5,999/yr)">
                         Customized Website Development - Yearly (₹5,999/yr)
                       </option>
@@ -309,6 +310,18 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                       </option>
                     </optgroup>
 
+                    <optgroup label="Flagship Software Solutions">
+                      <option value="Resto-X (Yearly: ₹4,999)">Resto-X Restaurant POS - Yearly (₹4,999)</option>
+                      <option value="Resto-X (Permanent: ₹24,999)">Resto-X Restaurant POS - Lifetime (₹24,999)</option>
+                      <option value="Resto-X + Ojas AI (Yearly: ₹5,999)">Resto-X + Ojas AI - Yearly (₹5,999)</option>
+                      <option value="Resto-X + Ojas AI (Permanent: ₹27,499)">Resto-X + Ojas AI - Lifetime (₹27,499)</option>
+                      <option value="Event-X (Permanent: ₹2,999)">Event-X Wedding Suite - Lifetime (₹2,999)</option>
+                      <option value="Fitness-X (Yearly: ₹999)">Fitness-X Gym Manager - Yearly (₹999)</option>
+                      <option value="Fitness-X (Permanent: ₹2,999)">Fitness-X Gym Manager - Lifetime (₹2,999)</option>
+                      <option value="Ojas AI (Yearly: ₹999)">Ojas AI Copilot - Yearly (₹999)</option>
+                      <option value="Ojas AI (Permanent: ₹1,999)">Ojas AI Copilot - Lifetime (₹1,999)</option>
+                    </optgroup>
+
                     <optgroup label="Digital Growth Services">
                       <option value="Social Media Management - Starter (₹12,000/mo)">
                         Social Media Management - Starter (₹12,000/mo)
@@ -316,8 +329,17 @@ export const CustomSolutionForm: React.FC<CustomSolutionFormProps> = ({
                       <option value="Social Media Management - Growth (₹22,000/mo)">
                         Social Media Management - Growth (₹22,000/mo)
                       </option>
+                      <option value="Social Media Management - Dominance (₹35,000/mo)">
+                        Social Media Management - Dominance (₹35,000/mo)
+                      </option>
                       <option value="Email Marketing - Starter (₹8,000/mo)">
                         Email Marketing & Campaigns - Starter (₹8,000/mo)
+                      </option>
+                      <option value="Email Marketing - Growth (₹15,000/mo)">
+                        Email Marketing & Campaigns - Growth (₹15,000/mo)
+                      </option>
+                      <option value="Email Marketing - Premium (₹25,000/mo)">
+                        Email Marketing & Campaigns - Premium (₹25,000/mo)
                       </option>
                     </optgroup>
                   </select>
