@@ -223,3 +223,4 @@ code = code.replace(oldError.replace(/\n/g, '\r\n'), newError.replace(/\n/g, '\r
 
 fs.writeFileSync(arenaPath, code, 'utf8');
 console.log('✅ Enhanced QuestArenaPage with direct entry and instant replay');
+

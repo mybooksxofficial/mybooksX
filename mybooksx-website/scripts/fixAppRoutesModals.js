@@ -58,3 +58,4 @@ code = code.replace(oldDashBlock.replace(/\n/g, '\r\n'), newDashBlock.replace(/\
 
 fs.writeFileSync(appPath, code, 'utf8');
 console.log('✅ Added <AuthModal /> to /quest and /dashboard in App.tsx');
+
