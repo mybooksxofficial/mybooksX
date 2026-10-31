@@ -59,7 +59,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         {/* Clean Right Actions */}
         <div className="nav-actions">
-          {/* User Account / Points Pill */}
+          {/* Prominent Direct QUEST Button (Always visible on phone & desktop, direct 1-tap entry into 15m Quiz) */}
+          <button
+            type="button"
+            className="nav-quest-pill"
+            onClick={() => navigateTo('/quest')}
+            title="Enter 15-Minute Mathematical QUEST Arena"
+          >
+            <Zap size={14} className="bolt-icon" />
+            <span className="quest-text">⚡ QUEST</span>
+          </button>
+
+          {/* User Account / Points Pill (when logged in) */}
           {isAuthenticated && user ? (
             <button
               type="button"
@@ -76,9 +87,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               </div>
             </button>
           ) : (
+            /* Desktop-only Sign In button (hidden on phone, where QUEST button is the direct primary action) */
             <button
               type="button"
-              className="nav-signin-btn"
+              className="nav-signin-btn desktop-only"
               onClick={() => openAuthModal('login')}
             >
               <User size={15} />
@@ -105,16 +117,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </button>
           </div>
 
-          {/* Single Focused CTA */}
-          <a href="/#custom-solution" className="btn-primary nav-cta" onClick={() => navigateTo('/')}>
+          {/* Desktop-only Focused CTA */}
+          <a href="/#custom-solution" className="btn-primary nav-cta desktop-only" onClick={() => navigateTo('/')}>
             <span>{t.nav.startProject}</span>
             <ArrowRight size={14} />
           </a>
 
-          {/* Mobile Single Unified Drawer Hamburger */}
+          {/* Tablet/Desktop Drawer Toggle (Hidden on mobile phones per user request: 'sidebar hata diya phone ke hisab e') */}
           <button
             type="button"
-            className="mobile-toggle-btn"
+            className="mobile-toggle-btn tablet-drawer-btn"
             onClick={onToggleSidebar}
             aria-label="Open Navigation Menu"
           >
