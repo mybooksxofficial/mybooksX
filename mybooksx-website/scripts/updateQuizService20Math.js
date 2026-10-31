@@ -145,3 +145,4 @@ code = code.replace(/10 Questions/gi, '20 Questions');
 
 fs.writeFileSync(quizServicePath, code, 'utf8');
 console.log('✅ Updated src/server/quizService.ts to 20 Mathematical Questions & 15-Minute Duration (900s / 45s)');
+

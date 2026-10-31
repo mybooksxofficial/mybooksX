@@ -28,3 +28,4 @@ code = code.replace(/00:30/g, '00:45');
 
 fs.writeFileSync(arenaPath, code, 'utf8');
 console.log('✅ Updated src/pages/QuestArenaPage.tsx to 20 questions and 15:00 timer (45s per question)');
+

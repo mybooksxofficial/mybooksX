@@ -62,6 +62,7 @@ export const AppContent: React.FC = () => {
     return (
       <div className="mybooksx-app-container">
         <UserDashboardPage />
+        <AuthModal />
         <LegalModals />
       </div>
     );
@@ -72,6 +73,8 @@ export const AppContent: React.FC = () => {
     return (
       <div className="mybooksx-app-container">
         <QuestArenaPage />
+        <AuthModal />
+        <LegalModals />
       </div>
     );
   }

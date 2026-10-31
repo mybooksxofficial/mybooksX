@@ -224,3 +224,4 @@ if (!apiClientCode.includes('phoneLogin(data:')) {
 }
 
 console.log('🏁 Step 1 completed successfully.');
+

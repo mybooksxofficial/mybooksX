@@ -572,3 +572,4 @@ export const AuthModal: React.FC = () => {
 
 fs.writeFileSync(path.join(rootDir, 'src/components/AuthModal.tsx'), authModalContent, 'utf8');
 console.log('✅ Updated src/components/AuthModal.tsx with Name + Phone real sign-in (Zero Google Auth)');
+

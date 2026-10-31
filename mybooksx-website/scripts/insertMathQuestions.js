@@ -214,3 +214,4 @@ for (const q of mathQuestions) {
 console.log('✅ Successfully inserted 20 mathematical questions.');
 console.log('Total questions in DB:', db.prepare('SELECT count(*) as c FROM questions').get());
 console.log('Math questions in DB:', db.prepare("SELECT count(*) as c FROM questions WHERE id LIKE 'qm_%'").get());
+

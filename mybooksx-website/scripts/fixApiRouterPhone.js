@@ -57,3 +57,4 @@ code = code.replace(oldBlock.replace(/\n/g, '\r\n'), newBlock.replace(/\n/g, '\r
 
 fs.writeFileSync(apiRouterPath, code, 'utf8');
 console.log('✅ Updated /api/auth/phone in apiRouter.ts');
+

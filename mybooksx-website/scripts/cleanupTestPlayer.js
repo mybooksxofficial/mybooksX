@@ -11,3 +11,4 @@ db.exec("DELETE FROM users WHERE full_name = 'Rahul Sharma'");
 
 console.log('Cleaned test player. Remaining users:');
 console.log(db.prepare('SELECT id, full_name, email, phone, points_balance FROM users').all());
+
