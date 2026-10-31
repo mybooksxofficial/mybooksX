@@ -196,3 +196,4 @@ export const MATH_QUEST_QUESTIONS: MathQuestQuestion[] = [
     explanation: '1 hour = 60 minutes = 4 × 15 minutes. Batches processed = 450 × 4 = 1,800 batches.'
   }
 ];
+
