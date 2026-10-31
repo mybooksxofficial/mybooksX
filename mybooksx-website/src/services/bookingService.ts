@@ -45,10 +45,12 @@ export const bookingService = {
       }
       const parsed = JSON.parse(data);
       // Filter out past dummy test data
-      const realOnly = parsed.filter(
-        (b: BookingRecord) =>
-          b.name !== 'Vikram Malhotra' && b.name !== 'Ananya Sharma' && !b.id.startsWith('SAMPLE-')
-      );
+      const isReal = (b: BookingRecord) => {
+        if (!b || !b.id || !b.name) return false;
+        const n = b.name.toLowerCase();
+        return n !== 'vikram malhotra' && n !== 'ananya sharma' && !n.includes('sample') && !n.includes('test') && !b.id.startsWith('SAMPLE-');
+      };
+      const realOnly = parsed.filter(isReal);
       if (realOnly.length !== parsed.length) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(realOnly));
       }

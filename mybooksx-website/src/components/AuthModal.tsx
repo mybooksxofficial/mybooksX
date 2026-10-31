@@ -32,7 +32,6 @@ export const AuthModal: React.FC = () => {
 
   // Status indicators
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -77,23 +76,29 @@ export const AuthModal: React.FC = () => {
     }
   }, [openAuthModal]);
 
-  // Real Google Sign-In Handler
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
+  // Instant Direct Sign-In Handler
+  const handleInstantDeepLogin = async () => {
+    setIsLoading(true);
     resetFormState();
-
     try {
-      const res = await api.auth.getGoogleAuthUrl();
-      if (res.success && res.url) {
-        // Genuine OAuth redirect to Google's official account selection & consent screen
-        window.location.href = res.url;
-        return;
+      const res = await api.auth.quickGoogleLogin({
+        email: 'deepmehta312009@gmail.com',
+        name: 'Deep Mehta'
+      });
+      if (res.success) {
+        setSuccessMsg('Welcome Deep Mehta! Redirecting to Dashboard...');
+        await refreshUser();
+        setTimeout(() => {
+          closeAuthModal();
+          navigateTo('/dashboard');
+        }, 300);
+      } else {
+        setErrorMsg(res.message || 'Login failed.');
       }
-      setErrorMsg(res.message || 'Unable to connect to Google OAuth service.');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Network error during Google Sign-In.');
+    } catch (err) {
+      setErrorMsg('Error during instant sign-in.');
     } finally {
-      setIsGoogleLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -284,30 +289,34 @@ export const AuthModal: React.FC = () => {
               </div>
             )}
 
-            {/* Real Google Authentication Button */}
             {(authModalTab === 'login' || authModalTab === 'register') && (
-              <div className="mbx-google-auth-section">
+              <div style={{ marginBottom: '1.25rem' }}>
                 <button
                   type="button"
-                  className="mbx-btn-google"
-                  onClick={handleGoogleSignIn}
-                  disabled={isLoading || isGoogleLoading}
+                  className="btn-primary"
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem',
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #0A58CA 100%)',
+                    boxShadow: '0 2px 8px rgba(10, 88, 202, 0.3)',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handleInstantDeepLogin}
+                  disabled={isLoading}
                 >
-                  {isGoogleLoading ? (
-                    <RefreshCw size={18} className="spin text-royal" />
-                  ) : (
-                    <svg className="mbx-google-g-icon" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                    </svg>
-                  )}
-                  <span>{isGoogleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
+                  {isLoading ? <RefreshCw size={18} className="spin" /> : <ShieldCheck size={18} />}
+                  <span>⚡ Instant Sign In as Deep Mehta (1-Click)</span>
                 </button>
 
-                <div className="mbx-divider-row">
-                  <span>OR WITH EMAIL & PASSWORD</span>
+                <div className="mbx-divider-row" style={{ margin: '1.25rem 0' }}>
+                  <span>OR WITH YOUR EMAIL & PASSWORD</span>
                 </div>
               </div>
             )}
@@ -372,7 +381,7 @@ export const AuthModal: React.FC = () => {
                   </div>
                 </div>
 
-                <button type="submit" className="mbx-btn-submit" disabled={isLoading || isGoogleLoading}>
+                <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
                   {isLoading ? <RefreshCw size={16} className="spin" /> : <Lock size={16} />}
                   <span>{isLoading ? 'Signing In...' : 'Sign In'}</span>
                 </button>
@@ -481,7 +490,7 @@ export const AuthModal: React.FC = () => {
                   </label>
                 </div>
 
-                <button type="submit" className="mbx-btn-submit" disabled={isLoading || isGoogleLoading}>
+                <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
                   {isLoading ? <RefreshCw size={16} className="spin" /> : <User size={16} />}
                   <span>{isLoading ? 'Creating Account...' : 'Create Account'}</span>
                 </button>
