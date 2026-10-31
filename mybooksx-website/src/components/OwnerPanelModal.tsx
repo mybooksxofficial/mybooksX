@@ -724,10 +724,10 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                           .filter(u => {
                             if (!leaderboardSearch.trim()) return true;
                             const q = leaderboardSearch.toLowerCase();
-                            return u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.userId.toLowerCase().includes(q);
+                            return u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.phone && u.phone.includes(q)) || u.userId.toLowerCase().includes(q);
                           })
                           .map(u => {
-                            const playerText = `👤 *MYBOOKSX PLAYER DOSSIER*\nRank: #${u.rank}\nName: ${u.fullName}\nEmail: ${u.email}\nAvailable Points: ${u.pointsBalance.toLocaleString()} pts\nReserved Points: ${u.pointsReserved.toLocaleString()} pts\nLifetime Earned: ${u.lifetimePoints.toLocaleString()} pts\nQuests Completed: ${u.quizzesPlayed}\nRedemptions: ${u.redemptionsCount}\nHotline: +91 9644570828`;
+                            const playerText = `👤 *MYBOOKSX PLAYER DOSSIER*\nRank: #${u.rank}\nName: ${u.fullName}\nMobile: ${u.phone || "N/A"}\nEmail: ${u.email}\nAvailable Points: ${u.pointsBalance.toLocaleString()} pts\nReserved Points: ${u.pointsReserved.toLocaleString()} pts\nLifetime Earned: ${u.lifetimePoints.toLocaleString()} pts\nQuests Completed: ${u.quizzesPlayed}\nRedemptions: ${u.redemptionsCount}\nHotline: +91 9644570828`;
                             const waUrl = `https://wa.me/919644570828?text=${encodeURIComponent(playerText)}`;
 
                             return (
@@ -742,15 +742,22 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                                   </span>
                                 </td>
                                 <td style={{ padding: '0.75rem 1rem' }}>
-                                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{u.fullName}</div>
-                                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{u.email}</div>
-                                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.2rem' }}>
-                                    <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '4px', background: u.authProvider === 'google' ? '#EFF6FF' : '#F3F4F6', color: u.authProvider === 'google' ? '#1D4ED8' : '#374151' }}>
-                                      {u.authProvider === 'google' ? 'Google OAuth' : 'Email/Password'}
+                                  <div style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--text-primary)' }}>{u.fullName}</div>
+                                  {u.phone ? (
+                                    <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#059669', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.15rem' }}>
+                                      <Phone size={12} />
+                                      <span>{u.phone}</span>
+                                    </div>
+                                  ) : (
+                                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                                  )}
+                                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.25rem' }}>
+                                    <span style={{ fontSize: '0.68rem', padding: '0.1rem 0.45rem', borderRadius: '4px', background: u.authProvider === 'phone' ? '#ECFDF5' : '#EFF6FF', color: u.authProvider === 'phone' ? '#065F46' : '#1D4ED8', fontWeight: 600 }}>
+                                      {u.authProvider === 'phone' ? '📱 Mobile Verified' : 'Email Account'}
                                     </span>
                                     {u.isVerified && (
-                                      <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '4px', background: '#DCFCE7', color: '#15803D' }}>
-                                        Verified
+                                      <span style={{ fontSize: '0.68rem', padding: '0.1rem 0.45rem', borderRadius: '4px', background: '#DCFCE7', color: '#15803D', fontWeight: 600 }}>
+                                        ✓ Active
                                       </span>
                                     )}
                                   </div>
@@ -775,17 +782,28 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                                   </span>
                                 </td>
                                 <td style={{ padding: '0.75rem 1rem' }}>
-                                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                    {u.phone && (
+                                      <a
+                                        href={`tel:${u.phone.replace(/\s+/g, '')}`}
+                                        className="btn-outline"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.35rem 0.55rem', fontSize: '0.74rem', borderColor: '#3B82F6', color: '#1D4ED8', textDecoration: 'none', borderRadius: '4px' }}
+                                        title={`Call ${u.fullName} directly`}
+                                      >
+                                        <Phone size={12} />
+                                        <span>Call</span>
+                                      </a>
+                                    )}
                                     <a
                                       href={waUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="btn-outline"
-                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.6rem', fontSize: '0.76rem', borderColor: '#25D366', color: '#128C7E', textDecoration: 'none', borderRadius: '4px' }}
-                                      title="Send this player's points text directly to Founder's WhatsApp (+91 9644570828)"
+                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.55rem', fontSize: '0.74rem', borderColor: '#25D366', color: '#128C7E', textDecoration: 'none', borderRadius: '4px' }}
+                                      title="Send this player's points dossier directly to Founder's WhatsApp (+91 9644570828)"
                                     >
-                                      <MessageSquare size={13} />
-                                      <span>Text to +91 9644570828</span>
+                                      <MessageSquare size={12} />
+                                      <span>Send to Hotline</span>
                                     </a>
                                   </div>
                                 </td>
@@ -807,7 +825,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                       <span>QUEST Timing & Launch Schedule Control</span>
                     </h3>
                     <p className="dash-subtext" style={{ marginTop: '0.25rem' }}>
-                      Set the daily 5-minute business competition live at any time, configure scheduled hours (IST), or reset attempts.
+                      Set the daily 15-minute mathematical competition live at any time, configure scheduled hours (IST), or reset attempts.
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -866,7 +884,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                       <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>⚡ Make Quiz Live Right Now</h4>
                     </div>
                     <p style={{ fontSize: '0.85rem', color: '#6B7280', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                      Immediately removes the countdown lock and allows any user to take the 10-question business challenge at any minute.
+                      Immediately removes the countdown lock and allows any user to take the 20-question mathematical challenge at any minute.
                     </p>
                     <button
                       type="button"

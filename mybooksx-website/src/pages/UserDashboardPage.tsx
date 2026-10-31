@@ -396,7 +396,7 @@ export const UserDashboardPage: React.FC = () => {
                       onClick={() => handleStartQuest('daily')}
                     >
                       <Play size={18} />
-                      <span>Start QUEST (10 Questions • 5 Mins)</span>
+                      <span>Start QUEST (20 Questions • 15 Mins)</span>
                     </button>
                   )}
                 </div>
@@ -406,7 +406,7 @@ export const UserDashboardPage: React.FC = () => {
               <div className="quest-scoring-rules-card">
                 <div className="rules-header">
                   <TrendingUp size={16} className="text-royal" />
-                  <h4>30-Second Speed Points Criteria (5 Min Total)</h4>
+                  <h4>45-Second Speed Points Criteria (15 Min Total • 20 Math Questions)</h4>
                 </div>
                 <div className="scoring-table-grid">
                   <div className="score-tier">

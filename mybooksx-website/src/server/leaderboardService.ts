@@ -245,6 +245,7 @@ export class LeaderboardService {
         u.id as user_id,
         u.full_name,
         u.email,
+        u.phone,
         u.auth_provider,
         u.is_verified,
         u.points_balance,
@@ -255,7 +256,6 @@ export class LeaderboardService {
         COALESCE((SELECT COUNT(id) FROM quiz_answers WHERE user_id = u.id AND is_correct = 1), 0) as total_correct,
         COALESCE((SELECT COUNT(id) FROM redemption_requests WHERE user_id = u.id), 0) as redemptions_count
        FROM users u
-       WHERE u.role != 'admin' OR u.role IS NULL
        ORDER BY u.points_balance DESC, u.total_points_earned DESC, u.created_at ASC`
     ).all<{
       user_id: string;
@@ -298,7 +298,8 @@ export class LeaderboardService {
         userId: u.user_id,
         fullName: u.full_name || 'Anonymous Player',
         email: u.email,
-        authProvider: u.auth_provider || 'email',
+        phone: u.phone || (u.email && u.email.includes('@phone.mybooksx.com') ? '+91 ' + u.email.replace('@phone.mybooksx.com', '') : ''),
+        authProvider: u.auth_provider || 'phone',
         isVerified: Boolean(u.is_verified),
         pointsBalance: balance,
         pointsReserved: reserved,

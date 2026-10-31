@@ -140,7 +140,31 @@ export async function handleApiRequest(
     }
   }
 
-  if (pathname === '/api/auth/login' && method === 'POST') {
+  
+    // Real Name & Mobile Phone Authentication (Zero Google OAuth errors)
+    if (pathname === '/api/auth/phone' && method === 'POST') {
+      try {
+        const body: any = await req.json();
+        const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || '127.0.0.1';
+        const result = await AuthService.loginOrRegisterWithPhone(db, {
+          fullName: body.fullName || body.name || '',
+          phone: body.phone || body.mobile || '',
+          clientIp
+        });
+        if (result.success && result.sessionToken) {
+          const isHttps = url.protocol === 'https:';
+          const cookieHeader = `mbx_session=${result.sessionToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${isHttps ? '; Secure' : ''}`;
+          return jsonResponse(result, 200, {
+            'Set-Cookie': cookieHeader
+          });
+        }
+        return jsonResponse(result, result.success ? 200 : 400);
+      } catch (e: any) {
+        return jsonResponse({ success: false, message: e?.message || 'Phone sign-in failed.' }, 400);
+      }
+    }
+
+    if (pathname === '/api/auth/login' && method === 'POST') {
     try {
       const body: any = await req.json();
       const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || '127.0.0.1';

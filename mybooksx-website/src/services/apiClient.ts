@@ -132,6 +132,20 @@ export const api = {
       });
     },
 
+    
+    async phoneLogin(data: { fullName: string; phone: string }) {
+      return request<{
+        success: boolean;
+        message: string;
+        user?: any;
+        sessionToken?: string;
+        error?: string;
+      }>('/api/auth/phone', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+
     async quickGoogleLogin(params: { email: string; name?: string; avatarUrl?: string }) {
       const res = await request<{
         success: boolean;

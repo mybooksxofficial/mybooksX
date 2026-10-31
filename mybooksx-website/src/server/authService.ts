@@ -22,6 +22,7 @@ import { checkRateLimit } from './rateLimiter.ts';
 export interface UserRecord {
   id: string;
   email: string;
+  phone?: string;
   full_name: string;
   password_hash?: string;
   salt?: string;
@@ -42,6 +43,7 @@ export interface UserRecord {
 export interface PublicUser {
   id: string;
   email: string;
+  phone?: string;
   fullName: string;
   isVerified: boolean;
   pointsBalance: number;
@@ -57,6 +59,7 @@ export function toPublicUser(u: UserRecord): PublicUser {
   return {
     id: u.id,
     email: u.email,
+    phone: u.phone || undefined,
     fullName: u.full_name,
     isVerified: Boolean(u.is_verified),
     pointsBalance: u.points_balance || 0,
@@ -70,6 +73,86 @@ export function toPublicUser(u: UserRecord): PublicUser {
 }
 
 export class AuthService {
+
+  /**
+   * Real Name & Mobile Phone Authentication
+   * Allows real players to authenticate directly with Name and Mobile number.
+   * Immediately verified, active session created, real records displayed on Owner Portal.
+   */
+  static async loginOrRegisterWithPhone(
+    db: D1DatabaseLike,
+    params: {
+      fullName: string;
+      phone: string;
+      clientIp?: string;
+    }
+  ): Promise<{ success: boolean; message: string; sessionToken?: string; user?: PublicUser; error?: string }> {
+    const rawName = (params.fullName || '').trim();
+    const rawPhone = (params.phone || '').trim();
+
+    if (!rawName || rawName.length < 2) {
+      return { success: false, message: 'Please enter your full name (at least 2 characters).', error: 'INVALID_NAME' };
+    }
+
+    const cleanDigits = rawPhone.replace(/\D/g, '');
+    if (cleanDigits.length < 10) {
+      return { success: false, message: 'Please enter a valid 10-digit mobile number.', error: 'INVALID_PHONE' };
+    }
+
+    const formatted10 = cleanDigits.slice(-10);
+    const displayPhone = '+91 ' + formatted10;
+    const generatedEmail = formatted10 + '@phone.mybooksx.com';
+    const now = new Date().toISOString();
+
+    let user = await db.prepare(
+      'SELECT * FROM users WHERE phone = ? OR phone = ? OR email = ?'
+    ).bind(displayPhone, formatted10, generatedEmail).first<UserRecord>();
+
+    if (!user) {
+      user = await db.prepare(
+        'SELECT * FROM users WHERE phone LIKE ?'
+      ).bind('%' + formatted10 + '%').first<UserRecord>();
+    }
+
+    if (user) {
+      await db.prepare(
+        'UPDATE users SET full_name = ?, phone = ?, is_verified = 1, updated_at = ? WHERE id = ?'
+      ).bind(rawName, displayPhone, now, user.id).run();
+
+      user.full_name = rawName;
+      user.phone = displayPhone;
+      user.is_verified = 1;
+    } else {
+      const newId = 'usr_ph_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6);
+      await db.prepare(
+        `INSERT INTO users (
+          id, email, full_name, phone, password_hash, salt, is_verified,
+          points_balance, points_reserved, total_points_earned, role, auth_provider,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, 'phone_auth_hash', 'phone_salt', 1, 0, 0, 0, 'user', 'phone', ?, ?)`
+      ).bind(newId, generatedEmail, rawName, displayPhone, now, now).run();
+
+      user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(newId).first<UserRecord>();
+      if (!user) {
+        return { success: false, message: 'Failed to create user account.', error: 'DB_ERROR' };
+      }
+    }
+
+    const sessionToken = generateSessionToken();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    await db.prepare(
+      `INSERT INTO sessions (id, user_id, expires_at, user_agent, ip_address, created_at)
+       VALUES (?, ?, ?, 'mobile_web', ?, ?)`
+    ).bind(sessionToken, user.id, expiresAt, params.clientIp || '127.0.0.1', now).run();
+
+    return {
+      success: true,
+      message: 'Welcome ' + user.full_name + '! Signed in successfully.',
+      sessionToken,
+      user: toPublicUser(user)
+    };
+  }
+
   /**
    * Register a new user
    */

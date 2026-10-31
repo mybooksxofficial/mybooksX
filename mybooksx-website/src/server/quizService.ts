@@ -99,19 +99,17 @@ export class QuizService {
 
     const seconds = responseTimeMs / 1000;
 
-    // Generous 1.0s network latency buffer for 30s deadline
-    if (seconds <= 5.5) {
-      return { points: 200, speedTier: '0-5s (Lightning)' };
-    } else if (seconds <= 10.5) {
-      return { points: 180, speedTier: '6-10s (Fast)' };
+    // 45-second question duration with generous 1.0s network latency buffer
+    if (seconds <= 7.5) {
+      return { points: 200, speedTier: '0-7s (Lightning)' };
     } else if (seconds <= 15.5) {
-      return { points: 160, speedTier: '11-15s (Great)' };
-    } else if (seconds <= 20.5) {
-      return { points: 130, speedTier: '16-20s (Good)' };
+      return { points: 180, speedTier: '8-15s (Fast)' };
     } else if (seconds <= 25.5) {
-      return { points: 100, speedTier: '21-25s (Steady)' };
-    } else if (seconds <= 31.0) {
-      return { points: 60, speedTier: '26-30s (Clutch)' };
+      return { points: 150, speedTier: '16-25s (Great)' };
+    } else if (seconds <= 35.5) {
+      return { points: 120, speedTier: '26-35s (Good)' };
+    } else if (seconds <= 46.0) {
+      return { points: 90, speedTier: '36-45s (Steady)' };
     } else {
       return { points: 0, speedTier: 'Timeout' };
     }
@@ -323,8 +321,8 @@ export class QuizService {
 
   /**
    * Retrieve active or recently completed Quest session for refresh persistence
-   * Total Quest duration: 5 minutes (300 seconds)
-   * Individual question duration: 30 seconds
+   * Total Quest duration: 15 minutes (900 seconds)
+   * Individual question duration: 45 seconds
    */
   static async getActiveSession(
     db: D1DatabaseLike,
@@ -380,8 +378,8 @@ export class QuizService {
       const sessionStartedAtMs = new Date(activeSession.started_at).getTime();
       const totalElapsedSec = (nowMs - sessionStartedAtMs) / 1000;
 
-      // Authoritative 5-minute deadline check (300 seconds)
-      if (totalElapsedSec >= 300) {
+      // Authoritative 115-Minute Deadline check (300 seconds)
+      if (totalElapsedSec >= 900) {
         await db.prepare(
           `UPDATE quiz_sessions SET
             status = 'completed',
@@ -435,7 +433,7 @@ export class QuizService {
         };
       }
 
-      // Session is in-progress and within the 5-minute window!
+      // Session is in-progress and within the 15-minute window!
       const currQId = qIds[activeSession.current_question_index];
       const qRow = await db.prepare(
         'SELECT id, question, category, difficulty, options_json FROM questions WHERE id = ?'
@@ -444,8 +442,8 @@ export class QuizService {
       if (qRow) {
         const questionStartedAtMs = new Date(activeSession.current_question_started_at).getTime();
         const questionElapsedSec = (nowMs - questionStartedAtMs) / 1000;
-        const questionRemainingSec = Math.max(0, 30.0 - questionElapsedSec);
-        const overallRemainingSec = Math.max(0, 300.0 - totalElapsedSec);
+        const questionRemainingSec = Math.max(0, 45.0 - questionElapsedSec);
+        const overallRemainingSec = Math.max(0, 900.0 - totalElapsedSec);
 
         return {
           hasActiveSession: true,
@@ -467,8 +465,8 @@ export class QuizService {
               totalQuestions: qIds.length,
               startedAt: activeSession.current_question_started_at,
               questStartedAt: activeSession.started_at,
-              totalQuestDurationSeconds: 300,
-              questionDurationSeconds: 30,
+              totalQuestDurationSeconds: 900,
+              questionDurationSeconds: 45,
               overallRemainingSeconds: Math.round(overallRemainingSec),
               questionRemainingSeconds: Number(questionRemainingSec.toFixed(1))
             },
@@ -523,8 +521,8 @@ export class QuizService {
 
   /**
    * Start a new QUEST Session (Competitive QUEST or Practice Mode)
-   * 10 Questions: 4 Easy, 4 Medium, 2 Hard (Business Related)
-   * Exactly 5 Minutes (300 seconds) total duration, 30 seconds per question.
+   * 20 questions: 4 Easy, 4 Medium, 2 Hard (Business Related)
+   * Exactly 15 minutes (900 seconds) total duration, 45 seconds per question.
    */
   static async startQuiz(
     db: D1DatabaseLike,
@@ -590,10 +588,10 @@ export class QuizService {
             totalQuestions: qIds.length,
             startedAt: existingActive.current_question_started_at,
             questStartedAt: existingActive.started_at,
-            totalQuestDurationSeconds: 300,
-            questionDurationSeconds: 30,
-            overallRemainingSeconds: Math.max(0, 300 - Math.round(totalElapsedSec)),
-            questionRemainingSeconds: Math.max(0, Number((30.0 - questionElapsedSec).toFixed(1)))
+            totalQuestDurationSeconds: 900,
+            questionDurationSeconds: 45,
+            overallRemainingSeconds: Math.max(0, 900 - Math.round(totalElapsedSec)),
+            questionRemainingSeconds: Math.max(0, Number((45.0 - questionElapsedSec).toFixed(1)))
           }
         };
       }
@@ -612,28 +610,26 @@ export class QuizService {
       }
     }
 
-    // 4. Select exactly 10 Questions: 4 Easy, 4 Medium, 2 Hard (Business Related)
-    // Prioritizing the 20 curated business questions (qb_e1..qb_e7, qb_m1..qb_m8, qb_h1..qb_h5)
-    const easyQ = await db.prepare(
-      "SELECT id FROM questions WHERE is_active = 1 AND difficulty = 'Easy' ORDER BY CASE WHEN id LIKE 'qb_%' THEN 0 ELSE 1 END, RANDOM() LIMIT 4"
-    ).all<{ id: string }>();
-    const medQ = await db.prepare(
-      "SELECT id FROM questions WHERE is_active = 1 AND difficulty = 'Medium' ORDER BY CASE WHEN id LIKE 'qb_%' THEN 0 ELSE 1 END, RANDOM() LIMIT 4"
-    ).all<{ id: string }>();
-    const hardQ = await db.prepare(
-      "SELECT id FROM questions WHERE is_active = 1 AND difficulty = 'Hard' ORDER BY CASE WHEN id LIKE 'qb_%' THEN 0 ELSE 1 END, RANDOM() LIMIT 2"
+    // 4. Select exactly 20 Mathematical Questions (15-Minute Duration)
+    // Primary pool: Curated Mathematical & Quantitative reasoning questions (qm_1 .. qm_20)
+    const mathQ = await db.prepare(
+      "SELECT id FROM questions WHERE is_active = 1 AND id LIKE 'qm_%' ORDER BY CAST(SUBSTR(id, 4) AS INTEGER) ASC LIMIT 20"
     ).all<{ id: string }>();
 
-    let questionIds = [
-      ...(easyQ.results || []).map(q => q.id),
-      ...(medQ.results || []).map(q => q.id),
-      ...(hardQ.results || []).map(q => q.id)
-    ];
+    let questionIds = (mathQ.results || []).map(q => q.id);
 
-    if (questionIds.length < 10) {
-      // Fallback: fill up to 10 from active questions
-      const anyQ = await db.prepare("SELECT id FROM questions WHERE is_active = 1 ORDER BY RANDOM() LIMIT 10").all<{ id: string }>();
-      questionIds = (anyQ.results || []).map(q => q.id);
+    if (questionIds.length < 20) {
+      // Fallback: fill up to 20 from active questions
+      const remainingNeed = 20 - questionIds.length;
+      const placeholders = questionIds.map(() => '?').join(',');
+      const query = questionIds.length > 0
+        ? `SELECT id FROM questions WHERE is_active = 1 AND id NOT IN (${placeholders}) ORDER BY RANDOM() LIMIT ?`
+        : `SELECT id FROM questions WHERE is_active = 1 ORDER BY RANDOM() LIMIT 20`;
+      const stmt = db.prepare(query);
+      const moreQ = questionIds.length > 0
+        ? await stmt.bind(...questionIds, remainingNeed).all<{ id: string }>()
+        : await stmt.all<{ id: string }>();
+      questionIds = [...questionIds, ...(moreQ.results || []).map(q => q.id)];
     }
 
     if (questionIds.length === 0) {
@@ -643,7 +639,7 @@ export class QuizService {
     const sessionId = 'qs_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
     const now = new Date().toISOString();
 
-    // 5. Create Quiz Session (Strictly 10 questions, 300 seconds total)
+    // 5. Create Quiz Session (Strictly 20 questions, 300 seconds total)
     await db.prepare(
       `INSERT INTO quiz_sessions (
         id, user_id, mode, status, total_questions, current_question_index,
@@ -687,10 +683,10 @@ export class QuizService {
         totalQuestions: questionIds.length,
         startedAt: now,
         questStartedAt: now,
-        totalQuestDurationSeconds: 300,
-        questionDurationSeconds: 30,
-        overallRemainingSeconds: 300,
-        questionRemainingSeconds: 30
+        totalQuestDurationSeconds: 900,
+        questionDurationSeconds: 45,
+        overallRemainingSeconds: 900,
+        questionRemainingSeconds: 45
       }
     };
   }
@@ -788,15 +784,15 @@ export class QuizService {
       params.questionId,
       isTimeout ? -1 : params.selectedOptionIndex,
       isCorrect ? 1 : 0,
-      isTimeout ? 30000 : responseTimeMs,
+      isTimeout ? 45000 : responseTimeMs,
       pointsAwarded,
       nowIso
     ).run();
 
-    // 6. Check overall 5-minute timer (300 seconds authoritative deadline)
+    // 6. Check overall 15-minute timer (300 seconds authoritative deadline)
     const sessionStartedAtMs = new Date(session.started_at).getTime();
     const totalQuestElapsedSec = (now - sessionStartedAtMs) / 1000;
-    const isOverallExpired = totalQuestElapsedSec >= 300;
+    const isOverallExpired = totalQuestElapsedSec >= 900;
 
     // Update session score & points
     const newScore = session.score + (isCorrect ? 1 : 0);
@@ -877,10 +873,10 @@ export class QuizService {
           totalQuestions: questionIds.length,
           startedAt: nowIso,
           questStartedAt: session.started_at,
-          totalQuestDurationSeconds: 300,
-          questionDurationSeconds: 30,
-          overallRemainingSeconds: Math.max(0, 300 - Math.round(totalQuestElapsedSec)),
-          questionRemainingSeconds: 30
+          totalQuestDurationSeconds: 900,
+          questionDurationSeconds: 45,
+          overallRemainingSeconds: Math.max(0, 900 - Math.round(totalQuestElapsedSec)),
+          questionRemainingSeconds: 45
         };
       }
     }

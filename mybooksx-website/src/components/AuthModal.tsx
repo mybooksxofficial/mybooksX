@@ -1,14 +1,14 @@
 /**
- * High-End Authentication Modal
- * Clean, production-ready authentication: Real Google OAuth 2.0 (PKCE) & Instant Google Sign-In & Genuine Email/Password.
- * Strictly adheres to production standards: No developer configuration boxes or blockers.
+ * Real Player Authentication Modal
+ * Simple, fast & real: Enter Name & Mobile Number to join the 15-Minute Mathematical QUEST.
+ * Zero Google OAuth errors (No redirect_uri_mismatch). Fully visible on Owner Portal.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/apiClient.ts';
 import { navigateTo } from '../utils/navigation.ts';
-import { X, Lock, User, ShieldCheck, AlertCircle, Eye, EyeOff, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { X, Lock, User, Phone, ShieldCheck, AlertCircle, Eye, EyeOff, RefreshCw, CheckCircle2, Zap } from 'lucide-react';
 import './AuthModal.css';
 
 export const AuthModal: React.FC = () => {
@@ -21,8 +21,12 @@ export const AuthModal: React.FC = () => {
     openLegalModal
   } = useAuth();
 
+  // Mode: 'phone' (default fast entry) or 'email'
+  const [authMethod, setAuthMethod] = useState<'phone' | 'email'>('phone');
+
   // Form inputs
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,65 +49,50 @@ export const AuthModal: React.FC = () => {
     openAuthModal(tab);
   };
 
-  // Listen for OAuth redirect errors from backend callback (?auth_error=...)
-  useEffect(() => {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const authError = urlParams.get('auth_error');
-      if (authError) {
-        let friendly = decodeURIComponent(authError);
-        if (authError === 'access_denied') {
-          friendly = 'Google Sign-In was cancelled.';
-        } else if (authError === 'missing_code_or_state' || authError === 'INVALID_STATE') {
-          friendly = 'Authentication session invalid or expired. Please try again.';
-        } else if (authError === 'EXPIRED_STATE') {
-          friendly = 'The Google sign-in session expired. Please try again.';
-        } else if (authError === 'UNVERIFIED_EMAIL') {
-          friendly = 'Your Google account email is not verified. Please verify your email with Google before signing in.';
-        } else if (authError === 'TOKEN_EXCHANGE_FAILED') {
-          friendly = 'Google authorization exchange failed. Please try again.';
-        }
-
-        setErrorMsg(friendly);
-        openAuthModal('login');
-
-        // Clean up URL parameter cleanly
-        const cleanUrl = window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
-    } catch {
-      // Ignore URL parsing errors
-    }
-  }, [openAuthModal]);
-
-  // Instant Direct Sign-In Handler
-  const handleInstantDeepLogin = async () => {
-    setIsLoading(true);
+  // 1. REAL NAME & PHONE NUMBER SIGN-IN (Primary & Instant)
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     resetFormState();
+
+    const trimmedName = fullName.trim();
+    const cleanPhone = phone.replace(/\D/g, '');
+
+    if (!trimmedName || trimmedName.length < 2) {
+      setErrorMsg('Please enter your full name (at least 2 characters).');
+      return;
+    }
+
+    if (cleanPhone.length < 10) {
+      setErrorMsg('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const res = await api.auth.quickGoogleLogin({
-        email: 'deepmehta312009@gmail.com',
-        name: 'Deep Mehta'
+      const res = await api.auth.phoneLogin({
+        fullName: trimmedName,
+        phone: cleanPhone.slice(-10)
       });
+
       if (res.success) {
-        setSuccessMsg('Welcome Deep Mehta! Redirecting to Dashboard...');
+        setSuccessMsg(`Welcome, ${res.user?.fullName || trimmedName}! Entering QUEST...`);
         await refreshUser();
         setTimeout(() => {
           closeAuthModal();
-          navigateTo('/dashboard');
-        }, 300);
+          navigateTo('/quest');
+        }, 400);
       } else {
-        setErrorMsg(res.message || 'Login failed.');
+        setErrorMsg(res.message || 'Could not sign in with this mobile number.');
       }
-    } catch (err) {
-      setErrorMsg('Error during instant sign-in.');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Network error during sign-in.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Genuine Email & Password Login
-  const handleLogin = async (e: React.FormEvent) => {
+  // 2. Email & Password Login
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     resetFormState();
     setIsLoading(true);
@@ -115,10 +104,10 @@ export const AuthModal: React.FC = () => {
         await refreshUser();
         setTimeout(() => {
           closeAuthModal();
-          navigateTo('/dashboard');
-        }, 500);
+          navigateTo('/quest');
+        }, 400);
       } else {
-        setErrorMsg(res.message || 'Login failed. Please verify your credentials.');
+        setErrorMsg(res.message || 'Login failed. Please check your credentials.');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred during sign in.');
@@ -127,7 +116,7 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Genuine User Registration
+  // 3. User Registration with Email
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     resetFormState();
@@ -163,8 +152,8 @@ export const AuthModal: React.FC = () => {
         await refreshUser();
         setTimeout(() => {
           closeAuthModal();
-          navigateTo('/dashboard');
-        }, 600);
+          navigateTo('/quest');
+        }, 500);
       } else {
         setErrorMsg(res.message || 'Registration failed. Please check your details.');
       }
@@ -175,7 +164,7 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Email Verification Handler
+  // 4. Verification Handler
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     resetFormState();
@@ -184,38 +173,17 @@ export const AuthModal: React.FC = () => {
     try {
       const res = await api.auth.verifyEmail({ email, code: verificationCode });
       if (res.success) {
-        setSuccessMsg('Email verified successfully! You can now participate in Quizzes and Redemptions.');
+        setSuccessMsg('Email verified successfully! You can now participate in QUEST.');
         await refreshUser();
         setTimeout(() => {
           closeAuthModal();
-          navigateTo('/dashboard');
-        }, 800);
+          navigateTo('/quest');
+        }, 600);
       } else {
         setErrorMsg(res.message || 'Verification failed. Please check the code.');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Verification error.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (!email) {
-      setErrorMsg('Please enter your email address to receive a new code.');
-      return;
-    }
-    setIsLoading(true);
-    resetFormState();
-    try {
-      const res = await api.auth.resendCode(email);
-      if (res.success) {
-        setSuccessMsg(res.message || 'Verification code sent to your email.');
-      } else {
-        setErrorMsg(res.message || 'Could not resend code.');
-      }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to resend code.');
     } finally {
       setIsLoading(false);
     }
@@ -251,93 +219,155 @@ export const AuthModal: React.FC = () => {
         </button>
 
         <div className="mbx-auth-header">
-              <div className="mbx-auth-brand-pill">
-                <ShieldCheck size={14} className="text-royal" />
-                <span>MyBooksX Portal</span>
+          <div className="mbx-auth-brand-pill">
+            <Zap size={14} className="text-royal" />
+            <span>15-Minute Mathematical QUEST</span>
+          </div>
+          <h2 className="mbx-auth-title">
+            {authModalTab === 'verify'
+              ? 'Verify Your Account'
+              : authModalTab === 'forgot'
+              ? 'Reset Password'
+              : 'Join Live Competition'}
+          </h2>
+          <p className="mbx-auth-subtitle">
+            Enter your real Name & Mobile Number to compete on the live leaderboard and win software rewards.
+          </p>
+        </div>
+
+        {/* Dynamic Alerts */}
+        {errorMsg && (
+          <div className="mbx-auth-alert error">
+            <AlertCircle size={16} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+        {successMsg && (
+          <div className="mbx-auth-alert success">
+            <CheckCircle2 size={16} />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {/* PRIMARY: REAL NAME & MOBILE NUMBER SIGN-IN */}
+        {authModalTab !== 'verify' && authModalTab !== 'forgot' && authMethod === 'phone' && (
+          <form className="mbx-auth-form" onSubmit={handlePhoneLogin}>
+            <div className="mbx-input-group">
+              <label className="mbx-input-label">Your Full Name</label>
+              <div className="mbx-password-wrapper">
+                <input
+                  type="text"
+                  className="mbx-input-field"
+                  placeholder="e.g. Deep Mehta"
+                  required
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
+                  autoFocus
+                />
+                <span className="mbx-password-toggle" style={{ pointerEvents: 'none' }}>
+                  <User size={16} color="var(--royal-blue)" />
+                </span>
               </div>
-              <h2 className="mbx-auth-title">
-                {authModalTab === 'login' && 'Welcome Back'}
-                {authModalTab === 'register' && 'Create Your Account'}
-                {authModalTab === 'verify' && 'Verify Your Email'}
-                {authModalTab === 'forgot' && 'Reset Password'}
-              </h2>
-              <p className="mbx-auth-subtitle">
-                {authModalTab === 'login' && 'Sign in to access daily quizzes, points balance & rewards.'}
-                {authModalTab === 'register' && 'Join MyBooksX to compete, earn points, and claim software rewards.'}
-                {authModalTab === 'verify' && 'Enter the verification code to activate your account.'}
-                {authModalTab === 'forgot' && 'Enter your email to receive recovery instructions.'}
-              </p>
             </div>
 
-            {/* Tab switcher for Login / Register */}
-            {(authModalTab === 'login' || authModalTab === 'register') && (
-              <div className="mbx-auth-tabs">
-                <button
-                  type="button"
-                  className={`mbx-auth-tab-btn ${authModalTab === 'login' ? 'active' : ''}`}
-                  onClick={() => handleTabSwitch('login')}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  className={`mbx-auth-tab-btn ${authModalTab === 'register' ? 'active' : ''}`}
-                  onClick={() => handleTabSwitch('register')}
-                >
-                  Register
-                </button>
+            <div className="mbx-input-group">
+              <label className="mbx-input-label">Mobile Number (India)</label>
+              <div className="mbx-password-wrapper">
+                <input
+                  type="tel"
+                  className="mbx-input-field"
+                  placeholder="9644570828"
+                  required
+                  maxLength={10}
+                  value={phone}
+                  onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                />
+                <span className="mbx-password-toggle" style={{ pointerEvents: 'none' }}>
+                  <Phone size={16} color="var(--royal-blue)" />
+                </span>
               </div>
-            )}
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.25rem', display: 'block' }}>
+                🇮🇳 Real 10-digit number. Used for winner voucher notifications.
+              </span>
+            </div>
 
-            {(authModalTab === 'login' || authModalTab === 'register') && (
-              <div style={{ marginBottom: '1.25rem' }}>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem',
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    background: 'linear-gradient(135deg, #1D4ED8 0%, #0A58CA 100%)',
-                    boxShadow: '0 2px 8px rgba(10, 88, 202, 0.3)',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handleInstantDeepLogin}
-                  disabled={isLoading}
-                >
-                  {isLoading ? <RefreshCw size={18} className="spin" /> : <ShieldCheck size={18} />}
-                  <span>⚡ Instant Sign In as Deep Mehta (1-Click)</span>
-                </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{
+                width: '100%',
+                padding: '0.9rem',
+                fontSize: '1rem',
+                fontWeight: 700,
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
+                cursor: 'pointer',
+                marginTop: '0.5rem'
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? <RefreshCw size={18} className="spin" /> : <Zap size={18} />}
+              <span>{isLoading ? 'Entering QUEST...' : '⚡ Enter QUEST & Start Playing'}</span>
+            </button>
 
-                <div className="mbx-divider-row" style={{ margin: '1.25rem 0' }}>
-                  <span>OR WITH YOUR EMAIL & PASSWORD</span>
-                </div>
-              </div>
-            )}
+            <div className="mbx-divider-row" style={{ margin: '1.25rem 0' }}>
+              <span>OR USE EMAIL ACCOUNT</span>
+            </div>
 
-            {/* Dynamic Alerts */}
-            {errorMsg && (
-              <div className="mbx-auth-alert error">
-                <AlertCircle size={16} />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-            {successMsg && (
-              <div className="mbx-auth-alert success">
-                <CheckCircle2 size={16} />
-                <span>{successMsg}</span>
-              </div>
-            )}
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{
+                width: '100%',
+                padding: '0.7rem',
+                fontSize: '0.88rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                border: '1px solid var(--border-subtle)',
+                background: '#F9FAFB',
+                color: 'var(--text-secondary)'
+              }}
+              onClick={() => {
+                resetFormState();
+                setAuthMethod('email');
+              }}
+            >
+              <Lock size={15} />
+              <span>Sign in with Email & Password</span>
+            </button>
+          </form>
+        )}
 
-            {/* LOGIN FORM */}
+        {/* SECONDARY: EMAIL & PASSWORD LOGIN */}
+        {authModalTab !== 'verify' && authModalTab !== 'forgot' && authMethod === 'email' && (
+          <div>
+            <div className="mbx-auth-tabs">
+              <button
+                type="button"
+                className={`mbx-auth-tab-btn ${authModalTab === 'login' ? 'active' : ''}`}
+                onClick={() => handleTabSwitch('login')}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                className={`mbx-auth-tab-btn ${authModalTab === 'register' ? 'active' : ''}`}
+                onClick={() => handleTabSwitch('register')}
+              >
+                Register
+              </button>
+            </div>
+
             {authModalTab === 'login' && (
-              <form className="mbx-auth-form" onSubmit={handleLogin}>
+              <form className="mbx-auth-form" onSubmit={handleEmailLogin}>
                 <div className="mbx-input-group">
                   <label className="mbx-input-label">Email Address</label>
                   <input
@@ -374,7 +404,6 @@ export const AuthModal: React.FC = () => {
                       type="button"
                       className="mbx-password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label="Toggle password visibility"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -385,21 +414,9 @@ export const AuthModal: React.FC = () => {
                   {isLoading ? <RefreshCw size={16} className="spin" /> : <Lock size={16} />}
                   <span>{isLoading ? 'Signing In...' : 'Sign In'}</span>
                 </button>
-
-                <div className="mbx-auth-switch">
-                  <span>Don't have an account?</span>
-                  <button
-                    type="button"
-                    className="mbx-switch-link"
-                    onClick={() => handleTabSwitch('register')}
-                  >
-                    Register free
-                  </button>
-                </div>
               </form>
             )}
 
-            {/* REGISTER FORM */}
             {authModalTab === 'register' && (
               <form className="mbx-auth-form" onSubmit={handleRegister}>
                 <div className="mbx-input-group">
@@ -407,7 +424,7 @@ export const AuthModal: React.FC = () => {
                   <input
                     type="text"
                     className="mbx-input-field"
-                    placeholder="Deep Mehta"
+                    placeholder="Your Name"
                     required
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
@@ -427,171 +444,118 @@ export const AuthModal: React.FC = () => {
                 </div>
 
                 <div className="mbx-input-group">
-                  <label className="mbx-input-label">Password (Min. 8 characters)</label>
-                  <div className="mbx-password-wrapper">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      className="mbx-input-field"
-                      placeholder="••••••••"
-                      required
-                      minLength={8}
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="mbx-password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label="Toggle visibility"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
+                  <label className="mbx-input-label">Password (Min. 8 chars)</label>
+                  <input
+                    type="password"
+                    className="mbx-input-field"
+                    placeholder="••••••••"
+                    required
+                    minLength={8}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
                 </div>
 
                 <div className="mbx-input-group">
                   <label className="mbx-input-label">Confirm Password</label>
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
                     className="mbx-input-field"
                     placeholder="••••••••"
                     required
+                    minLength={8}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                   />
                 </div>
 
-                <div className="mbx-checkbox-row">
+                <div className="mbx-terms-row">
                   <input
                     type="checkbox"
-                    id="mbx-terms"
+                    id="terms-cb"
                     checked={acceptedTerms}
                     onChange={e => setAcceptedTerms(e.target.checked)}
-                    required
                   />
-                  <label htmlFor="mbx-terms">
-                    I agree to the{' '}
-                    <button
-                      type="button"
-                      className="mbx-legal-link"
-                      onClick={() => openLegalModal('terms')}
-                    >
-                      Terms & Conditions
+                  <label htmlFor="terms-cb" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    I accept the{' '}
+                    <button type="button" className="mbx-legal-link" onClick={() => openLegalModal('terms')}>
+                      Terms
                     </button>{' '}
                     and{' '}
-                    <button
-                      type="button"
-                      className="mbx-legal-link"
-                      onClick={() => openLegalModal('privacy')}
-                    >
+                    <button type="button" className="mbx-legal-link" onClick={() => openLegalModal('privacy')}>
                       Privacy Policy
                     </button>
-                    .
                   </label>
                 </div>
 
                 <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
-                  {isLoading ? <RefreshCw size={16} className="spin" /> : <User size={16} />}
-                  <span>{isLoading ? 'Creating Account...' : 'Create Account'}</span>
-                </button>
-
-                <div className="mbx-auth-switch">
-                  <span>Already have an account?</span>
-                  <button
-                    type="button"
-                    className="mbx-switch-link"
-                    onClick={() => handleTabSwitch('login')}
-                  >
-                    Sign In
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* VERIFY EMAIL FORM */}
-            {authModalTab === 'verify' && (
-              <form className="mbx-auth-form" onSubmit={handleVerifyEmail}>
-                <div className="mbx-input-group">
-                  <label className="mbx-input-label">Email to Verify</label>
-                  <input
-                    type="email"
-                    className="mbx-input-field"
-                    required
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="mbx-input-group">
-                  <label className="mbx-input-label">6-Digit Verification Code</label>
-                  <input
-                    type="text"
-                    className="mbx-input-field"
-                    placeholder="123456"
-                    maxLength={6}
-                    required
-                    value={verificationCode}
-                    onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                    style={{ letterSpacing: '0.25em', fontSize: '1.2rem', textAlign: 'center' }}
-                  />
-                </div>
-
-                <button type="submit" className="mbx-btn-submit" disabled={isLoading || verificationCode.length !== 6}>
                   {isLoading ? <RefreshCw size={16} className="spin" /> : <ShieldCheck size={16} />}
-                  <span>Verify & Activate</span>
+                  <span>{isLoading ? 'Registering...' : 'Create Account'}</span>
                 </button>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
-                  <button
-                    type="button"
-                    className="mbx-legal-link"
-                    onClick={handleResendCode}
-                    disabled={isLoading}
-                  >
-                    Resend Code
-                  </button>
-                  <button
-                    type="button"
-                    className="mbx-legal-link"
-                    onClick={() => handleTabSwitch('login')}
-                  >
-                    Back to Sign In
-                  </button>
-                </div>
               </form>
             )}
 
-            {/* FORGOT PASSWORD FORM */}
-            {authModalTab === 'forgot' && (
-              <form className="mbx-auth-form" onSubmit={handleForgotPassword}>
-                <div className="mbx-input-group">
-                  <label className="mbx-input-label">Registered Email</label>
-                  <input
-                    type="email"
-                    className="mbx-input-field"
-                    placeholder="name@company.com"
-                    required
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                  />
-                </div>
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <button
+                type="button"
+                className="mbx-switch-link"
+                style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--royal-blue)' }}
+                onClick={() => {
+                  resetFormState();
+                  setAuthMethod('phone');
+                }}
+              >
+                ← Back to Mobile Number Sign In
+              </button>
+            </div>
+          </div>
+        )}
 
-                <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
-                  {isLoading ? <RefreshCw size={16} className="spin" /> : <ShieldCheck size={16} />}
-                  <span>Send Recovery Email</span>
-                </button>
+        {/* FORGOT PASSWORD */}
+        {authModalTab === 'forgot' && (
+          <form className="mbx-auth-form" onSubmit={handleForgotPassword}>
+            <div className="mbx-input-group">
+              <label className="mbx-input-label">Your Email Address</label>
+              <input
+                type="email"
+                className="mbx-input-field"
+                placeholder="name@company.com"
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
+              <span>Send Recovery Code</span>
+            </button>
+            <div className="mbx-auth-switch">
+              <button type="button" className="mbx-switch-link" onClick={() => handleTabSwitch('login')}>
+                Back to Sign In
+              </button>
+            </div>
+          </form>
+        )}
 
-                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                  <button
-                    type="button"
-                    className="mbx-switch-link"
-                    onClick={() => handleTabSwitch('login')}
-                  >
-                    Back to Sign In
-                  </button>
-                </div>
-              </form>
-            )}
+        {/* VERIFY EMAIL */}
+        {authModalTab === 'verify' && (
+          <form className="mbx-auth-form" onSubmit={handleVerifyEmail}>
+            <div className="mbx-input-group">
+              <label className="mbx-input-label">Verification Code</label>
+              <input
+                type="text"
+                className="mbx-input-field"
+                placeholder="6-digit code"
+                required
+                maxLength={6}
+                value={verificationCode}
+                onChange={e => setVerificationCode(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="mbx-btn-submit" disabled={isLoading}>
+              <span>Verify Account</span>
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

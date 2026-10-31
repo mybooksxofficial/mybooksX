@@ -1,12 +1,12 @@
 /**
  * Dedicated QUEST Arena Page (/quest)
- * 5-Minute (300-second) Automatic Question System:
- * - Exactly 10 business questions.
- * - Overall Quest countdown: 05:00.
- * - Individual question countdown: 00:30.
+ * 15-Minute (300-second) Automatic Question System:
+ * - Exactly 20 mathematical questions.
+ * - Overall Quest countdown: 15:00.
+ * - Individual question countdown: 00:45.
  * - Progress: Question 1 of 10.
- * - Automatic transitions on answer selection or 30-second timeout (No manual Next button).
- * - Synchronized with server timestamps, authoritative 5-minute deadline.
+ * - Automatic transitions on answer selection or 45-second timeout (No manual Next button).
+ * - Synchronized with server timestamps, authoritative 15-minute deadline.
  * - Strict anti-leak answer security (zero answer reveals during transitions).
  * - Full refresh rehydration preserving question, remaining timers, answers, and points.
  */
@@ -54,8 +54,8 @@ export const QuestArenaPage: React.FC = () => {
   const [lastPointsAwarded, setLastPointsAwarded] = useState<{ pts: number; tier: string } | null>(null);
 
   // Dual Timers (Synchronized with authoritative server timestamps)
-  // Overall Quest Timer: 300 seconds (05:00)
-  // Question Timer: 30 seconds (00:30)
+  // Overall Quest Timer: 900 seconds (15:00)
+  // Question Timer: 45 seconds (00:45)
   const [overallTimeLeft, setOverallTimeLeft] = useState(300.0);
   const [questionTimeLeft, setQuestionTimeLeft] = useState(30.0);
 
@@ -116,16 +116,16 @@ export const QuestArenaPage: React.FC = () => {
           questionStartedAtRef.current = qStartedAtMs;
 
           const elapsedOverall = (nowMs - sessStartedAtMs) / 1000;
-          const remOverall = Math.max(0, 300.0 - elapsedOverall);
+          const remOverall = Math.max(0, 900.0 - elapsedOverall);
 
           const elapsedQuestion = (nowMs - qStartedAtMs) / 1000;
-          const remQuestion = Math.max(0, 30.0 - elapsedQuestion);
+          const remQuestion = Math.max(0, 45.0 - elapsedQuestion);
 
           setSessionId(sess.id);
           setMode(sess.mode);
           setScore(sess.score);
           setTotalPointsEarned(sess.totalPoints);
-          setTotalQuestions(sess.totalQuestions || 10);
+          setTotalQuestions(sess.totalQuestions || 20);
           setCurrentQuestion(sess.currentQuestion);
           setOverallTimeLeft(remOverall);
           setQuestionTimeLeft(remQuestion);
@@ -151,7 +151,7 @@ export const QuestArenaPage: React.FC = () => {
           return;
         }
 
-        // Start new competitive QUEST session (10 questions, 300s total)
+        // Start new competitive QUEST session (20 questions, 300s total)
         const startRes = await api.quiz.startQuiz('daily');
         if (!isMounted) return;
 
@@ -163,11 +163,11 @@ export const QuestArenaPage: React.FC = () => {
           setSessionId(startRes.sessionId);
           setMode(startRes.mode || 'daily');
           setCurrentQuestion(startRes.firstQuestion);
-          setTotalQuestions(startRes.totalQuestions || 10);
+          setTotalQuestions(startRes.totalQuestions || 20);
           setScore(0);
           setTotalPointsEarned(0);
-          setOverallTimeLeft(300.0);
-          setQuestionTimeLeft(30.0);
+          setOverallTimeLeft(900.0);
+          setQuestionTimeLeft(45.0);
           setSelectedOption(null);
           setIsCompleted(false);
         } else {
@@ -203,14 +203,14 @@ export const QuestArenaPage: React.FC = () => {
     timerIntervalRef.current = setInterval(() => {
       const now = Date.now();
       const elapsedOverall = (now - questStartedAtRef.current) / 1000;
-      const remOverall = Math.max(0, 300.0 - elapsedOverall);
+      const remOverall = Math.max(0, 900.0 - elapsedOverall);
       setOverallTimeLeft(remOverall);
 
       const elapsedQuestion = (now - questionStartedAtRef.current) / 1000;
-      const remQuestion = Math.max(0, 30.0 - elapsedQuestion);
+      const remQuestion = Math.max(0, 45.0 - elapsedQuestion);
       setQuestionTimeLeft(remQuestion);
 
-      // Check Authoritative 5-Minute Overall Deadline
+      // Check Authoritative 15-Minute Overall Deadline
       if (remOverall <= 0.05) {
         clearInterval(timerIntervalRef.current);
         if (!isSubmittingRef.current) {
@@ -219,7 +219,7 @@ export const QuestArenaPage: React.FC = () => {
         return;
       }
 
-      // Check 30-Second Individual Question Deadline
+      // Check 45-Second Individual Question Deadline
       if (remQuestion <= 0.05) {
         clearInterval(timerIntervalRef.current);
         if (!isSubmittingRef.current) {
@@ -288,7 +288,7 @@ export const QuestArenaPage: React.FC = () => {
           setCurrentQuestion(nextQuestion);
           setSelectedOption(null);
           questionStartedAtRef.current = Date.now();
-          setQuestionTimeLeft(30.0);
+          setQuestionTimeLeft(45.0);
 
           if (nextQuestion.overallRemainingSeconds !== undefined) {
             setOverallTimeLeft(nextQuestion.overallRemainingSeconds);
@@ -373,7 +373,7 @@ export const QuestArenaPage: React.FC = () => {
             <div className="comp-stat-box">
               <span className="label">Total Questions</span>
               <strong className="value">{completionSummary.totalQuestions}</strong>
-              <span className="sub">5-Minute Challenge</span>
+              <span className="sub">15-Minute Challenge</span>
             </div>
           </div>
 
@@ -496,7 +496,7 @@ export const QuestArenaPage: React.FC = () => {
             <span>QUEST</span>
           </div>
 
-          {/* Synchronized Overall Quest 5-Minute Timer (05:00) */}
+          {/* Synchronized Overall Quest 15-Minute Timer (15:00) */}
           <div className="quest-overall-timer-pill" title="Overall Quest Countdown (5 Minutes Max)">
             <Hourglass size={15} className="text-royal" />
             <span className="timer-label">OVERALL:</span>
@@ -545,7 +545,7 @@ export const QuestArenaPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Individual Question Countdown Timer: 00:30 */}
+            {/* Individual Question Countdown Timer: 00:45 */}
             <div className="quest-timer-strip">
               <div className="question-timer-group">
                 <div className={`quest-timer-badge ${questionTimeLeft <= 5.0 ? 'warning' : ''}`}>
