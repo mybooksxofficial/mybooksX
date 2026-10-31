@@ -261,6 +261,7 @@ export class LeaderboardService {
       user_id: string;
       full_name: string;
       email: string;
+      phone?: string | null;
       auth_provider: string;
       is_verified: number;
       points_balance: number;

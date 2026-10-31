@@ -30,7 +30,8 @@ import {
   Sparkles,
   Gift,
   MessageSquare,
-  Phone
+  Phone,
+  RefreshCw
 } from 'lucide-react';
 import './QuestArenaPage.css';
 
@@ -649,7 +650,7 @@ export const QuestArenaPage: React.FC = () => {
                   setIsLoading(true);
                   setErrorMsg('');
                   try {
-                    await api.admin.resetAttempts();
+                    await api.admin.resetQuizAttempts();
                   } catch {}
                   window.location.reload();
                 }}
