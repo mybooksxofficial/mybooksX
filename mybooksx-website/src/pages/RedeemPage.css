@@ -1,0 +1,787 @@
+/* ==========================================================================
+   MYBOOKSX DEDICATED REDEEM PANEL STYLES (/redeem)
+   Clean, Minimalist, Corporate Luxury with Royal Blue Accents
+   ========================================================================== */
+
+.mbx-redeem-viewport {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Navbar */
+.mbx-redeem-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0.85rem 0;
+}
+
+.mbx-redeem-nav-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mbx-redeem-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.mbx-redeem-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: 0.4rem 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mbx-redeem-back-btn:hover {
+  color: var(--royal-blue);
+  border-color: var(--royal-blue);
+  transform: translateX(-2px);
+}
+
+.mbx-redeem-nav-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border-light);
+}
+
+.mbx-redeem-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+}
+
+.mbx-redeem-logo img {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+}
+
+.mbx-redeem-logo span {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-espresso);
+  letter-spacing: -0.03em;
+}
+
+.mbx-redeem-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-royal);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--transition-fast);
+}
+
+.mbx-redeem-user-pill:hover {
+  border-color: var(--royal-blue);
+  box-shadow: var(--shadow-royal);
+}
+
+.mbx-points-bold {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--royal-blue);
+  font-size: 0.95rem;
+}
+
+.mbx-points-unit {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Hero Section */
+.mbx-redeem-hero {
+  padding: 2.75rem 0 2rem;
+  text-align: center;
+}
+
+.mbx-redeem-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--royal-blue-light);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--royal-blue);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.85rem;
+}
+
+.mbx-redeem-heading {
+  font-family: var(--font-heading);
+  font-size: 2.65rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.mbx-redeem-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 580px;
+  margin: 0 auto 2.25rem;
+}
+
+/* 4 Metrics Cards Grid */
+.mbx-redeem-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mbx-metric-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  box-shadow: var(--shadow-subtle);
+}
+
+.mbx-metric-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mbx-metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mbx-metric-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.mbx-metric-value {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* Alerts */
+.mbx-alert {
+  max-width: 1100px;
+  margin: 1rem auto;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+}
+
+.mbx-alert.error {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+}
+
+.mbx-alert.success {
+  background: #F0FDF4;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+}
+
+/* Catalog Section */
+.mbx-catalog-section,
+.mbx-history-section {
+  max-width: 1280px;
+  margin: 0 auto 3.5rem;
+  width: 100%;
+}
+
+.mbx-section-header {
+  margin-bottom: 1.5rem;
+}
+
+.mbx-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.mbx-section-desc {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+}
+
+/* 5 Reward Cards Grid */
+.mbx-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.mbx-reward-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--transition-fast);
+}
+
+.mbx-reward-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--royal-blue);
+}
+
+.mbx-reward-card.featured {
+  border: 2px solid var(--royal-blue);
+  background: linear-gradient(180deg, #FFFFFF, #FAF7F2);
+}
+
+.mbx-bundle-ribbon {
+  position: absolute;
+  top: -12px;
+  right: 1.5rem;
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 4px 10px rgba(10, 88, 202, 0.3);
+}
+
+.mbx-reward-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.mbx-reward-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--royal-blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mbx-reward-duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-sand-tint);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.mbx-reward-name {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.mbx-reward-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.mbx-reward-cost-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 1.25rem;
+}
+
+.mbx-cost-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.mbx-cost-pill strong {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--royal-blue);
+}
+
+.mbx-cost-pill span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.status-badge.eligible {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.status-badge.need {
+  background: var(--bg-sand-tint);
+  color: var(--text-muted);
+}
+
+.status-badge.active {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.status-badge.pending {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.btn-redeem {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-redeem:hover:not(:disabled) {
+  background: var(--royal-blue-deep);
+  transform: translateY(-1px);
+}
+
+.btn-redeem:disabled {
+  background: #E5E7EB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
+
+.btn-bundle {
+  background: linear-gradient(135deg, var(--royal-blue), #003C96);
+}
+
+/* History Section Table */
+.mbx-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-subtle);
+}
+
+.mbx-responsive-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mbx-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.mbx-data-table th {
+  background: var(--bg-sand-tint);
+  padding: 0.85rem 1.25rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.mbx-data-table td {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.mbx-code-badge {
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--bg-sand-tint);
+  border: 1px solid var(--border-subtle);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--royal-blue-deep);
+}
+
+.mbx-status-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.mbx-status-pill.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.mbx-status-pill.approved {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.mbx-status-pill.rejected {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.mbx-delivery-approved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mbx-license-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: #1E40AF;
+  font-weight: 700;
+}
+
+.mbx-delivery-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.mbx-empty-state {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+}
+
+.mbx-empty-state h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0.85rem 0 0.35rem;
+}
+
+.mbx-empty-state p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Modals */
+.mbx-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 31, 22, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: mbxAuthFadeIn 0.2s ease-out;
+}
+
+.mbx-confirm-dialog,
+.mbx-receipt-dialog {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-floating);
+  max-width: 480px;
+  width: 100%;
+  padding: 2.25rem 2rem;
+  position: relative;
+}
+
+.mbx-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-sand-tint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.mbx-dialog-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.mbx-dialog-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--royal-blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+
+.mbx-dialog-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.mbx-dialog-sub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.mbx-confirm-summary-box {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.mbx-confirm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+}
+
+.mbx-confirm-row.balance-after {
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  font-weight: 700;
+}
+
+.mbx-terms-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: var(--royal-blue-light);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.95rem;
+  font-size: 0.8rem;
+  color: var(--royal-blue-deep);
+  line-height: 1.45;
+  margin-bottom: 1.5rem;
+}
+
+.mbx-dialog-actions {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirm {
+  flex: 2;
+  padding: 0.75rem;
+}
+
+/* Receipt Ticket */
+.mbx-receipt-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.mbx-receipt-stamp {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mbx-receipt-ticket {
+  background: #FCFAF8;
+  border: 1.5px dashed var(--border-royal);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.ticket-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.86rem;
+}
+
+.ticket-field:last-child {
+  border-bottom: none;
+}
+
+.ticket-field .label {
+  color: var(--text-muted);
+}
+
+.ticket-field .value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ticket-field .value.code {
+  font-family: monospace;
+  font-weight: 800;
+  color: var(--royal-blue);
+}
+
+.ticket-field .value.highlight {
+  font-weight: 800;
+  color: var(--royal-blue);
+}
+
+.ticket-field .status-pending {
+  color: #B45309;
+  font-weight: 700;
+}
+
+.mbx-receipt-footer {
+  text-align: center;
+}
+
+.legal-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-print {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Responsiveness */
+@media (max-width: 900px) {
+  .mbx-redeem-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .mbx-redeem-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .mbx-redeem-heading {
+    font-size: 2.1rem;
+  }
+}
+

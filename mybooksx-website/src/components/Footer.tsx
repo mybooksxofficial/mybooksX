@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useAuth } from '../context/AuthContext.tsx';
 import { Phone, Mail, MapPin, ArrowUp, Sparkles } from 'lucide-react';
 import './Footer.css';
 
@@ -9,6 +10,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onOpenOwner }) => {
   const { t } = useLanguage();
+  const { openLegalModal } = useAuth();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -89,6 +91,32 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOwner }) => {
           <p className="copyright-text">
             © {new Date().getFullYear()} MyBooksX Studio. {t.footer.rights}
           </p>
+
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="owner-portal-trigger-link"
+              onClick={() => openLegalModal('terms')}
+            >
+              Terms & Conditions
+            </button>
+            <span style={{ color: 'var(--border-light)' }}>•</span>
+            <button
+              type="button"
+              className="owner-portal-trigger-link"
+              onClick={() => openLegalModal('privacy')}
+            >
+              Privacy Policy (DPDP)
+            </button>
+            <span style={{ color: 'var(--border-light)' }}>•</span>
+            <button
+              type="button"
+              className="owner-portal-trigger-link"
+              onClick={() => openLegalModal('rewards_policy')}
+            >
+              Rewards Policy
+            </button>
+          </div>
 
           <div className="footer-bottom-actions">
             <button

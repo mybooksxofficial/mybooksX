@@ -1,0 +1,271 @@
+/* ==========================================================================
+   MYBOOKSX REWARDS STORE STYLING: LUXURY PRODUCT CARDS & RECEIPT CONFIRMATION
+   ========================================================================== */
+
+.rewards-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 31, 22, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 10000;
+  animation: rewardsFade 0.25s ease-out;
+}
+
+@keyframes rewardsFade {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.rewards-modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
+  width: 100%;
+  max-width: 820px;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2.25rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* User Balance Strip */
+.rewards-balance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.35rem;
+  background: linear-gradient(135deg, var(--color-peach-light), #FFFFFF);
+  border: 1.5px solid var(--color-peach);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.75rem;
+}
+
+.balance-title-block strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--color-espresso);
+}
+
+.balance-title-block span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.balance-value-block {
+  text-align: right;
+}
+
+.balance-value-block strong {
+  display: block;
+  font-size: 1.5rem;
+  font-family: var(--font-heading);
+  color: var(--royal-blue);
+}
+
+.balance-value-block span {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Store Cards Grid */
+.rewards-store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.reward-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.reward-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--border-royal);
+}
+
+.reward-card.featured-bundle {
+  background: linear-gradient(135deg, #FFFFFF, var(--royal-blue-light));
+  border: 1.5px solid var(--royal-blue);
+}
+
+.reward-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.reward-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featured-bundle .reward-icon-box {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+}
+
+.reward-cost-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  color: var(--royal-blue);
+  padding: 0.35rem 0.65rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+}
+
+.reward-title {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.reward-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.48;
+  margin-bottom: 1.15rem;
+  flex: 1;
+}
+
+.reward-duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  background: var(--color-sand-light);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 1.15rem;
+}
+
+.reward-redeem-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.reward-redeem-btn:hover:not(:disabled) {
+  background: var(--royal-blue-deep);
+  box-shadow: var(--shadow-royal);
+}
+
+.reward-redeem-btn:disabled {
+  background: var(--color-sand);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Receipt View */
+.receipt-wrapper {
+  background: var(--bg-page);
+  border: 1px dashed var(--color-taupe);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.receipt-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 1.25rem;
+}
+
+.receipt-code-badge {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--royal-blue);
+  font-size: 1.1rem;
+}
+
+.receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.receipt-field label {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.receipt-field strong {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.receipt-disclaimer-box {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: #FFFFFF;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.rewards-legal-strip {
+  padding: 0.75rem 1rem;
+  background: var(--bg-page);
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+}
+

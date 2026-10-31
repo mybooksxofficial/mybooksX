@@ -1,0 +1,101 @@
+/* ==========================================================================
+   MYBOOKSX LEGAL COMPLIANCE & POLICIES MODAL STYLING
+   ========================================================================== */
+
+.legal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 31, 22, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 10001;
+  animation: legalFade 0.25s ease-out;
+}
+
+@keyframes legalFade {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.legal-modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
+  width: 100%;
+  max-width: 740px;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2.25rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-tabs-header {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.25rem 0 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.legal-tab-btn {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.legal-tab-btn.active {
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+}
+
+.legal-content-body {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.legal-content-body h3 {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-top: 0.5rem;
+}
+
+.legal-content-body h4 {
+  font-size: 0.95rem;
+  color: var(--color-espresso);
+  margin-top: 0.25rem;
+}
+
+.legal-content-body ul {
+  padding-left: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.legal-alert-box {
+  padding: 0.85rem 1.15rem;
+  background: var(--bg-page);
+  border-left: 3px solid var(--royal-blue);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+

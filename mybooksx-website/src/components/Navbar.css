@@ -85,9 +85,99 @@
   color: var(--text-secondary);
   position: relative;
   transition: color var(--transition-fast);
+  text-decoration: none;
 }
 
 .nav-link:hover {
+  color: var(--royal-blue);
+}
+
+.nav-link-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.nav-link-btn:hover {
+  color: var(--royal-blue);
+  background: var(--royal-blue-light);
+}
+
+.nav-link-btn.highlight {
+  color: var(--royal-blue);
+  font-weight: 700;
+}
+
+.nav-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-royal);
+  border-radius: var(--radius-full);
+  padding: 0.25rem 0.45rem 0.25rem 0.75rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--transition-fast);
+}
+
+.nav-user-pill:hover {
+  border-color: var(--royal-blue);
+  box-shadow: var(--shadow-royal);
+  transform: translateY(-1px);
+}
+
+.nav-user-points {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--royal-blue);
+  font-family: var(--font-heading);
+}
+
+.nav-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.nav-signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  background: var(--color-peach-light);
+  border: 1px solid var(--color-peach);
+  color: var(--color-espresso);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-signin-btn:hover {
+  background: var(--color-peach);
   color: var(--royal-blue);
 }
 

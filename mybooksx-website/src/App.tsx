@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { AuthProvider } from './context/AuthContext.tsx';
+import { useCurrentRoute } from './utils/navigation.ts';
 import { Navbar } from './components/Navbar';
 import { SidebarDrawer } from './components/SidebarDrawer';
 import { HeroSection } from './sections/HeroSection';
@@ -14,15 +16,65 @@ import { Footer } from './components/Footer';
 import { SpinWheelModal } from './components/SpinWheelModal';
 import { OjasAiModal } from './components/OjasAiModal';
 import { OwnerPanelModal } from './components/OwnerPanelModal';
+import { AuthModal } from './components/AuthModal.tsx';
+import { QuizArenaModal } from './components/QuizArenaModal.tsx';
+import { LeaderboardModal } from './components/LeaderboardModal.tsx';
+import { RewardsStoreModal } from './components/RewardsStoreModal.tsx';
+import { UserDashboardModal } from './components/UserDashboardModal.tsx';
+import { LegalModals } from './components/LegalModals.tsx';
+import { RedeemPage } from './pages/RedeemPage.tsx';
+import { AdminRedemptionsPage } from './pages/AdminRedemptionsPage.tsx';
+import { UserDashboardPage } from './pages/UserDashboardPage.tsx';
+import { QuestArenaPage } from './pages/QuestArenaPage.tsx';
 import { MessageSquareText } from 'lucide-react';
 
 export const AppContent: React.FC = () => {
+  const currentRoute = useCurrentRoute();
+
   const [wheelOpen, setWheelOpen] = useState(false);
   const [ojasOpen, setOjasOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: string } | null>(null);
+
+  // Dedicated Route 1: /redeem (Separate Rewards Marketplace & My Redemptions Panel)
+  if (currentRoute === '/redeem') {
+    return (
+      <div className="mybooksx-app-container">
+        <RedeemPage />
+        <LegalModals />
+      </div>
+    );
+  }
+
+  // Dedicated Route 2: /admin/redemptions (Protected Admin Redemptions Management Panel)
+  if (currentRoute === '/admin/redemptions') {
+    return (
+      <div className="mybooksx-app-container">
+        <AdminRedemptionsPage />
+      </div>
+    );
+  }
+
+  // Dedicated Route 3: /dashboard (Single Unified Authenticated Dashboard)
+  if (currentRoute === '/dashboard') {
+    return (
+      <div className="mybooksx-app-container">
+        <UserDashboardPage />
+        <LegalModals />
+      </div>
+    );
+  }
+
+  // Dedicated Route 4: /quest (QUEST Challenge Arena)
+  if (currentRoute === '/quest') {
+    return (
+      <div className="mybooksx-app-container">
+        <QuestArenaPage />
+      </div>
+    );
+  }
 
   // Allow direct access via #owner or #admin URL hash
   useEffect(() => {
@@ -146,7 +198,15 @@ export const AppContent: React.FC = () => {
 export default function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+        <AuthModal />
+        <QuizArenaModal />
+        <LeaderboardModal />
+        <RewardsStoreModal />
+        <UserDashboardModal />
+        <LegalModals />
+      </AuthProvider>
     </LanguageProvider>
   );
 }

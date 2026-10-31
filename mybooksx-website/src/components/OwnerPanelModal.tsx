@@ -20,10 +20,19 @@ import {
   Laptop,
   CheckCircle,
   ShieldAlert,
-  Cloud
+  Cloud,
+  Crown,
+  HelpCircle,
+  Plus,
+  Check,
+  Ban,
+  Trophy,
+  Zap
 } from 'lucide-react';
 import { bookingService } from '../services/bookingService';
 import type { BookingRecord, LoginLogRecord } from '../services/bookingService';
+import { api } from '../services/apiClient.ts';
+import type { RedemptionRecord } from '../server/rewardsService.ts';
 import './OwnerPanelModal.css';
 
 interface OwnerPanelModalProps {
@@ -41,16 +50,225 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   
-  // Tabs: 'bookings' or 'logins'
-  const [activeTab, setActiveTab] = useState<'bookings' | 'logins'>('bookings');
+  // Tabs: 'leaderboard', 'quiz_schedule', 'bookings', 'redemptions', 'questions', 'logins'
+  const [activeTab, setActiveTab] = useState<'leaderboard' | 'quiz_schedule' | 'bookings' | 'redemptions' | 'questions' | 'logins'>('leaderboard');
   
+  // Quiz Dynamic Timing & Schedule State
+  const [quizSchedule, setQuizSchedule] = useState<{
+    mode: 'always_live' | 'scheduled';
+    unlockTimeIst: string;
+    allowUnlimitedAttempts: boolean;
+    isLiveNow: boolean;
+    nextUnlockIso?: string;
+    remainingSeconds: number;
+    currentIstTime?: string;
+  }>({
+    mode: 'always_live',
+    unlockTimeIst: '14:00',
+    allowUnlimitedAttempts: false,
+    isLiveNow: true,
+    remainingSeconds: 0
+  });
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleMessage, setScheduleMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loginLogs, setLoginLogs] = useState<LoginLogRecord[]>([]);
+  const [adminRedemptions, setAdminRedemptions] = useState<RedemptionRecord[]>([]);
+  const [adminQuestions, setAdminQuestions] = useState<any[]>([]);
+  const [adminLeaderboard, setAdminLeaderboard] = useState<any[]>([]);
+  const [leaderboardSummary, setLeaderboardSummary] = useState<any>(null);
+  const [leaderboardSearch, setLeaderboardSearch] = useState('');
+  const [copiedVoucherId, setCopiedVoucherId] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [lastSyncedTime, setLastSyncedTime] = useState<string>('');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'New' | 'Contacted' | 'Closed'>('All');
+
+  // Question form state
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [newQuestionText, setNewQuestionText] = useState('');
+  const [newCategory, setNewCategory] = useState('Technology');
+  const [newDifficulty, setNewDifficulty] = useState('Medium');
+  const [newOptions, setNewOptions] = useState(['', '', '', '']);
+  const [newCorrectIdx, setNewCorrectIdx] = useState(0);
+  const [newExplanation, setNewExplanation] = useState('');
+
+  const loadAdminLeaderboard = async () => {
+    try {
+      const res = await api.admin.getLeaderboard();
+      if (res.success && res.users) {
+        setAdminLeaderboard(res.users);
+        setLeaderboardSummary(res.summary);
+      }
+    } catch (e) {
+      console.warn('Failed to load leaderboard', e);
+    }
+  };
+
+  const loadAdminRedemptions = async () => {
+    try {
+      const res = await api.admin.getRedemptions();
+      if (res.success && res.redemptions) {
+        setAdminRedemptions(res.redemptions);
+      }
+    } catch (e) {
+      console.warn('Failed to load redemptions', e);
+    }
+  };
+
+  const loadAdminQuestions = async () => {
+    try {
+      const res = await api.admin.getQuestions();
+      if (res.success && res.questions) {
+        setAdminQuestions(res.questions);
+      }
+    } catch (e) {
+      console.warn('Failed to load questions', e);
+    }
+  };
+
+  const loadQuizSchedule = async () => {
+    try {
+      setScheduleLoading(true);
+      const res = await api.quiz.getSchedule();
+      if (res.success && res.schedule) {
+        setQuizSchedule(res.schedule);
+      }
+    } catch (e) {
+      console.warn('Failed to load quiz schedule', e);
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  const handleSaveQuizSchedule = async (
+    newMode?: 'always_live' | 'scheduled',
+    newTime?: string,
+    newUnlimited?: boolean
+  ) => {
+    try {
+      setScheduleLoading(true);
+      setScheduleMessage(null);
+      const payload = {
+        mode: newMode !== undefined ? newMode : quizSchedule.mode,
+        unlockTimeIst: newTime !== undefined ? newTime : quizSchedule.unlockTimeIst,
+        allowUnlimitedAttempts: newUnlimited !== undefined ? newUnlimited : quizSchedule.allowUnlimitedAttempts
+      };
+      const res = await api.admin.updateQuizSchedule(payload);
+      if (res.success && res.schedule) {
+        setQuizSchedule(res.schedule);
+        setScheduleMessage({
+          type: 'success',
+          text: `Schedule saved! Status: ${res.schedule.isLiveNow ? '🟢 LIVE NOW' : `⏰ Scheduled for ${res.schedule.unlockTimeIst} IST`}`
+        });
+      }
+    } catch (err: any) {
+      setScheduleMessage({ type: 'error', text: err?.message || 'Failed to update schedule.' });
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  const handleResetQuizAttempts = async () => {
+    if (!window.confirm("Are you sure you want to reset all completed quiz attempts for today? This allows you and all players to replay today's Quest immediately!")) {
+      return;
+    }
+    try {
+      setScheduleLoading(true);
+      setScheduleMessage(null);
+      const res = await api.admin.resetQuizAttempts();
+      if (res.success) {
+        setScheduleMessage({
+          type: 'success',
+          text: res.message || "Today's completed sessions cleared! Anyone can replay Quest immediately."
+        });
+      }
+    } catch (err: any) {
+      setScheduleMessage({ type: 'error', text: err?.message || 'Failed to reset attempts.' });
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  const handleApproveRedemption = async (redemptionId: string) => {
+    const notes = window.prompt('Enter activation notes / deployment instructions for the client:', 'Approved by system administrator. Access granted for 30 days.');
+    if (notes === null) return;
+
+    try {
+      const res = await api.admin.approveRedemption(redemptionId, notes);
+      if (res.success) {
+        alert(`Redemption Approved! Generated License Key: ${res.licenseKey}`);
+        await loadAdminRedemptions();
+      } else {
+        alert(`Error: ${res.message}`);
+      }
+    } catch (err: any) {
+      alert(`Error approving redemption: ${err.message}`);
+    }
+  };
+
+  const handleRejectRedemption = async (redemptionId: string) => {
+    const reason = window.prompt('Enter rejection reason (reserved points will be immediately refunded to user):', 'Duplicate request or verification required.');
+    if (!reason) return;
+
+    try {
+      const res = await api.admin.rejectRedemption(redemptionId, reason);
+      if (res.success) {
+        alert('Redemption rejected and points refunded to user.');
+        await loadAdminRedemptions();
+      } else {
+        alert(`Error: ${res.message}`);
+      }
+    } catch (err: any) {
+      alert(`Error rejecting redemption: ${err.message}`);
+    }
+  };
+
+  const handleCreateQuestion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newQuestionText.trim() || newOptions.some(o => !o.trim())) {
+      alert('Please fill all fields and all 4 options.');
+      return;
+    }
+
+    try {
+      const res = await api.admin.addQuestion({
+        question: newQuestionText,
+        category: newCategory,
+        difficulty: newDifficulty,
+        options: newOptions,
+        correctIndex: Number(newCorrectIdx),
+        explanation: newExplanation
+      });
+
+      if (res.success) {
+        alert('Question added successfully!');
+        setNewQuestionText('');
+        setNewOptions(['', '', '', '']);
+        setNewExplanation('');
+        setShowAddQuestion(false);
+        await loadAdminQuestions();
+      } else {
+        alert(`Error: ${res.message}`);
+      }
+    } catch (err: any) {
+      alert(`Error adding question: ${err.message}`);
+    }
+  };
+
+  const handleDeleteQuestion = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this question?')) return;
+    try {
+      const res = await api.admin.deleteQuestion(id);
+      if (res.success) {
+        await loadAdminQuestions();
+      }
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
 
   // Load and auto-sync with shared cloud database
   useEffect(() => {
@@ -59,7 +277,13 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
       setBookings(bookingService.getAllBookings());
       setLoginLogs(bookingService.getLoginLogs());
 
-      // 2. Fetch live cross-device data from cloud
+      // 2. Fetch live data from backend
+      loadAdminLeaderboard();
+      loadAdminRedemptions();
+      loadAdminQuestions();
+      loadQuizSchedule();
+
+      // 3. Fetch live cross-device data from cloud
       const syncCloudData = async () => {
         setIsSyncing(true);
         try {
@@ -127,6 +351,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
     if (validIds.includes(cleanId) && validPasswords.includes(cleanPass)) {
       setIsAuthenticated(true);
       sessionStorage.setItem('mybooksx_owner_auth', 'true');
+      sessionStorage.setItem('mybooksx_owner_key', 'deepmehta@mybooks');
       setLoginError('');
       
       // Record successful login audit log (synced to cloud)
@@ -322,8 +547,38 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
               </div>
             </div>
 
-            {/* TAB SELECTOR: Client Bookings vs Login Activity */}
+            {/* TAB SELECTOR: Client Bookings vs Leaderboard & Points vs Rewards vs Questions */}
             <div className="owner-tabs-row">
+              <button
+                type="button"
+                className={`owner-tab-nav-btn ${activeTab === 'leaderboard' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('leaderboard');
+                  loadAdminLeaderboard();
+                }}
+              >
+                <Trophy size={15} />
+                <span>Leaderboard & Points</span>
+                <span className="tab-pill-badge" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                  {adminLeaderboard.length} Players
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`owner-tab-nav-btn ${activeTab === 'quiz_schedule' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('quiz_schedule');
+                  loadQuizSchedule();
+                }}
+              >
+                <Clock size={15} />
+                <span>⚡ Quiz Timing & Launch</span>
+                <span className="tab-pill-badge" style={{ background: quizSchedule.isLiveNow ? '#ECFDF5' : '#FEF3C7', color: quizSchedule.isLiveNow ? '#065F46' : '#92400E' }}>
+                  {quizSchedule.isLiveNow ? '🟢 Live Now' : `${quizSchedule.unlockTimeIst} IST`}
+                </span>
+              </button>
+
               <button
                 type="button"
                 className={`owner-tab-nav-btn ${activeTab === 'bookings' ? 'active' : ''}`}
@@ -335,16 +590,365 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
               <button
                 type="button"
+                className={`owner-tab-nav-btn ${activeTab === 'redemptions' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('redemptions');
+                  loadAdminRedemptions();
+                }}
+              >
+                <Crown size={15} />
+                <span>Software Redemptions</span>
+                <span className="tab-pill-badge" style={{ background: '#FEF3C7', color: '#92400E' }}>
+                  {adminRedemptions.filter(r => r.status === 'Pending').length} Pending
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`owner-tab-nav-btn ${activeTab === 'questions' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('questions');
+                  loadAdminQuestions();
+                }}
+              >
+                <HelpCircle size={15} />
+                <span>Quiz Question Bank</span>
+                <span className="tab-pill-badge">{adminQuestions.length}</span>
+              </button>
+
+              <button
+                type="button"
                 className={`owner-tab-nav-btn ${activeTab === 'logins' ? 'active' : ''}`}
                 onClick={() => setActiveTab('logins')}
               >
                 <History size={15} />
-                <span>Who Logged In (Access Audit)</span>
+                <span>Login Audit</span>
                 <span className="tab-pill-badge">{loginLogs.length}</span>
               </button>
             </div>
 
-            {activeTab === 'bookings' ? (
+            {activeTab === 'leaderboard' ? (
+              /* TAB 0: LIVE LEADERBOARD & USER POINTS DIRECTORY */
+              <div className="owner-dash-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div>
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Trophy size={18} className="text-royal" />
+                      <span>Live Leaderboard & Player Points Directory</span>
+                    </h3>
+                    <p className="dash-subtext">Real-time view of all registered players, their current points balance, rank, and redemption history.</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="owner-cloud-sync-btn"
+                      onClick={loadAdminLeaderboard}
+                    >
+                      <RefreshCw size={14} />
+                      <span>Refresh Standings</span>
+                    </button>
+                    <a
+                      href={`https://wa.me/919644570828?text=${encodeURIComponent(
+                        `📊 *MYBOOKSX LEADERBOARD SUMMARY*\nTotal Players: ${leaderboardSummary?.totalUsers || adminLeaderboard.length}\nCirculating Points: ${(leaderboardSummary?.totalPointsCirculating || 0).toLocaleString()} pts\nTop Scorer: ${leaderboardSummary?.topScorerName || 'N/A'} (${(leaderboardSummary?.topScore || 0).toLocaleString()} pts)\nDate: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderColor: '#25D366', color: '#128C7E', textDecoration: 'none', borderRadius: 'var(--radius-sm)' }}
+                      title="Send Leaderboard Summary to Owner WhatsApp (+91 9644570828)"
+                    >
+                      <MessageSquare size={14} />
+                      <span>Text Summary to +91 9644570828</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Summary Metrics Banner */}
+                {leaderboardSummary && (
+                  <div className="owner-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                    <div className="owner-kpi-card" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#1E40AF', fontWeight: 600, textTransform: 'uppercase' }}>Total Players</span>
+                      <strong style={{ display: 'block', fontSize: '1.5rem', color: '#1E3A8A', marginTop: '0.25rem' }}>{leaderboardSummary.totalUsers}</strong>
+                    </div>
+                    <div className="owner-kpi-card" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 600, textTransform: 'uppercase' }}>Available Points in Wallets</span>
+                      <strong style={{ display: 'block', fontSize: '1.5rem', color: '#14532D', marginTop: '0.25rem' }}>{leaderboardSummary.totalPointsCirculating?.toLocaleString()} pts</strong>
+                    </div>
+                    <div className="owner-kpi-card" style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#92400E', fontWeight: 600, textTransform: 'uppercase' }}>Points Reserved (Redeeming)</span>
+                      <strong style={{ display: 'block', fontSize: '1.5rem', color: '#78350F', marginTop: '0.25rem' }}>{leaderboardSummary.totalPointsReserved?.toLocaleString()} pts</strong>
+                    </div>
+                    <div className="owner-kpi-card" style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#6B21A8', fontWeight: 600, textTransform: 'uppercase' }}>Rank #1 Top Scorer</span>
+                      <strong style={{ display: 'block', fontSize: '1.15rem', color: '#581C87', marginTop: '0.25rem' }}>{leaderboardSummary.topScorerName} ({leaderboardSummary.topScore?.toLocaleString()} pts)</strong>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filter and Search */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <input
+                    type="text"
+                    className="owner-search-input"
+                    placeholder="Search player by name, email, or user ID..."
+                    value={leaderboardSearch}
+                    onChange={e => setLeaderboardSearch(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.9rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)' }}
+                  />
+                </div>
+
+                {/* Users Table */}
+                <div className="mbx-responsive-table" style={{ overflowX: 'auto', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                    <thead>
+                      <tr style={{ background: 'var(--bg-sand-tint)', borderBottom: '1px solid var(--border-light)' }}>
+                        <th style={{ padding: '0.75rem 1rem' }}>Rank</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Player Details</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Available Points (Balance)</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Reserved</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Lifetime Earned</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Quests Completed</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Redemptions</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Text to Owner</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminLeaderboard.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                            No player records found. Users will appear here as soon as they register or play QUEST.
+                          </td>
+                        </tr>
+                      ) : (
+                        adminLeaderboard
+                          .filter(u => {
+                            if (!leaderboardSearch.trim()) return true;
+                            const q = leaderboardSearch.toLowerCase();
+                            return u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.userId.toLowerCase().includes(q);
+                          })
+                          .map(u => {
+                            const playerText = `👤 *MYBOOKSX PLAYER DOSSIER*\nRank: #${u.rank}\nName: ${u.fullName}\nEmail: ${u.email}\nAvailable Points: ${u.pointsBalance.toLocaleString()} pts\nReserved Points: ${u.pointsReserved.toLocaleString()} pts\nLifetime Earned: ${u.lifetimePoints.toLocaleString()} pts\nQuests Completed: ${u.quizzesPlayed}\nRedemptions: ${u.redemptionsCount}\nHotline: +91 9644570828`;
+                            const waUrl = `https://wa.me/919644570828?text=${encodeURIComponent(playerText)}`;
+
+                            return (
+                              <tr key={u.userId} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <span style={{
+                                    fontWeight: 700,
+                                    fontSize: '0.92rem',
+                                    color: u.rank === 1 ? '#D97706' : u.rank === 2 ? '#4B5563' : u.rank === 3 ? '#92400E' : 'var(--text-secondary)'
+                                  }}>
+                                    #{u.rank} {u.rank === 1 ? '🥇' : u.rank === 2 ? '🥈' : u.rank === 3 ? '🥉' : ''}
+                                  </span>
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{u.fullName}</div>
+                                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.2rem' }}>
+                                    <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '4px', background: u.authProvider === 'google' ? '#EFF6FF' : '#F3F4F6', color: u.authProvider === 'google' ? '#1D4ED8' : '#374151' }}>
+                                      {u.authProvider === 'google' ? 'Google OAuth' : 'Email/Password'}
+                                    </span>
+                                    {u.isVerified && (
+                                      <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '4px', background: '#DCFCE7', color: '#15803D' }}>
+                                        Verified
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <strong style={{ fontSize: '1.05rem', color: 'var(--royal-blue-deep)' }}>
+                                    {u.pointsBalance.toLocaleString()} pts
+                                  </strong>
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem', color: u.pointsReserved > 0 ? '#D97706' : 'var(--text-muted)' }}>
+                                  {u.pointsReserved.toLocaleString()} pts
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem', color: 'var(--text-secondary)' }}>
+                                  {u.lifetimePoints.toLocaleString()} pts
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <span style={{ fontWeight: 600 }}>{u.quizzesPlayed}</span> ({u.totalCorrect} correct)
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <span style={{ fontWeight: 600, color: u.redemptionsCount > 0 ? 'var(--royal-blue)' : 'var(--text-muted)' }}>
+                                    {u.redemptionsCount}
+                                  </span>
+                                </td>
+                                <td style={{ padding: '0.75rem 1rem' }}>
+                                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                    <a
+                                      href={waUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn-outline"
+                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.6rem', fontSize: '0.76rem', borderColor: '#25D366', color: '#128C7E', textDecoration: 'none', borderRadius: '4px' }}
+                                      title="Send this player's points text directly to Founder's WhatsApp (+91 9644570828)"
+                                    >
+                                      <MessageSquare size={13} />
+                                      <span>Text to +91 9644570828</span>
+                                    </a>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : activeTab === 'quiz_schedule' ? (
+              /* TAB 0.5: QUEST TIMING & LAUNCH SCHEDULE CONTROL */
+              <div className="owner-dash-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div>
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                      <Clock size={20} className="text-royal" />
+                      <span>QUEST Timing & Launch Schedule Control</span>
+                    </h3>
+                    <p className="dash-subtext" style={{ marginTop: '0.25rem' }}>
+                      Set the daily 5-minute business competition live at any time, configure scheduled hours (IST), or reset attempts.
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <button type="button" className="owner-cloud-sync-btn" onClick={loadQuizSchedule} disabled={scheduleLoading}>
+                      <RefreshCw size={14} className={scheduleLoading ? 'spin-icon' : ''} />
+                      <span>Refresh Status</span>
+                    </button>
+                  </div>
+                </div>
+
+                {scheduleMessage && (
+                  <div className={`mbx-auth-alert ${scheduleMessage.type}`} style={{ marginBottom: '1.25rem', padding: '0.75rem 1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {scheduleMessage.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    <span>{scheduleMessage.text}</span>
+                  </div>
+                )}
+
+                {/* Status Card */}
+                <div style={{
+                  background: quizSchedule.isLiveNow ? 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)' : 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                  border: `1px solid ${quizSchedule.isLiveNow ? '#10B981' : '#F59E0B'}`,
+                  borderRadius: '12px',
+                  padding: '1.25rem 1.5rem',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: quizSchedule.isLiveNow ? '#065F46' : '#92400E' }}>
+                      CURRENT ACCESS STATUS
+                    </div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 800, color: quizSchedule.isLiveNow ? '#047857' : '#B45309', marginTop: '0.25rem' }}>
+                      {quizSchedule.isLiveNow ? '⚡ QUEST IS UNLOCKED & LIVE RIGHT NOW' : `⏰ SCHEDULED TO UNLOCK AT ${quizSchedule.unlockTimeIst} IST`}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '0.25rem' }}>
+                      Current Server Time: <strong>{quizSchedule.currentIstTime || 'Detecting...'}</strong> • Access Mode: <strong>{quizSchedule.mode === 'always_live' ? 'Always Live (24/7)' : `Scheduled for ${quizSchedule.unlockTimeIst} IST`}</strong>
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ display: 'inline-block', padding: '0.5rem 1rem', borderRadius: '999px', fontWeight: 700, fontSize: '0.85rem', background: quizSchedule.isLiveNow ? '#10B981' : '#F59E0B', color: '#FFFFFF' }}>
+                      {quizSchedule.isLiveNow ? 'LIVE & ACCESSIBLE' : 'SCHEDULE ACTIVE'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Controls Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                  
+                  {/* CARD 1: Instant Unlock */}
+                  <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <Zap size={20} className="text-royal" />
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>⚡ Make Quiz Live Right Now</h4>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', color: '#6B7280', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                      Immediately removes the countdown lock and allows any user to take the 10-question business challenge at any minute.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ width: '100%', padding: '0.75rem', fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                      onClick={() => handleSaveQuizSchedule('always_live')}
+                      disabled={scheduleLoading || quizSchedule.mode === 'always_live'}
+                    >
+                      <Zap size={16} />
+                      <span>{quizSchedule.mode === 'always_live' ? '✓ Currently Live 24/7' : '⚡ Unlock QUEST Right Now'}</span>
+                    </button>
+                  </div>
+
+                  {/* CARD 2: Scheduled Daily Hour */}
+                  <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <Clock size={20} className="text-royal" />
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>⏰ Set Scheduled Daily Time (IST)</h4>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', color: '#6B7280', lineHeight: 1.5, marginBottom: '1rem' }}>
+                      Specify the exact hour and minute in Indian Standard Time (IST) when the daily competition unlocks.
+                    </p>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '1.25rem' }}>
+                      <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#374151' }}>Daily Unlock Time:</label>
+                      <input
+                        type="time"
+                        value={quizSchedule.unlockTimeIst}
+                        onChange={(e) => setQuizSchedule(prev => ({ ...prev, unlockTimeIst: e.target.value }))}
+                        style={{ padding: '0.45rem 0.65rem', border: '1px solid #D1D5DB', borderRadius: '6px', fontSize: '0.95rem', fontWeight: 600 }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      style={{ width: '100%', padding: '0.75rem', fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                      onClick={() => handleSaveQuizSchedule('scheduled', quizSchedule.unlockTimeIst)}
+                      disabled={scheduleLoading}
+                    >
+                      <Clock size={16} />
+                      <span>Save Scheduled Time ({quizSchedule.unlockTimeIst} IST)</span>
+                    </button>
+                  </div>
+
+                </div>
+
+                {/* Section 2: Replays & Attempt Management */}
+                <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '1.25rem 1.5rem' }}>
+                  <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', fontWeight: 700 }}>🧪 Testing & Immediate Replay Controls</h4>
+                  <p style={{ fontSize: '0.85rem', color: '#6B7280', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                    Control attempt limits so you can test questions repeatedly and replay without waiting for tomorrow.
+                  </p>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', userSelect: 'none' }}>
+                      <input
+                        type="checkbox"
+                        checked={quizSchedule.allowUnlimitedAttempts}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setQuizSchedule(prev => ({ ...prev, allowUnlimitedAttempts: val }));
+                          handleSaveQuizSchedule(undefined, undefined, val);
+                        }}
+                        style={{ width: '18px', height: '18px', accentColor: '#1D4ED8' }}
+                      />
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1F2937' }}>
+                        Allow Unlimited Attempts Today (Test & Practice Mode)
+                      </span>
+                    </label>
+
+                    <button
+                      type="button"
+                      style={{ background: '#DC2626', color: '#FFFFFF', border: 'none', padding: '0.65rem 1.25rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                      onClick={handleResetQuizAttempts}
+                      disabled={scheduleLoading}
+                    >
+                      <RefreshCw size={15} />
+                      <span>Reset Today's Attempts (Allow Instant Replay)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : activeTab === 'bookings' ? (
               /* TAB 1: CLIENT BOOKINGS */
               <>
                 {/* Filter and Search Bar */}
@@ -465,7 +1069,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                   </div>
                 )}
               </>
-            ) : (
+            ) : activeTab === 'logins' ? (
               /* TAB 2: WHO HAS LOGGED IN (ACCESS AUDIT LOGS) */
               <div className="login-logs-audit-container">
                 <div className="audit-header-banner">
@@ -520,6 +1124,287 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                     ))}
                   </div>
                 )}
+              </div>
+            ) : activeTab === 'redemptions' ? (
+              /* TAB 3: SOFTWARE REDEMPTION APPROVALS */
+              <div className="owner-dash-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <div>
+                    <h3>Software Reward Redemptions</h3>
+                    <p className="dash-subtext">Review user redemption requests, approve 30-day licenses, or refund points upon rejection.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="owner-cloud-sync-btn"
+                    onClick={loadAdminRedemptions}
+                  >
+                    <RefreshCw size={14} />
+                    <span>Refresh Requests</span>
+                  </button>
+                </div>
+
+                {adminRedemptions.length === 0 ? (
+                  <div className="empty-bookings-state">
+                    <Crown size={40} className="text-muted" />
+                    <h3>No Redemption Requests</h3>
+                    <p>When verified users redeem software applications using their quiz points, their requests appear here.</p>
+                  </div>
+                ) : (
+                  <div className="bookings-grid">
+                    {adminRedemptions.map(r => (
+                      <div key={r.id} className="booking-card">
+                        <div className="booking-card-top">
+                          <div>
+                            <span className="booking-source-pill">REF: {r.redemptionCode}</span>
+                            <h4 className="booking-client-name">{r.userName}</h4>
+                            <span className="booking-service-badge" style={{ marginTop: '0.25rem' }}>
+                              {r.rewardTitle}
+                            </span>
+                          </div>
+                          <span
+                            className="status-badge"
+                            style={{
+                              background: r.status === 'Approved' ? '#DEF7EC' : r.status === 'Pending' ? '#FEF3C7' : '#FDF2F2',
+                              color: r.status === 'Approved' ? '#03543F' : r.status === 'Pending' ? '#92400E' : '#9B1C1C'
+                            }}
+                          >
+                            {r.status}
+                          </span>
+                        </div>
+
+                        <div className="booking-details-box" style={{ margin: '0.85rem 0' }}>
+                          <div><strong>Email:</strong> {r.userEmail}</div>
+                          <div><strong>Points Reserved:</strong> {r.pointsReserved.toLocaleString()} pts</div>
+                          <div><strong>Submitted:</strong> {new Date(r.createdAt).toLocaleString()}</div>
+                          {r.licenseKey && <div><strong>License Key:</strong> <code>{r.licenseKey}</code></div>}
+                          {r.deliveryDetails && <div><strong>Delivery:</strong> {r.deliveryDetails}</div>}
+                          {r.rejectionReason && <div style={{ color: '#9B1C1C' }}><strong>Reason:</strong> {r.rejectionReason}</div>}
+                        </div>
+
+                        {/* Direct Text Transmission to Owner Hotline */}
+                        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', margin: '0.65rem 0' }}>
+                          <a
+                            href={r.whatsappUrl || `https://wa.me/919644570828?text=${encodeURIComponent(r.voucherText || `Voucher: ${r.redemptionCode}\nApp: ${r.rewardTitle}\nPoints: ${r.pointsReserved}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-outline"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.65rem', fontSize: '0.78rem', borderColor: '#25D366', color: '#128C7E', textDecoration: 'none', borderRadius: '4px' }}
+                            title="Send Voucher Directly to Founder's WhatsApp (+91 9644570828)"
+                          >
+                            <MessageSquare size={13} />
+                            <span>WhatsApp to +91 9644570828</span>
+                          </a>
+
+                          <button
+                            type="button"
+                            className="btn-outline"
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem', borderRadius: '4px' }}
+                            onClick={() => {
+                              navigator.clipboard.writeText(r.voucherText || `Voucher: ${r.redemptionCode}\nApp: ${r.rewardTitle}\nPoints: ${r.pointsReserved}`);
+                              setCopiedVoucherId(r.id);
+                              setTimeout(() => setCopiedVoucherId(null), 2000);
+                            }}
+                          >
+                            {copiedVoucherId === r.id ? '✓ Text Copied' : '📋 Copy Text'}
+                          </button>
+                        </div>
+
+                        {r.status === 'Pending' && (
+                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ flex: 1, padding: '0.5rem', fontSize: '0.84rem' }}
+                              onClick={() => handleApproveRedemption(r.id)}
+                            >
+                              <Check size={14} />
+                              <span>Approve (Issue License)</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-outline"
+                              style={{ padding: '0.5rem 0.85rem', color: '#9B1C1C', borderColor: '#F8B4B4', fontSize: '0.84rem' }}
+                              onClick={() => handleRejectRedemption(r.id)}
+                            >
+                              <Ban size={14} />
+                              <span>Reject & Refund</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* TAB 4: QUIZ QUESTIONS MANAGEMENT */
+              <div className="owner-dash-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <div>
+                    <h3>Quiz Question Management</h3>
+                    <p className="dash-subtext">Add, inspect, and remove questions from the live MyBooksX question bank.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ padding: '0.5rem 1rem' }}
+                    onClick={() => setShowAddQuestion(!showAddQuestion)}
+                  >
+                    <Plus size={15} />
+                    <span>{showAddQuestion ? 'Close Form' : 'Add New Question'}</span>
+                  </button>
+                </div>
+
+                {showAddQuestion && (
+                  <form
+                    onSubmit={handleCreateQuestion}
+                    style={{ background: 'var(--bg-page)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', marginBottom: '1.5rem' }}
+                  >
+                    <h4 style={{ marginBottom: '1rem' }}>Create New Arena Question</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Question Text</label>
+                        <input
+                          type="text"
+                          className="mbx-input-field"
+                          placeholder="e.g. What is 25% of 800?"
+                          value={newQuestionText}
+                          onChange={e => setNewQuestionText(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Category</label>
+                          <select
+                            className="mbx-input-field"
+                            value={newCategory}
+                            onChange={e => setNewCategory(e.target.value)}
+                          >
+                            <option value="Technology">Technology</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="General Knowledge">General Knowledge</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Business">Business</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Difficulty</label>
+                          <select
+                            className="mbx-input-field"
+                            value={newDifficulty}
+                            onChange={e => setNewDifficulty(e.target.value)}
+                          >
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                        {newOptions.map((opt, idx) => (
+                          <div key={idx}>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>
+                              Option {String.fromCharCode(65 + idx)}
+                            </label>
+                            <input
+                              type="text"
+                              className="mbx-input-field"
+                              placeholder={`Option ${String.fromCharCode(65 + idx)}`}
+                              value={opt}
+                              onChange={e => {
+                                const updated = [...newOptions];
+                                updated[idx] = e.target.value;
+                                setNewOptions(updated);
+                              }}
+                              required
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Correct Answer</label>
+                          <select
+                            className="mbx-input-field"
+                            value={newCorrectIdx}
+                            onChange={e => setNewCorrectIdx(Number(e.target.value))}
+                          >
+                            <option value={0}>Option A</option>
+                            <option value={1}>Option B</option>
+                            <option value={2}>Option C</option>
+                            <option value={3}>Option D</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Explanation (Optional)</label>
+                          <input
+                            type="text"
+                            className="mbx-input-field"
+                            placeholder="Brief explanation shown after answering"
+                            value={newExplanation}
+                            onChange={e => setNewExplanation(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <button type="submit" className="btn-primary" style={{ marginTop: '0.5rem' }}>
+                        <Plus size={15} />
+                        <span>Save Question to Bank</span>
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                <div className="bookings-grid">
+                  {adminQuestions.map(q => {
+                    const opts = JSON.parse(q.options_json || '[]');
+                    return (
+                      <div key={q.id} className="booking-card">
+                        <div className="booking-card-top">
+                          <div>
+                            <span className="booking-source-pill">{q.category} • {q.difficulty}</span>
+                            <h4 style={{ fontSize: '0.98rem', margin: '0.4rem 0' }}>{q.question}</h4>
+                          </div>
+                          <button
+                            type="button"
+                            className="trash-btn"
+                            title="Delete question"
+                            onClick={() => handleDeleteQuestion(q.id)}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem', fontSize: '0.82rem', margin: '0.6rem 0' }}>
+                          {opts.map((opt: string, i: number) => (
+                            <div
+                              key={i}
+                              style={{
+                                padding: '0.3rem 0.5rem',
+                                borderRadius: '4px',
+                                background: i === q.correct_index ? '#DEF7EC' : 'var(--bg-page)',
+                                fontWeight: i === q.correct_index ? 700 : 400,
+                                color: i === q.correct_index ? '#03543F' : 'inherit'
+                              }}
+                            >
+                              {String.fromCharCode(65 + i)}: {opt} {i === q.correct_index && '✓'}
+                            </div>
+                          ))}
+                        </div>
+
+                        {q.explanation && (
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                            💡 {q.explanation}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

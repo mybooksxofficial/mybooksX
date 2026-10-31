@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { Menu, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.tsx';
+import { navigateTo } from '../utils/navigation.ts';
+import { Menu, ArrowRight, Zap, User, Gift } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -9,6 +11,12 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { language, setLanguage, t } = useLanguage();
+  const {
+    user,
+    isAuthenticated,
+    openAuthModal
+  } = useAuth();
+
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,17 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <nav className="container main-nav">
         {/* Brand with Circular Logo */}
         <div className="nav-left">
-          <button 
-            type="button" 
-            className="sidebar-toggle-btn desktop-only-btn"
-            onClick={onToggleSidebar}
-            title="Explore Products & Quick Menu"
-            aria-label="Open Sidebar"
-          >
-            <Menu size={20} />
-          </button>
-
-          <a href="#" className="nav-logo-link" aria-label="MyBooksX Home">
+          <a href="/" className="nav-logo-link" aria-label="MyBooksX Home" onClick={(e) => { e.preventDefault(); navigateTo('/'); }}>
             <div className="circular-logo-container">
               <img 
                 src="/logo/mybooksx-logo.png" 
@@ -48,15 +46,46 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         {/* Minimal Clean Links for Desktop */}
         <div className="desktop-links">
-          <a href="#products" className="nav-link">{t.nav.products}</a>
-          <a href="#digital-growth" className="nav-link">Digital Growth</a>
-          <a href="#why-choose-us" className="nav-link">Why Choose Us</a>
-          <a href="#reviews" className="nav-link">Client Reviews</a>
-          <a href="#faq" className="nav-link">{t.nav.faq}</a>
+          <a href="/#products" className="nav-link" onClick={() => navigateTo('/')}>{t.nav.products}</a>
+          <a href="/#digital-growth" className="nav-link" onClick={() => navigateTo('/')}>Digital Growth</a>
+          <a href="/#why-choose-us" className="nav-link" onClick={() => navigateTo('/')}>Why Choose Us</a>
+          <a href="/#reviews" className="nav-link" onClick={() => navigateTo('/')}>Client Reviews</a>
+          <a href="/#faq" className="nav-link" onClick={() => navigateTo('/')}>{t.nav.faq}</a>
+          <button type="button" className="nav-link-btn" onClick={() => navigateTo('/redeem')}>
+            <Gift size={14} className="text-royal" />
+            <span>Redeem</span>
+          </button>
         </div>
 
         {/* Clean Right Actions */}
         <div className="nav-actions">
+          {/* User Account / Points Pill */}
+          {isAuthenticated && user ? (
+            <button
+              type="button"
+              className="nav-user-pill"
+              onClick={() => navigateTo('/dashboard')}
+              title="Open My Dashboard"
+            >
+              <div className="nav-user-points">
+                <Zap size={13} className="text-royal" />
+                <span>{user.pointsBalance.toLocaleString()} pts</span>
+              </div>
+              <div className="nav-user-avatar">
+                {user.fullName.charAt(0).toUpperCase()}
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="nav-signin-btn"
+              onClick={() => openAuthModal('login')}
+            >
+              <User size={15} />
+              <span>Sign In</span>
+            </button>
+          )}
+
           {/* Subtle Language Pill */}
           <div className="lang-switcher">
             <button
@@ -77,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </div>
 
           {/* Single Focused CTA */}
-          <a href="#custom-solution" className="btn-primary nav-cta">
+          <a href="/#custom-solution" className="btn-primary nav-cta" onClick={() => navigateTo('/')}>
             <span>{t.nav.startProject}</span>
             <ArrowRight size={14} />
           </a>

@@ -1,11 +1,13 @@
 import React from 'react';
-import { X, Sparkles, Utensils, HeartHandshake, Bot, Dumbbell, ShieldCheck, Phone, Mail, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.tsx';
+import { navigateTo } from '../utils/navigation.ts';
+import { X, Utensils, HeartHandshake, Bot, Dumbbell, ShieldCheck, Phone, Mail, ArrowRight, Zap } from 'lucide-react';
 import './SidebarDrawer.css';
 
 interface SidebarDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenWheel: () => void;
+  onOpenWheel?: () => void;
   onOpenOjas: () => void;
   onSelectProduct: (name: string) => void;
   onOpenOwner?: () => void;
@@ -14,11 +16,15 @@ interface SidebarDrawerProps {
 export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   isOpen,
   onClose,
-  onOpenWheel,
   onOpenOjas,
   onSelectProduct,
   onOpenOwner
 }) => {
+  const {
+    user,
+    isAuthenticated
+  } = useAuth();
+
   if (!isOpen) return null;
 
   return (
@@ -60,25 +66,96 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           </button>
         </div>
 
-        {/* Quick Lucky Wheel Trigger Banner */}
-        <div className="sidebar-wheel-card">
-          <div className="wheel-badge-icon">
-            <Sparkles size={18} className="text-royal" />
+        {/* QUEST & Speed Rewards Card */}
+        <div className="sidebar-wheel-card" style={{ borderColor: 'var(--royal-blue)', background: 'linear-gradient(135deg, var(--royal-blue-light), #FFFFFF)' }}>
+          <div className="wheel-badge-icon" style={{ background: 'var(--royal-blue)' }}>
+            <Zap size={18} style={{ color: '#FFFFFF' }} />
           </div>
           <div className="wheel-text-block">
-            <strong>Festive Discount Wheel</strong>
-            <p>Spin once to reveal up to 12% OFF or ₹1,000 cash discount.</p>
+            <strong>QUEST & Speed Rewards</strong>
+            <p>
+              {isAuthenticated && user
+                ? `You have ${user.pointsBalance.toLocaleString()} pts. Next QUEST unlocks at 8 PM IST.`
+                : 'Play 20-question business challenges, earn speed points & redeem software.'}
+            </p>
           </div>
           <button
             type="button"
-            className="btn-accent sidebar-spin-btn"
+            className="btn-primary sidebar-spin-btn"
             onClick={() => {
               onClose();
-              onOpenWheel();
+              navigateTo('/quest');
             }}
           >
-            Spin Now
+            Enter QUEST
           </button>
+        </div>
+
+        {/* Mobile & Desktop Page Navigation Links */}
+        <div className="sidebar-section">
+          <span className="sidebar-section-label">QUEST & REWARDS ECOSYSTEM</span>
+          <div className="sidebar-nav-links">
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
+              onClick={() => {
+                onClose();
+                navigateTo('/dashboard');
+              }}
+            >
+              <span>⚡ Unified Dashboard</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </button>
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
+              onClick={() => {
+                onClose();
+                navigateTo('/quest');
+              }}
+            >
+              <span>🎯 QUEST Arena</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </button>
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
+              onClick={() => {
+                onClose();
+                navigateTo('/redeem');
+              }}
+            >
+              <span>🎁 Dedicated Redeem Panel</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </button>
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
+              onClick={() => {
+                onClose();
+                navigateTo('/dashboard');
+              }}
+            >
+              <span>🏆 Official Leaderboard</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </button>
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
+              onClick={() => {
+                onClose();
+                navigateTo('/dashboard');
+              }}
+            >
+              <span>{isAuthenticated ? '👤 Unified Dashboard & Wallet' : '🔐 Sign In / Register'}</span>
+              <ArrowRight size={13} className="nav-arrow-hint" />
+            </button>
+          </div>
         </div>
 
         {/* Mobile & Desktop Page Navigation Links */}

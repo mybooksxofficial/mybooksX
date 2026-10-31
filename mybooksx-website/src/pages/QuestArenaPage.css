@@ -1,0 +1,489 @@
+/* ==========================================================================
+   MYBOOKSX DEDICATED QUEST ARENA (/quest) STYLES
+   High Focus, Minimalist, Royal Blue & Warm Neutral Palette
+   ========================================================================== */
+
+.mbx-quest-viewport {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.mbx-quest-viewport.center-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.quest-gate-card {
+  max-width: 460px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-floating);
+}
+
+.quest-gate-card h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 1rem 0 0.5rem;
+}
+
+.quest-gate-card p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin-bottom: 1.75rem;
+}
+
+.gate-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Header */
+.mbx-quest-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0.85rem 0;
+}
+
+.quest-header-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quest-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+}
+
+.quest-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--royal-blue);
+  letter-spacing: -0.02em;
+}
+
+.quest-overall-timer-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-sand-tint);
+  border: 1px solid var(--border-royal);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+}
+
+.quest-overall-timer-pill .timer-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.quest-overall-timer-pill .timer-digits {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--royal-blue);
+  min-width: 42px;
+}
+
+.quest-overall-timer-pill .timer-digits.warning {
+  color: #DC2626;
+  animation: pulse 0.6s infinite alternate;
+}
+
+.quest-score-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.86rem;
+}
+
+.pts-badge {
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+}
+
+/* Main Container */
+.mbx-quest-main-container {
+  max-width: 860px;
+  margin: 2rem auto 4rem;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.quest-loading-state,
+.quest-error-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-subtle);
+}
+
+.quest-loading-state h3,
+.quest-error-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 1rem 0 0.5rem;
+}
+
+.quest-loading-state p,
+.quest-error-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Active Question Card */
+.quest-active-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.quest-progress-bar-row {
+  margin-bottom: 1.5rem;
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.difficulty-tag {
+  background: var(--bg-sand-tint);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  color: var(--royal-blue);
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-sand-tint);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--royal-blue);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* Timer Strip */
+.quest-timer-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.question-timer-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.quest-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-sand-tint);
+  border: 1.5px solid var(--border-royal);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--royal-blue);
+}
+
+.question-timer-sub {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.quest-timer-badge.warning {
+  border-color: #EF4444;
+  color: #DC2626;
+  background: #FEF2F2;
+  animation: pulse 0.6s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
+
+.last-points-toast {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.pts-gain {
+  color: #16A34A;
+}
+
+.pts-zero {
+  color: var(--text-muted);
+}
+
+/* Question Text */
+.quest-question-text {
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+}
+
+/* Options */
+.quest-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin-bottom: 2.25rem;
+}
+
+.quest-option-card {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-light);
+  background: #FFFFFF;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quest-option-card:hover:not(:disabled) {
+  border-color: var(--royal-blue);
+  background: #F8FAFF;
+  transform: translateX(3px);
+}
+
+.quest-option-card.selected {
+  border-color: var(--royal-blue);
+  background: var(--royal-blue-light);
+  box-shadow: 0 2px 8px rgba(10, 88, 202, 0.15);
+}
+
+.option-letter {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sand-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: var(--color-espresso);
+  flex-shrink: 0;
+}
+
+.quest-option-card.selected .option-letter {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+}
+
+.option-text {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* Automatic Transition Status Footer (No Next Button) */
+.quest-auto-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.5rem;
+}
+
+.auto-advance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--royal-blue-light);
+  color: var(--royal-blue);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-royal);
+}
+
+.option-spinner {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Completion Card */
+.quest-completion-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 2.5rem;
+  max-width: 720px;
+  margin: 3rem auto;
+  text-align: center;
+  box-shadow: var(--shadow-floating);
+}
+
+.completion-badge {
+  margin-bottom: 1.25rem;
+}
+
+.trophy-bounce {
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+.completion-title {
+  font-family: var(--font-heading);
+  font-size: 2.35rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.completion-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 2.25rem;
+}
+
+.completion-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.comp-stat-box {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.comp-stat-box.highlight {
+  border: 2px solid var(--royal-blue);
+  background: #F0F7FF;
+}
+
+.comp-stat-box .label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.comp-stat-box .value {
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0.35rem 0 0.15rem;
+}
+
+.comp-stat-box .sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.completion-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--royal-blue-light);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.84rem;
+  color: var(--royal-blue-deep);
+  margin-bottom: 2.25rem;
+}
+
+.completion-actions-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .completion-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .completion-actions-row {
+    flex-direction: column;
+  }
+  .quest-action-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
