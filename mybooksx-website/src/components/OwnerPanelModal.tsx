@@ -652,7 +652,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                       <Trophy size={18} className="text-royal" />
                       <span>Live Leaderboard & Player Points Directory</span>
                     </h3>
-                    <p className="dash-subtext">Real-time view of all registered players, their current points balance, rank, and redemption history.</p>
+                    <p className="dash-subtext">Real-time view of all registered players, their current points balance and redemption history.</p>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
@@ -780,7 +780,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                       <strong style={{ display: 'block', fontSize: '1.5rem', color: '#78350F', marginTop: '0.25rem' }}>{leaderboardSummary.totalPointsReserved?.toLocaleString()} pts</strong>
                     </div>
                     <div className="owner-kpi-card" style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#6B21A8', fontWeight: 600, textTransform: 'uppercase' }}>🏆 Leading Player</span>
+                      <span style={{ fontSize: '0.78rem', color: '#6B21A8', fontWeight: 600, textTransform: 'uppercase' }}>🏆 Top Points Scorer</span>
                       <strong style={{ display: 'block', fontSize: '1.15rem', color: '#581C87', marginTop: '0.25rem' }}>{leaderboardSummary.topScorerName} ({leaderboardSummary.topScore?.toLocaleString()} pts)</strong>
                     </div>
                   </div>
@@ -827,7 +827,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                             return u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.phone && u.phone.includes(q)) || u.userId.toLowerCase().includes(q);
                           })
                           .map(u => {
-                            const playerText = `👤 *MYBOOKSX PLAYER DOSSIER*\nRank: #${u.rank}\nName: ${u.fullName}\nMobile: ${u.phone || "N/A"}\nEmail: ${u.email}\nAvailable Points: ${u.pointsBalance.toLocaleString()} pts\nReserved Points: ${u.pointsReserved.toLocaleString()} pts\nLifetime Earned: ${u.lifetimePoints.toLocaleString()} pts\nQuests Completed: ${u.quizzesPlayed}\nRedemptions: ${u.redemptionsCount}\nHotline: +91 9644570828`;
+                            const playerText = `👤 *MYBOOKSX PLAYER DOSSIER*\nName: ${u.fullName}\nMobile: ${u.phone || "N/A"}\nEmail: ${u.email}\nAvailable Points: ${u.pointsBalance.toLocaleString()} pts\nReserved Points: ${u.pointsReserved.toLocaleString()} pts\nLifetime Earned: ${u.lifetimePoints.toLocaleString()} pts\nQuests Completed: ${u.quizzesPlayed}\nRedemptions: ${u.redemptionsCount}\nHotline: +91 9644570828`;
                             const waUrl = `https://wa.me/919644570828?text=${encodeURIComponent(playerText)}`;
 
                             return (

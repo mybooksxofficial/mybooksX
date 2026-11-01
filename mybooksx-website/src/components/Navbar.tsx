@@ -61,14 +61,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           <a href="/#why-choose-us" className="nav-link" onClick={() => navigateTo('/')}>Why Choose Us</a>
           <a href="/#reviews" className="nav-link" onClick={() => navigateTo('/')}>Client Reviews</a>
           <a href="/#faq" className="nav-link" onClick={() => navigateTo('/')}>{t.nav.faq}</a>
-          <button type="button" className="nav-link-btn" onClick={() => navigateTo('/redeem')}>
-            <Gift size={14} className="text-royal" />
-            <span>Redeem</span>
-          </button>
         </div>
 
         {/* Clean Right Actions */}
         <div className="nav-actions">
+          {/* Direct Redeem Button: Instantly opens /redeem on desktop & mobile */}
+          <button
+            type="button"
+            className="nav-redeem-btn"
+            onClick={() => navigateTo('/redeem')}
+            title="Open Rewards Marketplace"
+          >
+            <Gift size={14} className="text-royal" />
+            <span>Redeem</span>
+          </button>
+
           {/* User Account / Points Pill (when logged in) */}
           {isAuthenticated && user ? (
             <button

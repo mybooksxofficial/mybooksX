@@ -174,18 +174,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
               <span>🎁 Dedicated Redeem Panel</span>
               <ArrowRight size={13} className="nav-arrow-hint" />
             </button>
-            <button
-              type="button"
-              className="sidebar-nav-link"
-              style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
-              onClick={() => {
-                onClose();
-                navigateTo('/dashboard');
-              }}
-            >
-              <span>🏆 Official Leaderboard</span>
-              <ArrowRight size={13} className="nav-arrow-hint" />
-            </button>
+
             <button
               type="button"
               className="sidebar-nav-link"

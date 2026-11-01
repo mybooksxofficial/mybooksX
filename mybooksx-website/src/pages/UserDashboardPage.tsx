@@ -195,7 +195,6 @@ export const UserDashboardPage: React.FC = () => {
   const points = user.pointsBalance || 0;
   const totalEarned = user.totalPointsEarned || 0;
   const userRankObj = leaderboardData?.currentUserRank;
-  const userRank = userRankObj?.rank || 1;
   const questionsAnswered = userRankObj?.questionsAnswered || 0;
   const accuracy = userRankObj?.accuracyPct || 0;
   const correctAnswers = Math.round((questionsAnswered * accuracy) / 100);
@@ -315,10 +314,10 @@ export const UserDashboardPage: React.FC = () => {
             {/* Top Key Metrics Banner */}
             <div className="dash-kpi-grid">
               <div className="kpi-card rank-highlight">
-                <span className="kpi-label">YOUR RANK</span>
-                <strong className="kpi-value text-royal">#{userRank}</strong>
+                <span className="kpi-label">AVAILABLE POINTS</span>
+                <strong className="kpi-value text-royal">{points.toLocaleString()} pts</strong>
                 <span className="kpi-sub">
-                  {userRank <= 10 ? 'Top 10 Player' : `Ranked ${userRank} overall`}
+                  Ready for Software Redemption
                 </span>
               </div>
 
@@ -473,7 +472,7 @@ export const UserDashboardPage: React.FC = () => {
             <div className="lb-controls-row">
               <div>
                 <h2>Global & Weekly Standings</h2>
-                <p>Track your verified ranking against all active MyBooksX competitors.</p>
+                <p>Track your verified speed points against active MyBooksX competitors.</p>
               </div>
               <div className="lb-mode-toggle">
                 <button
@@ -496,8 +495,8 @@ export const UserDashboardPage: React.FC = () => {
             {/* PINNED LOGGED-IN USER BANNER (Always Prominently Visible) */}
             <div className="pinned-user-ranking-card">
               <div className="pinned-rank-col">
-                <span className="pinned-tag">MY RANK</span>
-                <div className="pinned-rank-number">#{userRank}</div>
+                <span className="pinned-tag">MY WALLET</span>
+                <div className="pinned-rank-number">{points.toLocaleString()} pts</div>
               </div>
 
               <div className="pinned-user-col">
@@ -533,7 +532,7 @@ export const UserDashboardPage: React.FC = () => {
               <table className="lb-table">
                 <thead>
                   <tr>
-                    <th>Rank</th>
+                    <th>#</th>
                     <th>Player</th>
                     <th>Points</th>
                     <th>Questions Answered</th>

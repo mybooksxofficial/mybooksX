@@ -24,10 +24,8 @@ import {
   Crown, 
   ArrowLeft, 
   Check, 
-  Printer, 
   Key,
-  MessageSquare,
-  Phone
+  MessageSquare
 } from 'lucide-react';
 import './RedeemPage.css';
 
@@ -37,15 +35,12 @@ export const RedeemPage: React.FC = () => {
   const [rewards, setRewards] = useState<RewardItem[]>([]);
   const [redemptions, setRedemptions] = useState<RedemptionRecord[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg] = useState('');
-  const [copiedReceipt, setCopiedReceipt] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
 
   // Confirmation Dialog State
   const [selectedReward, setSelectedReward] = useState<RewardItem | null>(null);
   const [isRedeeming, setIsRedeeming] = useState(false);
 
-  // Success Confirmation Receipt Modal State
-  const [confirmedReceipt, setConfirmedReceipt] = useState<RedemptionRecord | null>(null);
 
   // Load Catalog and My Redemptions
   const loadData = async () => {
@@ -72,6 +67,8 @@ export const RedeemPage: React.FC = () => {
   }, [isAuthenticated]);
 
   // Handle Redemption Request
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+
   const handleConfirmRedeem = async () => {
     if (!selectedReward) return;
     if (!isAuthenticated) {
@@ -84,8 +81,9 @@ export const RedeemPage: React.FC = () => {
     try {
       const res = await api.rewards.redeem(selectedReward.id);
       if (res.success && res.redemption) {
-        setConfirmedReceipt(res.redemption);
         setSelectedReward(null);
+        setBookingSuccess(true);
+        setSuccessMsg('🎉 Booked! You will receive it within 7 days.');
 
         // Voice speech announcement: "Booked! You will receive it within 7 days."
         try {
@@ -100,6 +98,11 @@ export const RedeemPage: React.FC = () => {
 
         await refreshUser();
         await loadData();
+
+        // Automatic done ho jana chahiye: auto-close success dialog
+        setTimeout(() => {
+          setBookingSuccess(false);
+        }, 3200);
       } else {
         setErrorMsg(res.message || 'Failed to submit redemption request.');
       }
@@ -110,7 +113,6 @@ export const RedeemPage: React.FC = () => {
     }
   };
 
-  // Metrics calculation
   const availablePoints = user?.pointsBalance || 0;
   const totalEarned = user?.totalPointsEarned || 0;
   const totalRedeemed = redemptions
@@ -311,9 +313,9 @@ export const RedeemPage: React.FC = () => {
                       {isActiveSub
                         ? 'Subscription Active'
                         : isPending
-                        ? 'Pending Admin Review'
+                        ? '✓ Booked (Within 7 Days)'
                         : hasEnough
-                        ? 'Redeem 30-Day License'
+                        ? 'Book 30-Day License'
                         : 'Insufficient Points'}
                     </button>
                   </div>
@@ -507,127 +509,30 @@ export const RedeemPage: React.FC = () => {
         </div>
       )}
 
-      {/* REDEMPTION CONFIRMATION RECEIPT MODAL */}
-      {confirmedReceipt && (
-        <div className="mbx-modal-backdrop" onClick={() => setConfirmedReceipt(null)}>
-          <div className="mbx-receipt-dialog" onClick={(e) => e.stopPropagation()}>
+      {/* CLEAN BOOKING CONFIRMATION MODAL - NO TICKET FIELDS */}
+      {bookingSuccess && (
+        <div className="mbx-modal-backdrop" onClick={() => setBookingSuccess(false)}>
+          <div className="mbx-receipt-dialog" style={{ maxWidth: '440px', textAlign: 'center', padding: '2.5rem 1.75rem' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ width: '68px', height: '68px', borderRadius: '50%', background: '#DEF7EC', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
+              <CheckCircle2 size={40} />
+            </div>
+
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-espresso)', marginBottom: '0.65rem' }}>
+              🎉 Booked! You will receive it within 7 days.
+            </h3>
+
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: '1.75rem' }}>
+              Your software license has been booked. You will receive your software access details within 7 days.
+            </p>
+
             <button
               type="button"
-              className="mbx-modal-close"
-              onClick={() => setConfirmedReceipt(null)}
-              aria-label="Close"
+              className="btn-primary"
+              style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', borderRadius: '8px', fontWeight: 700 }}
+              onClick={() => setBookingSuccess(false)}
             >
-              <X size={18} />
+              ✓ Done
             </button>
-
-            <div className="mbx-receipt-header">
-              <div className="mbx-receipt-stamp">
-                <CheckCircle2 size={32} className="text-success" />
-              </div>
-              <h3>🎉 Booked! You will receive it within 7 days.</h3>
-              <p>Your software license booking is confirmed. Your login details and license keys will be delivered within 7 days.</p>
-            </div>
-
-            <div className="mbx-receipt-ticket">
-              <div className="ticket-field">
-                <span className="label">Receipt Number</span>
-                <span className="value code">{confirmedReceipt.redemptionCode}</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">User Name</span>
-                <span className="value">{confirmedReceipt.userName}</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">User Email</span>
-                <span className="value">{confirmedReceipt.userEmail}</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">Application</span>
-                <span className="value">{confirmedReceipt.rewardTitle}</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">Points Reserved</span>
-                <span className="value highlight">{confirmedReceipt.pointsReserved.toLocaleString()} pts</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">Access Validity</span>
-                <span className="value">30 Calendar Days (Post Approval)</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">Request Timestamp</span>
-                <span className="value">{new Date(confirmedReceipt.createdAt).toLocaleString()}</span>
-              </div>
-              <div className="ticket-field">
-                <span className="label">Status</span>
-                <span className="value status-pending">Pending Admin Review</span>
-              </div>
-            </div>
-
-            {/* Direct Phone Transmission to Owner (+91 9644570828) */}
-            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 'var(--radius-sm)', padding: '0.85rem 1rem', margin: '1rem 0', textAlign: 'left' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', color: '#166534', fontWeight: 600, fontSize: '0.88rem' }}>
-                <MessageSquare size={16} />
-                <span>Send Voucher Directly to Owner Phone (+91 9644570828)</span>
-              </div>
-              <p style={{ fontSize: '0.8rem', color: '#14532D', margin: '0 0 0.75rem', lineHeight: 1.45 }}>
-                Your voucher has been generated and formatted as text. Tap below to send this voucher text directly to Founder Deep Mehta on WhatsApp or SMS:
-              </p>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <a
-                  href={confirmedReceipt.whatsappUrl || `https://wa.me/919644570828?text=${encodeURIComponent(confirmedReceipt.voucherText || `Voucher: ${confirmedReceipt.redemptionCode}\nApp: ${confirmedReceipt.rewardTitle}\nPoints: ${confirmedReceipt.pointsReserved}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.5rem 0.85rem', background: '#25D366', color: '#FFFFFF', borderColor: '#25D366', fontSize: '0.84rem', textDecoration: 'none', borderRadius: 'var(--radius-sm)' }}
-                >
-                  <MessageSquare size={15} />
-                  <span>Send via WhatsApp (+91 9644570828)</span>
-                </a>
-                <a
-                  href={confirmedReceipt.smsUrl || `sms:+919644570828?body=${encodeURIComponent(confirmedReceipt.voucherText || `Voucher: ${confirmedReceipt.redemptionCode}`)}`}
-                  className="btn-outline"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.5rem 0.85rem', fontSize: '0.84rem', borderRadius: 'var(--radius-sm)' }}
-                >
-                  <Phone size={15} />
-                  <span>Send SMS to +91 9644570828</span>
-                </a>
-                <button
-                  type="button"
-                  className="btn-outline"
-                  style={{ padding: '0.5rem 0.85rem', fontSize: '0.84rem', borderRadius: 'var(--radius-sm)' }}
-                  onClick={() => {
-                    navigator.clipboard.writeText(confirmedReceipt.voucherText || `Voucher: ${confirmedReceipt.redemptionCode}\nApp: ${confirmedReceipt.rewardTitle}`);
-                    setCopiedReceipt(true);
-                    setTimeout(() => setCopiedReceipt(false), 2000);
-                  }}
-                >
-                  {copiedReceipt ? '✓ Text Copied' : '📋 Copy Text'}
-                </button>
-              </div>
-            </div>
-
-            <div className="mbx-receipt-footer">
-              <span className="legal-note">
-                This is a software rewards redemption confirmation, not a financial tax invoice.
-              </span>
-              <div className="receipt-actions">
-                <button
-                  type="button"
-                  className="btn-print"
-                  onClick={() => window.print()}
-                >
-                  <Printer size={15} />
-                  <span>Print Receipt</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={() => setConfirmedReceipt(null)}
-                >
-                  Done
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}

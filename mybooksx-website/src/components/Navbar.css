@@ -237,6 +237,29 @@
   color: var(--royal-blue);
 }
 
+.nav-redeem-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.85rem;
+  border-radius: var(--radius-full, 9999px);
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: var(--royal-blue, #1E3A8A);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s ease);
+  flex-shrink: 0;
+}
+
+.nav-redeem-btn:hover {
+  background: #DBEAFE;
+  color: #1E40AF;
+  transform: translateY(-1px);
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
