@@ -19,6 +19,7 @@ import { navigateTo } from '../utils/navigation.ts';
 import confetti from 'canvas-confetti';
 import {
   Zap,
+  Lock,
   Clock,
   Hourglass,
   Trophy,
@@ -401,6 +402,26 @@ export const QuestArenaPage: React.FC = () => {
           <p className="completion-sub">
             Your results have been registered and points credited to your rewards wallet.
           </p>
+
+          <div style={{
+            background: '#EFF6FF',
+            border: '1.5px solid #93C5FD',
+            borderRadius: '10px',
+            padding: '0.85rem 1.25rem',
+            margin: '0 auto 1.5rem',
+            maxWidth: '560px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            color: '#1E40AF',
+            fontSize: '0.88rem',
+            fontWeight: 600,
+            textAlign: 'center'
+          }}>
+            <Lock size={16} />
+            <span>🔒 Daily 1-Time Quest Completed for Today. Access unlocks again tomorrow at 00:00 IST.</span>
+          </div>
 
           <div className="completion-stats-grid">
             <div className="comp-stat-box highlight">

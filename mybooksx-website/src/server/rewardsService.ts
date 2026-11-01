@@ -24,6 +24,7 @@ export interface RedemptionRecord {
   userId: string;
   userName: string;
   userEmail: string;
+  userPhone?: string;
   rewardId: string;
   rewardTitle: string;
   pointsReserved: number;

@@ -46,6 +46,22 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
   });
 
   const [ownerId, setOwnerId] = useState('');
+  const [policyMessage, setPolicyMessage] = useState<string | null>(null);
+  const [attemptPolicy, setAttemptPolicy] = useState<'strict_once' | 'unlimited'>(() => {
+    return (localStorage.getItem('mbx_quiz_access_policy') as any) || 'strict_once';
+  });
+
+  const handleUpdateAttemptPolicy = async (newPolicy: 'strict_once' | 'unlimited') => {
+    setAttemptPolicy(newPolicy);
+    try {
+      localStorage.setItem('mbx_quiz_access_policy', newPolicy);
+    } catch {}
+    try {
+      await api.admin.updateQuizSchedule({ allowUnlimitedAttempts: newPolicy === 'unlimited' });
+    } catch {}
+    setPolicyMessage(newPolicy === 'strict_once' ? '🔒 Policy set: Strict 1-Time Access Only (1 attempt/day)' : '⚡ Policy set: Unlimited Replays (Test Mode)');
+    setTimeout(() => setPolicyMessage(null), 3500);
+  };
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -599,7 +615,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                 <Crown size={15} />
                 <span>Software Redemptions</span>
                 <span className="tab-pill-badge" style={{ background: '#FEF3C7', color: '#92400E' }}>
-                  {adminRedemptions.filter(r => r.status === 'Pending').length} Pending
+                  {adminRedemptions.filter(r => r.status === 'Pending').length > 0 ? `🚨 ${adminRedemptions.filter(r => r.status === 'Pending').length} New Bookings` : '0 Pending'}
                 </span>
               </button>
 
@@ -663,6 +679,91 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                   </div>
                 </div>
 
+                {policyMessage && (
+                  <div style={{ background: '#ECFDF5', border: '1px solid #10B981', color: '#065F46', padding: '0.65rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontWeight: 600, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <CheckCircle size={16} />
+                    <span>{policyMessage}</span>
+                  </div>
+                )}
+                {/* Daily Quiz Attempt Access Control & Lock Selector */}
+                <div style={{
+                  background: '#F8FAFC',
+                  border: '1.5px solid #CBD5E1',
+                  borderRadius: '12px',
+                  padding: '1rem 1.25rem',
+                  marginBottom: '1.25rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.98rem', color: '#0F172A' }}>
+                      <Lock size={17} className="text-royal" />
+                      <span>Daily Quiz Attempt & Lock Policy</span>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        padding: '0.15rem 0.55rem',
+                        borderRadius: '999px',
+                        background: attemptPolicy === 'strict_once' ? '#DCFCE7' : '#FEF3C7',
+                        color: attemptPolicy === 'strict_once' ? '#166534' : '#92400E',
+                        fontWeight: 700
+                      }}>
+                        {attemptPolicy === 'strict_once' ? '🔒 1-Time Access Only' : '⚡ Unlimited Replays'}
+                      </span>
+                    </div>
+                    <p style={{ margin: '0.35rem 0 0', fontSize: '0.84rem', color: '#64748B', lineHeight: 1.45 }}>
+                      {attemptPolicy === 'strict_once'
+                        ? 'Users can only access and play the 15-minute QUEST once per day. Their attempt is locked until tomorrow.'
+                        : 'Testing & Practice Mode: Users can play repeatedly with unlimited replays.'}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <select
+                      value={attemptPolicy}
+                      onChange={(e) => handleUpdateAttemptPolicy(e.target.value as any)}
+                      style={{
+                        padding: '0.55rem 0.9rem',
+                        borderRadius: '8px',
+                        border: '1.5px solid #94A3B8',
+                        fontWeight: 600,
+                        fontSize: '0.88rem',
+                        background: '#FFFFFF',
+                        color: '#0F172A',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="strict_once">🔒 Strict 1-Time Access (1 attempt/day)</option>
+                      <option value="unlimited">⚡ Unlimited Replays (Test Mode)</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={handleResetQuizAttempts}
+                      disabled={scheduleLoading}
+                      style={{
+                        background: '#DC2626',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.55rem 0.95rem',
+                        fontWeight: 600,
+                        fontSize: '0.84rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem'
+                      }}
+                      title="Clear all daily player attempt locks immediately"
+                    >
+                      <RefreshCw size={14} className={scheduleLoading ? 'spin' : ''} />
+                      <span>Reset All Daily Locks</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Summary Metrics Banner */}
                 {leaderboardSummary && (
                   <div className="owner-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -679,7 +780,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                       <strong style={{ display: 'block', fontSize: '1.5rem', color: '#78350F', marginTop: '0.25rem' }}>{leaderboardSummary.totalPointsReserved?.toLocaleString()} pts</strong>
                     </div>
                     <div className="owner-kpi-card" style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#6B21A8', fontWeight: 600, textTransform: 'uppercase' }}>Rank #1 Top Scorer</span>
+                      <span style={{ fontSize: '0.78rem', color: '#6B21A8', fontWeight: 600, textTransform: 'uppercase' }}>🏆 Leading Player</span>
                       <strong style={{ display: 'block', fontSize: '1.15rem', color: '#581C87', marginTop: '0.25rem' }}>{leaderboardSummary.topScorerName} ({leaderboardSummary.topScore?.toLocaleString()} pts)</strong>
                     </div>
                   </div>
@@ -702,7 +803,6 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
                     <thead>
                       <tr style={{ background: 'var(--bg-sand-tint)', borderBottom: '1px solid var(--border-light)' }}>
-                        <th style={{ padding: '0.75rem 1rem' }}>Rank</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Player Details</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Available Points (Balance)</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Reserved</th>
@@ -715,7 +815,7 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                     <tbody>
                       {adminLeaderboard.length === 0 ? (
                         <tr>
-                          <td colSpan={8} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                          <td colSpan={7} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                             No player records found. Users will appear here as soon as they register or play QUEST.
                           </td>
                         </tr>
@@ -732,15 +832,6 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
                             return (
                               <tr key={u.userId} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                                <td style={{ padding: '0.75rem 1rem' }}>
-                                  <span style={{
-                                    fontWeight: 700,
-                                    fontSize: '0.92rem',
-                                    color: u.rank === 1 ? '#D97706' : u.rank === 2 ? '#4B5563' : u.rank === 3 ? '#92400E' : 'var(--text-secondary)'
-                                  }}>
-                                    #{u.rank} {u.rank === 1 ? '🥇' : u.rank === 2 ? '🥈' : u.rank === 3 ? '🥉' : ''}
-                                  </span>
-                                </td>
                                 <td style={{ padding: '0.75rem 1rem' }}>
                                   <div style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--text-primary)' }}>{u.fullName}</div>
                                   {u.phone ? (
@@ -1148,7 +1239,17 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
               <div className="owner-dash-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <div>
-                    <h3>Software Reward Redemptions</h3>
+                    <div>
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Crown size={20} className="text-royal" />
+                      <span>Software Reward Redemptions</span>
+                      {adminRedemptions.filter(r => r.status === 'Pending').length > 0 && (
+                        <span style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#991B1B', border: '1px solid #FCA5A5', padding: '0.2rem 0.6rem', borderRadius: '999px', fontWeight: 700 }}>
+                          🚨 {adminRedemptions.filter(r => r.status === 'Pending').length} New Orders Waiting
+                        </span>
+                      )}
+                    </h3>
+                  </div>
                     <p className="dash-subtext">Review user redemption requests, approve 30-day licenses, or refund points upon rejection.</p>
                   </div>
                   <button
@@ -1192,6 +1293,12 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
 
                         <div className="booking-details-box" style={{ margin: '0.85rem 0' }}>
                           <div><strong>Email:</strong> {r.userEmail}</div>
+                          {r.userPhone && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#059669', fontWeight: 600, marginTop: '0.2rem' }}>
+                              <Phone size={13} />
+                              <span>{r.userPhone}</span>
+                            </div>
+                          )}
                           <div><strong>Points Reserved:</strong> {r.pointsReserved.toLocaleString()} pts</div>
                           <div><strong>Submitted:</strong> {new Date(r.createdAt).toLocaleString()}</div>
                           {r.licenseKey && <div><strong>License Key:</strong> <code>{r.licenseKey}</code></div>}
@@ -1199,6 +1306,31 @@ export const OwnerPanelModal: React.FC<OwnerPanelModalProps> = ({ isOpen, onClos
                           {r.rejectionReason && <div style={{ color: '#9B1C1C' }}><strong>Reason:</strong> {r.rejectionReason}</div>}
                         </div>
 
+                        {/* Direct Client Reach-Out Buttons */}
+                        {r.userPhone && (
+                          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', margin: '0.65rem 0' }}>
+                            <a
+                              href={`https://wa.me/${r.userPhone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(
+                                `Hello ${r.userName}, thank you for redeeming ${r.rewardTitle} on MyBooksX! Your booking order is registered. We are preparing your corporate access license. Hotline: +91 9644570828`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-primary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', fontSize: '0.8rem', background: '#25D366', color: '#FFFFFF', borderColor: '#25D366', textDecoration: 'none', borderRadius: '6px', fontWeight: 600 }}
+                            >
+                              <MessageSquare size={13} />
+                              <span>WhatsApp Client ({r.userPhone})</span>
+                            </a>
+                            <a
+                              href={`tel:${r.userPhone.replace(/\D/g, '').slice(-10)}`}
+                              className="btn-outline"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', fontSize: '0.8rem', borderRadius: '6px' }}
+                            >
+                              <Phone size={13} />
+                              <span>Call Client</span>
+                            </a>
+                          </div>
+                        )}
                         {/* Direct Text Transmission to Owner Hotline */}
                         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', margin: '0.65rem 0' }}>
                           <a
