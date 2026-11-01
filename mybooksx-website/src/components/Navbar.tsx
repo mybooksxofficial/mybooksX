@@ -18,6 +18,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
+  const [questDoneKey, setQuestDoneKey] = useState(0);
+
+  useEffect(() => {
+    const handleStorageUpdate = () => setQuestDoneKey(prev => prev + 1);
+    window.addEventListener('storage', handleStorageUpdate);
+    window.addEventListener('popstate', handleStorageUpdate);
+    return () => {
+      window.removeEventListener('storage', handleStorageUpdate);
+      window.removeEventListener('popstate', handleStorageUpdate);
+    };
+  }, []);
 
   // Check if current user has already completed today's quest (Strict 1-Time Access)
   const isQuestDoneToday = React.useMemo(() => {
@@ -34,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     } catch {
       return false;
     }
-  }, [user]);
+  }, [user, questDoneKey]);
 
   useEffect(() => {
     const handleScroll = () => {

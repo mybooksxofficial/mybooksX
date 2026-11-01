@@ -79,16 +79,42 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                 : 'Play 20-question business challenges, earn speed points & redeem software.'}
             </p>
           </div>
-          <button
-            type="button"
-            className="btn-primary sidebar-spin-btn"
-            onClick={() => {
-              onClose();
-              navigateTo('/quest');
-            }}
-          >
-            Enter QUEST
-          </button>
+          {(() => {
+            let isDone = false;
+            try {
+              const policy = localStorage.getItem('mbx_quiz_access_policy') || 'strict_once';
+              if (policy !== 'unlimited') {
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const lastComp = localStorage.getItem('mbx_last_completed_today');
+                isDone = lastComp === todayStr;
+              }
+            } catch {}
+
+            return isDone ? (
+              <button
+                type="button"
+                className="btn-secondary sidebar-spin-btn"
+                style={{ background: '#ECFDF5', borderColor: '#10B981', color: '#047857', fontWeight: 700 }}
+                onClick={() => {
+                  onClose();
+                  navigateTo('/quest');
+                }}
+              >
+                ✓ Quest Completed Today
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary sidebar-spin-btn"
+                onClick={() => {
+                  onClose();
+                  navigateTo('/quest');
+                }}
+              >
+                ⚡ Enter QUEST
+              </button>
+            );
+          })()}
         </div>
 
         {/* Mobile & Desktop Page Navigation Links */}
