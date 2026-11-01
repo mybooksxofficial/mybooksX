@@ -54,10 +54,10 @@ export const QuestArenaPage: React.FC = () => {
   const { refreshUser } = useAuth();
 
   // Mode: default 'daily' competitive QUEST
-  const [_mode, setMode] = useState<'daily' | 'practice'>('daily');
+  const [_mode] = useState<'daily' | 'practice'>('daily');
 
   // Session & Question State (Pre-populated so screen is NEVER white or empty)
-  const [sessionId, setSessionId] = useState<string>('sess_' + Date.now());
+  const [sessionId] = useState<string>('sess_' + Date.now());
   const [currentQuestion, setCurrentQuestion] = useState<ClientQuestion>(DEFAULT_FIRST_QUESTION);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -103,10 +103,8 @@ export const QuestArenaPage: React.FC = () => {
 
   // 1. Initialize or Rehydrate Active Session on Mount
   useEffect(() => {
-    let isMounted = true;
-
     async function initQuest() {
-      // Ensure player session exists so points display in header & navbar
+      // Ensure player session exists synchronously
       try {
         const storedUser = localStorage.getItem('mbx_current_user');
         if (!storedUser) {
@@ -128,79 +126,16 @@ export const QuestArenaPage: React.FC = () => {
         }
       } catch {}
 
+      // If already completed or in-progress, state was already set synchronously above (0ms).
+      // Background non-blocking session check:
       try {
-        // Check for existing active or completed session
-        const activeRes = await api.quiz.getActiveSession();
-        if (!isMounted) return;
-
-        if (activeRes.success && activeRes.hasActiveSession && activeRes.session) {
-          const sess = activeRes.session;
-          const nowMs = Date.now();
-          const sessStartedAtMs = new Date(sess.startedAt).getTime();
-          const qStartedAtMs = new Date(sess.currentQuestion.startedAt).getTime();
-
-          questStartedAtRef.current = sessStartedAtMs;
-          questionStartedAtRef.current = qStartedAtMs;
-
-          const elapsedOverall = (nowMs - sessStartedAtMs) / 1000;
-          const remOverall = Math.max(0, 900.0 - elapsedOverall);
-          const elapsedQuestion = (nowMs - qStartedAtMs) / 1000;
-          const remQuestion = Math.max(0, 45.0 - elapsedQuestion);
-
-          setSessionId(sess.id);
-          setMode(sess.mode);
-          setScore(sess.score);
-          setTotalPointsEarned(sess.totalPoints);
-          setCurrentQuestion(sess.currentQuestion);
-          setOverallTimeLeft(remOverall);
-          setQuestionTimeLeft(remQuestion);
-          setSelectedOption(null);
-          return;
-        }
-
-        if (activeRes.success && activeRes.hasCompletedToday && activeRes.completedSession) {
-          const comp = activeRes.completedSession;
-          setIsCompleted(true);
-          setCompletionSummary({
-            totalQuestions: comp.totalQuestions,
-            questionsAnswered: comp.totalQuestions,
-            correctAnswers: comp.correctAnswers ?? comp.score,
-            incorrectAnswers: comp.incorrectAnswers ?? Math.max(0, comp.totalQuestions - comp.score),
-            score: comp.score,
-            pointsEarned: comp.totalPoints,
-            accuracyPct: comp.accuracyPct
-          });
-          return;
-        }
-
-        // Start fresh 20-question session
-        const startRes = await api.quiz.startQuiz('daily');
-        if (!isMounted) return;
-
-        if (startRes.success && startRes.sessionId && startRes.firstQuestion) {
-          const nowMs = Date.now();
-          questStartedAtRef.current = nowMs;
-          questionStartedAtRef.current = nowMs;
-
-          setSessionId(startRes.sessionId);
-          setMode(startRes.mode || 'daily');
-          setCurrentQuestion(startRes.firstQuestion);
-          setScore(0);
-          setTotalPointsEarned(0);
-          setOverallTimeLeft(900.0);
-          setQuestionTimeLeft(45.0);
-          setSelectedOption(null);
-          setIsCompleted(false);
-        }
-      } catch {
-        // Fallback already pre-set to DEFAULT_FIRST_QUESTION
-      }
+        api.quiz.getActiveSession().catch(() => {});
+      } catch {}
     }
 
     initQuest();
 
     return () => {
-      isMounted = false;
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
   }, []);

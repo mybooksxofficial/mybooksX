@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext.tsx';
 import { navigateTo } from '../utils/navigation.ts';
-import { Menu, ArrowRight, Zap, User, Gift } from 'lucide-react';
+import { Menu, ArrowRight, Zap, User, Gift, CheckCircle } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -18,6 +18,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
+
+  // Check if current user has already completed today's quest (Strict 1-Time Access)
+  const isQuestDoneToday = React.useMemo(() => {
+    try {
+      const policy = localStorage.getItem('mbx_quiz_access_policy') || 'strict_once';
+      if (policy === 'unlimited') return false;
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const uStr = localStorage.getItem('mbx_current_user');
+      let uid = 'guest';
+      try { if (uStr) uid = JSON.parse(uStr).id || 'guest'; } catch {}
+      const lastCompletedToday = localStorage.getItem('mbx_last_completed_today');
+      const userLastCompleted = localStorage.getItem('mbx_last_completed_date_' + uid);
+      return lastCompletedToday === todayStr || userLastCompleted === todayStr;
+    } catch {
+      return false;
+    }
+  }, [user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,16 +76,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         {/* Clean Right Actions */}
         <div className="nav-actions">
-          {/* Prominent Direct QUEST Button (Always visible on phone & desktop, direct 1-tap entry into 15m Quiz) */}
-          <button
-            type="button"
-            className="nav-quest-pill"
-            onClick={() => navigateTo('/quest')}
-            title="Enter 15-Minute Mathematical QUEST Arena"
-          >
-            <Zap size={14} className="bolt-icon" />
-            <span className="quest-text">⚡ QUEST</span>
-          </button>
+          {/* Dynamic QUEST Button: Changes to '✓ Quest Done' once completed for today */}
+          {isQuestDoneToday ? (
+            <button
+              type="button"
+              className="nav-quest-pill completed"
+              onClick={() => navigateTo('/quest')}
+              title="You have completed today's 15-minute QUEST. Tap to view your score and victory voucher."
+            >
+              <CheckCircle size={14} className="check-icon" />
+              <span className="quest-text">✓ Quest Done</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="nav-quest-pill"
+              onClick={() => navigateTo('/quest')}
+              title="Enter 15-Minute Mathematical QUEST Arena"
+            >
+              <Zap size={14} className="bolt-icon" />
+              <span className="quest-text">⚡ QUEST</span>
+            </button>
+          )}
 
           {/* User Account / Points Pill (when logged in) */}
           {isAuthenticated && user ? (
@@ -123,12 +152,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             <ArrowRight size={14} />
           </a>
 
-          {/* Tablet/Desktop Drawer Toggle (Hidden on mobile phones per user request: 'sidebar hata diya phone ke hisab e') */}
+          {/* Responsive Navigation Menu Toggle Button - Active on Mobile & Tablet */}
           <button
             type="button"
-            className="mobile-toggle-btn tablet-drawer-btn"
+            className="mobile-toggle-btn"
             onClick={onToggleSidebar}
             aria-label="Open Navigation Menu"
+            title="Open Navigation Menu"
           >
             <Menu size={22} />
           </button>
