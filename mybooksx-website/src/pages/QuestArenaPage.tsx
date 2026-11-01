@@ -466,7 +466,7 @@ export const QuestArenaPage: React.FC = () => {
             textAlign: 'center'
           }}>
             <Lock size={16} />
-            <span>🔒 Daily 1-Time Quest Completed for Today. Access unlocks again tomorrow at 00:00 IST.</span>
+            <span>🔒 User already attended today. You cannot participate again today. Next challenge unlocks tomorrow at 00:00 IST.</span>
           </div>
 
           <div className="completion-stats-grid">

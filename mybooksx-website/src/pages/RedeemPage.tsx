@@ -86,6 +86,18 @@ export const RedeemPage: React.FC = () => {
       if (res.success && res.redemption) {
         setConfirmedReceipt(res.redemption);
         setSelectedReward(null);
+
+        // Voice speech announcement: "Booked! You will receive it within 7 days."
+        try {
+          if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance('Booked! You will receive it within 7 days.');
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+          }
+        } catch {}
+
         await refreshUser();
         await loadData();
       } else {
@@ -512,8 +524,8 @@ export const RedeemPage: React.FC = () => {
               <div className="mbx-receipt-stamp">
                 <CheckCircle2 size={32} className="text-success" />
               </div>
-              <h3>Redemption Confirmation Receipt</h3>
-              <p>Your software access request has been securely registered in D1 database.</p>
+              <h3>🎉 Booked! You will receive it within 7 days.</h3>
+              <p>Your software license booking is confirmed. Your login details and license keys will be delivered within 7 days.</p>
             </div>
 
             <div className="mbx-receipt-ticket">

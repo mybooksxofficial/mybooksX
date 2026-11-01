@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext.tsx';
 import { navigateTo } from '../utils/navigation.ts';
-import { Menu, ArrowRight, Zap, User, Gift, CheckCircle } from 'lucide-react';
+import { Menu, ArrowRight, Zap, User, Gift } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -18,34 +18,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
-  const [questDoneKey, setQuestDoneKey] = useState(0);
-
-  useEffect(() => {
-    const handleStorageUpdate = () => setQuestDoneKey(prev => prev + 1);
-    window.addEventListener('storage', handleStorageUpdate);
-    window.addEventListener('popstate', handleStorageUpdate);
-    return () => {
-      window.removeEventListener('storage', handleStorageUpdate);
-      window.removeEventListener('popstate', handleStorageUpdate);
-    };
-  }, []);
-
-  // Check if current user has already completed today's quest (Strict 1-Time Access)
-  const isQuestDoneToday = React.useMemo(() => {
-    try {
-      const policy = localStorage.getItem('mbx_quiz_access_policy') || 'strict_once';
-      if (policy === 'unlimited') return false;
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const uStr = localStorage.getItem('mbx_current_user');
-      let uid = 'guest';
-      try { if (uStr) uid = JSON.parse(uStr).id || 'guest'; } catch {}
-      const lastCompletedToday = localStorage.getItem('mbx_last_completed_today');
-      const userLastCompleted = localStorage.getItem('mbx_last_completed_date_' + uid);
-      return lastCompletedToday === todayStr || userLastCompleted === todayStr;
-    } catch {
-      return false;
-    }
-  }, [user, questDoneKey]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,8 +30,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   return (
     <header className={`navbar-wrapper ${scrolled ? 'scrolled' : ''}`}>
       <nav className="container main-nav">
-        {/* Brand with Circular Logo */}
+        {/* Brand with Circular Logo and Primary Sidebar Hamburger Button */}
         <div className="nav-left">
+          <button
+            type="button"
+            className="sidebar-toggle-btn"
+            onClick={onToggleSidebar}
+            aria-label="Toggle Navigation Sidebar"
+            title="Open Navigation Menu & QUEST"
+          >
+            <Menu size={20} />
+          </button>
+
           <a href="/" className="nav-logo-link" aria-label="MyBooksX Home" onClick={(e) => { e.preventDefault(); navigateTo('/'); }}>
             <div className="circular-logo-container">
               <img 
@@ -87,29 +69,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         {/* Clean Right Actions */}
         <div className="nav-actions">
-          {/* Dynamic QUEST Button: Changes to '✓ Quest Done' once completed for today */}
-          {isQuestDoneToday ? (
-            <button
-              type="button"
-              className="nav-quest-pill completed"
-              onClick={() => navigateTo('/quest')}
-              title="You have completed today's 15-minute QUEST. Tap to view your score and victory voucher."
-            >
-              <CheckCircle size={14} className="check-icon" />
-              <span className="quest-text">✓ Quest Done</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="nav-quest-pill"
-              onClick={() => navigateTo('/quest')}
-              title="Enter 15-Minute Mathematical QUEST Arena"
-            >
-              <Zap size={14} className="bolt-icon" />
-              <span className="quest-text">⚡ QUEST</span>
-            </button>
-          )}
-
           {/* User Account / Points Pill (when logged in) */}
           {isAuthenticated && user ? (
             <button
@@ -127,10 +86,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               </div>
             </button>
           ) : (
-            /* Desktop-only Sign In button (hidden on phone, where QUEST button is the direct primary action) */
+            /* Sign In button */
             <button
               type="button"
-              className="nav-signin-btn desktop-only"
+              className="nav-signin-btn"
               onClick={() => openAuthModal('login')}
             >
               <User size={15} />
@@ -157,21 +116,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </button>
           </div>
 
-          {/* Desktop-only Focused CTA */}
+          {/* Focused CTA */}
           <a href="/#custom-solution" className="btn-primary nav-cta desktop-only" onClick={() => navigateTo('/')}>
             <span>{t.nav.startProject}</span>
             <ArrowRight size={14} />
           </a>
 
-          {/* Responsive Navigation Menu Toggle Button - Active on Mobile & Tablet */}
+          {/* Mobile Right Quick Toggle Button */}
           <button
             type="button"
-            className="mobile-toggle-btn"
+            className="mobile-toggle-btn mobile-only"
             onClick={onToggleSidebar}
             aria-label="Open Navigation Menu"
-            title="Open Navigation Menu"
+            title="Open Navigation Menu & QUEST"
           >
-            <Menu size={22} />
+            <Menu size={20} />
           </button>
         </div>
       </nav>

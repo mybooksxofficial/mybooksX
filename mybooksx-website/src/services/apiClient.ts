@@ -573,8 +573,8 @@ function handleClientFallback(endpoint: string, options: RequestInit = {}): any 
         { id: 'rew-doctracker', code: 'DOCTRACKER', title: 'DocTracker', description: 'High-speed document indexing, OCR search engine & version controller for digital workflows.', pointsCost: 1000, durationDays: 30, isActive: true, iconName: 'FileText' },
         { id: 'rew-tripx', code: 'TRIP_X', title: 'Trip-X', description: 'Enterprise corporate travel, mileage tracking, route logistics & per-diem management suite.', pointsCost: 2000, durationDays: 30, isActive: true, iconName: 'Compass' },
         { id: 'rew-trackerx', code: 'TRACKER_X', title: 'Tracker-X', description: 'Real-time equipment asset tracking, warranty alerts, depreciation calculator & audit log.', pointsCost: 3000, durationDays: 30, isActive: true, iconName: 'Layers' },
-        { id: 'rew-expensec', code: 'EXPENSE_C', title: 'Expense-C', description: 'Automated GST-compliant corporate expense verification, receipt matching & payout system.', pointsCost: 5000, durationDays: 30, isActive: true, iconName: 'Receipt' },
-        { id: 'rew-bundle', code: 'PREMIUM_BUNDLE', title: 'MyBooksX Premium Bundle', description: 'Complete Suite: Full 30-day access to DocTracker, Trip-X, Tracker-X and Expense-C combined.', pointsCost: 10000, durationDays: 30, isActive: true, iconName: 'Crown' }
+        { id: 'rew-expensex', code: 'EXPENSE_X', title: 'Expense-X', description: 'Automated GST-compliant corporate expense verification, receipt matching & payout system.', pointsCost: 5000, durationDays: 30, isActive: true, iconName: 'Receipt' },
+        { id: 'rew-bundle', code: 'PREMIUM_BUNDLE', title: 'MyBooksX Premium Bundle', description: 'Complete Suite: Full 30-day access to DocTracker, Trip-X, Tracker-X and Expense-X combined.', pointsCost: 10000, durationDays: 30, isActive: true, iconName: 'Crown' }
       ]
     };
   }
@@ -589,7 +589,7 @@ function handleClientFallback(endpoint: string, options: RequestInit = {}): any 
       { id: 'rew-doctracker', code: 'DOCTRACKER', title: 'DocTracker', pointsCost: 1000, durationDays: 30 },
       { id: 'rew-tripx', code: 'TRIP_X', title: 'Trip-X', pointsCost: 2000, durationDays: 30 },
       { id: 'rew-trackerx', code: 'TRACKER_X', title: 'Tracker-X', pointsCost: 3000, durationDays: 30 },
-      { id: 'rew-expensec', code: 'EXPENSE_C', title: 'Expense-C', pointsCost: 5000, durationDays: 30 },
+      { id: 'rew-expensex', code: 'EXPENSE_X', title: 'Expense-X', pointsCost: 5000, durationDays: 30 },
       { id: 'rew-bundle', code: 'PREMIUM_BUNDLE', title: 'MyBooksX Premium Bundle', pointsCost: 10000, durationDays: 30 }
     ];
 

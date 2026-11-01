@@ -91,27 +91,44 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
             } catch {}
 
             return isDone ? (
-              <button
-                type="button"
-                className="btn-secondary sidebar-spin-btn"
-                style={{ background: '#ECFDF5', borderColor: '#10B981', color: '#047857', fontWeight: 700 }}
-                onClick={() => {
-                  onClose();
-                  navigateTo('/quest');
-                }}
-              >
-                ✓ Quest Completed Today
-              </button>
+              <div className="quest-locked-panel" style={{ width: '100%', marginTop: '0.65rem' }}>
+                <div style={{
+                  background: '#FEF2F2',
+                  border: '1px solid #FECACA',
+                  borderRadius: '8px',
+                  padding: '0.65rem 0.75rem',
+                  fontSize: '0.82rem',
+                  color: '#991B1B',
+                  lineHeight: '1.4',
+                  marginBottom: '0.5rem',
+                  fontWeight: 500,
+                  textAlign: 'left'
+                }}>
+                  🔒 <strong>User already attended today.</strong> You cannot participate again today. Next challenge unlocks tomorrow at 00:00 IST.
+                </div>
+                <button
+                  type="button"
+                  className="btn-secondary sidebar-spin-btn"
+                  style={{ width: '100%', background: '#F8FAFC', borderColor: '#CBD5E1', color: '#475569', fontWeight: 600, fontSize: '0.82rem' }}
+                  onClick={() => {
+                    onClose();
+                    navigateTo('/quest');
+                  }}
+                >
+                  📊 View Today's Score & Voucher
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
                 className="btn-primary sidebar-spin-btn"
+                style={{ width: '100%', marginTop: '0.65rem' }}
                 onClick={() => {
                   onClose();
                   navigateTo('/quest');
                 }}
               >
-                ⚡ Enter QUEST
+                ⚡ Enter 15-Minute QUEST
               </button>
             );
           })()}

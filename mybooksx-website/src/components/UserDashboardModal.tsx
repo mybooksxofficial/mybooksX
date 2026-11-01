@@ -250,7 +250,7 @@ export const UserDashboardModal: React.FC = () => {
                   MyBooksX Rewards Store
                 </strong>
                 <span style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
-                  Redeem DocTracker, Trip-X, Tracker-X, Expense-C or the Premium Bundle.
+                  Redeem DocTracker, Trip-X, Tracker-X, Expense-X or the Premium Bundle.
                 </span>
               </div>
               <button

@@ -6,8 +6,8 @@ VALUES
   ('rew-doctracker', 'DOCTRACKER', 'DocTracker', 'High-speed document indexing, OCR search engine & version controller for digital workflows.', 1000, 30, 1, 'FileText', '2026-10-31T00:00:00.000Z'),
   ('rew-tripx', 'TRIP_X', 'Trip-X', 'Enterprise corporate travel, mileage tracking, route logistics & per-diem management suite.', 2000, 30, 1, 'Compass', '2026-10-31T00:00:00.000Z'),
   ('rew-trackerx', 'TRACKER_X', 'Tracker-X', 'Real-time equipment asset tracking, warranty alerts, depreciation calculator & audit log.', 3000, 30, 1, 'Layers', '2026-10-31T00:00:00.000Z'),
-  ('rew-expensec', 'EXPENSE_C', 'Expense-C', 'Automated GST-compliant corporate expense verification, receipt matching & payout system.', 5000, 30, 1, 'Receipt', '2026-10-31T00:00:00.000Z'),
-  ('rew-bundle', 'PREMIUM_BUNDLE', 'MyBooksX Premium Bundle', 'Complete Suite: Full 30-day access to DocTracker, Trip-X, Tracker-X and Expense-C combined.', 10000, 30, 1, 'Crown', '2026-10-31T00:00:00.000Z');
+  ('rew-expensex', 'EXPENSE_X', 'Expense-X', 'Automated GST-compliant corporate expense verification, receipt matching & payout system.', 5000, 30, 1, 'Receipt', '2026-10-31T00:00:00.000Z'),
+  ('rew-bundle', 'PREMIUM_BUNDLE', 'MyBooksX Premium Bundle', 'Complete Suite: Full 30-day access to DocTracker, Trip-X, Tracker-X and Expense-X combined.', 10000, 30, 1, 'Crown', '2026-10-31T00:00:00.000Z');
 
 -- 2. 20 Business-Related Questions: 7 Easy, 8 Medium, 5 Hard
 -- Easy 1 (Correct: 0)
